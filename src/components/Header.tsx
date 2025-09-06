@@ -46,7 +46,7 @@ export function Header() {
   };
 
   const handleSupportCreator = () => {
-    window.open('https://github.com/sponsors', '_blank');
+    window.open('https://github.com/sponsors/xNeRoNx', '_blank');
   };
 
   return (
@@ -77,7 +77,7 @@ export function Header() {
               className="gap-2"
             >
               <Download size={16} />
-              {t('export')}
+              {t('export')} (beta)
             </Button>
 
             <Button
@@ -87,7 +87,7 @@ export function Header() {
               className="gap-2"
             >
               <Upload size={16} />
-              {t('import')}
+              {t('import')} (beta)
             </Button>
 
             <Button

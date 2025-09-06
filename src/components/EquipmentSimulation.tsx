@@ -209,7 +209,7 @@ export function EquipmentSimulation() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('equipment')}</h2>
+        <h2 className="text-2xl font-bold">{t('equipment')} (beta)</h2>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
