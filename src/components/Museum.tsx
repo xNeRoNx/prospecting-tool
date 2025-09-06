@@ -43,12 +43,6 @@ export function Museum() {
     return slots;
   };
 
-  // Initialize museum slots if empty
-  if (museumSlots.length === 0) {
-    const initialSlots = initializeMuseumSlots();
-    setMuseumSlots(initialSlots);
-  }
-
   const updateSlot = (id: string, updates: Partial<MuseumSlot>) => {
     // Check if trying to place the same ore in different slots
     if (updates.ore) {
