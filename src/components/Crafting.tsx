@@ -332,9 +332,14 @@ export function Crafting() {
                         <div className="flex items-center gap-2 text-xs">
                           <Wrench size={12} className="text-muted-foreground" />
                           <span className="text-muted-foreground">
-                            {craftingItem.item.recipe.map(r => 
-                              `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
-                            ).join(', ')}
+                            {showMinimalMaterials 
+                              ? craftingItem.item.recipe.map(r => 
+                                  `${r.amount} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
+                                ).join(', ')
+                              : craftingItem.item.recipe.map(r => 
+                                  `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
+                                ).join(', ')
+                            }
                           </span>
                         </div>
                       </div>
@@ -381,7 +386,7 @@ export function Crafting() {
                 onCheckedChange={setShowMinimalMaterials}
               />
               <Label htmlFor="minimal-materials" className="text-sm">
-                Minimal needed
+                {t('minimalNeeded')}
               </Label>
             </div>
           </div>

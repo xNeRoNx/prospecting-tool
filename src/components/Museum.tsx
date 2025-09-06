@@ -302,7 +302,7 @@ export function Museum() {
                                 <SelectContent>
                                   {modifiers.map(modifier => (
                                     <SelectItem key={modifier.name} value={modifier.name}>
-                                      {modifier.name}
+                                      {modifier.name} - {modifier.effect}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
@@ -327,7 +327,7 @@ export function Museum() {
                                 {slot.modifier && (
                                   <>
                                     <br />
-                                    +{getModifierBonus(ores.find(o => o.name === slot.ore)?.rarity || 'Common')}x modifier
+                                    {modifiers.find(m => m.name === slot.modifier)?.effect}: +{getModifierBonus(ores.find(o => o.name === slot.ore)?.rarity || 'Common')}x
                                   </>
                                 )}
                               </div>
