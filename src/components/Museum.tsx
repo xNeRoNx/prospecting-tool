@@ -21,49 +21,49 @@ export function Museum() {
     
     // Common: 3 slots each
     ['Common'].forEach(rarity => {
-      for (let i = 0; i < 30; i++) { // 10 common ores * 3 slots each
+      for (let i = 0; i < 3; i++) { // 10 common ores * 3 slots each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
     
     // Uncommon: 3 slots each  
     ['Uncommon'].forEach(rarity => {
-      for (let i = 0; i < 24; i++) { // 8 uncommon ores * 3 slots each
+      for (let i = 0; i < 3; i++) { // 8 uncommon ores * 3 slots each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
     
     // Rare: 3 slots each
     ['Rare'].forEach(rarity => {
-      for (let i = 0; i < 30; i++) { // 10 rare ores * 3 slots each
+      for (let i = 0; i < 3; i++) { // 10 rare ores * 3 slots each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
     
     // Epic: 3 slots each
     ['Epic'].forEach(rarity => {
-      for (let i = 0; i < 36; i++) { // 12 epic ores * 3 slots each
+      for (let i = 0; i < 3; i++) { // 12 epic ores * 3 slots each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
     
     // Legendary: 3 slots each
     ['Legendary'].forEach(rarity => {
-      for (let i = 0; i < 42; i++) { // 14 legendary ores * 3 slots each
+      for (let i = 0; i < 3; i++) { // 14 legendary ores * 3 slots each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
     
     // Mythic: 2 slots each
     ['Mythic'].forEach(rarity => {
-      for (let i = 0; i < 18; i++) { // 9 mythic ores * 2 slots each
+      for (let i = 0; i < 2; i++) { // 9 mythic ores * 2 slots each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
     
     // Exotic: 1 slot each
     ['Exotic'].forEach(rarity => {
-      for (let i = 0; i < 3; i++) { // 3 exotic ores * 1 slot each
+      for (let i = 0; i < 1; i++) { // 3 exotic ores * 1 slot each
         slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
       }
     });
