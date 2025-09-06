@@ -11,12 +11,13 @@ import { Plus, Minus, X, Check } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
 import type { CollectibleOre } from '@/hooks/useAppData';
-import { ores } from '@/lib/gameData';
+import { ores, modifiers } from '@/lib/gameData';
 
 export function CustomCollectibles() {
   const { t } = useLanguage();
   const { collectibles, setCollectibles } = useAppData();
   const [selectedOre, setSelectedOre] = useState('');
+  const [selectedModifier, setSelectedModifier] = useState('');
   const [quantity, setQuantity] = useState(1);
 
   const addOre = () => {
@@ -27,11 +28,13 @@ export function CustomCollectibles() {
       ore: selectedOre,
       quantity,
       completed: false,
+      modifier: selectedModifier || undefined,
       id
     };
     
     setCollectibles(current => [...current, newCollectible]);
     setSelectedOre('');
+    setSelectedModifier('');
     setQuantity(1);
   };
 
@@ -144,6 +147,22 @@ export function CustomCollectibles() {
               </div>
               
               <div>
+                <Label htmlFor="modifier-select">{t('modifier')} (Optional)</Label>
+                <Select value={selectedModifier} onValueChange={setSelectedModifier}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select modifier" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modifiers.map(modifier => (
+                      <SelectItem key={modifier.name} value={modifier.name}>
+                        {modifier.name} ({modifier.effect})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
                 <Label htmlFor="quantity">{t('quantity')}</Label>
                 <Input
                   id="quantity"
@@ -240,6 +259,11 @@ export function CustomCollectibles() {
                           
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>{t('quantity')}: {collectible.quantity}</span>
+                            {collectible.modifier && (
+                              <Badge variant="outline" size="sm">
+                                {collectible.modifier}
+                              </Badge>
+                            )}
                             {collectible.completed && (
                               <Badge variant="secondary" size="sm">
                                 <Check size={12} className="mr-1" />

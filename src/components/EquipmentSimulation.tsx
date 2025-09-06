@@ -50,10 +50,14 @@ export function EquipmentSimulation() {
   const addCustomStat = () => {
     if (!customStatName.trim() || customStatValue === 0) return;
     
+    // Only allow adding to existing base stat types
+    const validStats = ['luck', 'digStrength', 'digSpeed', 'shakeStrength', 'shakeSpeed', 'capacity', 'sellBoost', 'sizeBoost', 'modifierBoost', 'toughness'];
+    if (!validStats.includes(customStatName)) return;
+    
     updateEquipment({
       customStats: {
         ...equipment.customStats,
-        [customStatName]: customStatValue
+        [customStatName]: (equipment.customStats[customStatName] || 0) + customStatValue
       }
     });
     
@@ -464,11 +468,26 @@ export function EquipmentSimulation() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-2">
-                <Input
-                  placeholder="Stat name"
+                <Select
                   value={customStatName}
-                  onChange={(e) => setCustomStatName(e.target.value)}
-                />
+                  onValueChange={setCustomStatName}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select stat to boost" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="luck">Luck</SelectItem>
+                    <SelectItem value="digStrength">Dig Strength</SelectItem>
+                    <SelectItem value="digSpeed">Dig Speed</SelectItem>
+                    <SelectItem value="shakeStrength">Shake Strength</SelectItem>
+                    <SelectItem value="shakeSpeed">Shake Speed</SelectItem>
+                    <SelectItem value="capacity">Capacity</SelectItem>
+                    <SelectItem value="sellBoost">Sell Boost</SelectItem>
+                    <SelectItem value="sizeBoost">Size Boost</SelectItem>
+                    <SelectItem value="modifierBoost">Modifier Boost</SelectItem>
+                    <SelectItem value="toughness">Toughness</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Input
                   type="number"
                   placeholder="Value"

@@ -39,6 +39,7 @@ export interface CollectibleOre {
   ore: string;
   quantity: number;
   completed: boolean;
+  modifier?: string;
   id: string;
 }
 

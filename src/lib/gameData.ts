@@ -32,6 +32,17 @@ export interface Ore {
     stat: string;
     maxMultiplier: number;
   };
+  specialEffects?: {
+    luck?: number;
+    capacity?: number;
+    digStrength?: number;
+    shakeStrength?: number;
+    digSpeed?: number;
+    shakeSpeed?: number;
+    sellBoost?: number;
+    sizeBoost?: number;
+    modifierBoost?: number;
+  };
 }
 
 export interface Shovel {
@@ -487,15 +498,21 @@ export const ores: Ore[] = [
   { name: "Inferlume", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 } },
   { name: "Vortessence", rarity: "Mythic", museumEffect: { stat: "Capacity", maxMultiplier: 0.5 } },
   { name: "Mythril", rarity: "Mythic", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.5 } },
-  { name: "Prismara", rarity: "Mythic", museumEffect: { stat: "Luck, Capacity and Dig & Shake Strength", maxMultiplier: 0.25 } },
-  { name: "Flarebloom", rarity: "Mythic", museumEffect: { stat: "Boosts Luck 1x but reduces Size Boost by -0.5x", maxMultiplier: 1 } },
-  { name: "Volcanic Core", rarity: "Mythic", museumEffect: { stat: "Dig Strength and Size Boost", maxMultiplier: 0.25 } },
+  { name: "Prismara", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.25 }, 
+    specialEffects: { luck: 0.25, capacity: 0.25, digStrength: 0.25, shakeStrength: 0.25 } },
+  { name: "Flarebloom", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 1 },
+    specialEffects: { luck: 1, sizeBoost: -0.5 } },
+  { name: "Volcanic Core", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.25 },
+    specialEffects: { digStrength: 0.25, sizeBoost: 0.25 } },
   { name: "Frostshard", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.5 } },
   
   // Exotic
-  { name: "Dinosaur Skull", rarity: "Exotic", museumEffect: { stat: "Size Boost and Sell Boost", maxMultiplier: 0.5 } },
-  { name: "Cryogenic Artifact", rarity: "Exotic", museumEffect: { stat: "Dig Amount and Shake Strength are boosted by 1.5x while Dig Speed and Shake Speed are lowered by -1x", maxMultiplier: 1.5 } },
-  { name: "Voidstone", rarity: "Exotic", museumEffect: { stat: "Luck and Capacity", maxMultiplier: 0.5 } }
+  { name: "Dinosaur Skull", rarity: "Exotic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.5 },
+    specialEffects: { sizeBoost: 0.5, sellBoost: 0.5 } },
+  { name: "Cryogenic Artifact", rarity: "Exotic", museumEffect: { stat: "Dig Strength", maxMultiplier: 1.5 },
+    specialEffects: { digStrength: 1.5, shakeStrength: 1.5, digSpeed: -1, shakeSpeed: -1 } },
+  { name: "Voidstone", rarity: "Exotic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 },
+    specialEffects: { luck: 0.5, capacity: 0.5 } }
 ];
 
 export const modifiers = [

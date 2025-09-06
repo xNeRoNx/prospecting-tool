@@ -19,52 +19,24 @@ export function Museum() {
   const initializeMuseumSlots = () => {
     const slots: MuseumSlot[] = [];
     
-    // Common: 3 slots each
-    ['Common'].forEach(rarity => {
-      for (let i = 0; i < 3; i++) { // 10 common ores * 3 slots each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
-      }
-    });
-    
-    // Uncommon: 3 slots each  
-    ['Uncommon'].forEach(rarity => {
-      for (let i = 0; i < 3; i++) { // 8 uncommon ores * 3 slots each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
-      }
-    });
-    
-    // Rare: 3 slots each
-    ['Rare'].forEach(rarity => {
-      for (let i = 0; i < 3; i++) { // 10 rare ores * 3 slots each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
-      }
-    });
-    
-    // Epic: 3 slots each
-    ['Epic'].forEach(rarity => {
-      for (let i = 0; i < 3; i++) { // 12 epic ores * 3 slots each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
-      }
-    });
-    
-    // Legendary: 3 slots each
-    ['Legendary'].forEach(rarity => {
-      for (let i = 0; i < 3; i++) { // 14 legendary ores * 3 slots each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
-      }
-    });
-    
-    // Mythic: 2 slots each
-    ['Mythic'].forEach(rarity => {
-      for (let i = 0; i < 2; i++) { // 9 mythic ores * 2 slots each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
-      }
-    });
-    
-    // Exotic: 1 slot each
-    ['Exotic'].forEach(rarity => {
-      for (let i = 0; i < 1; i++) { // 3 exotic ores * 1 slot each
-        slots.push({ id: `${rarity.toLowerCase()}-${i}`, ore: undefined, modifier: undefined });
+    // Get slot counts for each rarity
+    const raritySlotCounts = {
+      'Common': 3,
+      'Uncommon': 3, 
+      'Rare': 3,
+      'Epic': 3,
+      'Legendary': 3,
+      'Mythic': 2,
+      'Exotic': 1
+    };
+
+    Object.entries(raritySlotCounts).forEach(([rarity, slotsCount]) => {
+      for (let i = 0; i < slotsCount; i++) {
+        slots.push({ 
+          id: `${rarity.toLowerCase()}-${i}`, 
+          ore: undefined, 
+          modifier: undefined 
+        });
       }
     });
     
@@ -114,60 +86,59 @@ export function Museum() {
       const ore = ores.find(o => o.name === slot.ore);
       if (!ore) return;
 
-      let baseMultiplier = ore.museumEffect.maxMultiplier;
-      
-      // Add modifier bonus if present
-      if (slot.modifier) {
-        baseMultiplier += getModifierBonus(ore.rarity);
-      }
+      // Handle special multi-stat effects first
+      if (ore.specialEffects) {
+        Object.entries(ore.specialEffects).forEach(([stat, value]) => {
+          if (stats[stat] !== undefined) {
+            let effectValue = value;
+            
+            // Add modifier bonus if present
+            if (slot.modifier) {
+              effectValue += getModifierBonus(ore.rarity);
+            }
+            
+            stats[stat] += effectValue;
+          }
+        });
+      } else {
+        // Handle normal single-stat effects
+        let baseMultiplier = ore.museumEffect.maxMultiplier;
+        
+        // Add modifier bonus if present
+        if (slot.modifier) {
+          baseMultiplier += getModifierBonus(ore.rarity);
+        }
 
-      // Apply the effect based on the ore's museum effect
-      const effectStat = ore.museumEffect.stat.toLowerCase();
-      
-      if (effectStat.includes('luck')) {
-        stats.luck += baseMultiplier;
-      }
-      if (effectStat.includes('dig strength')) {
-        stats.digStrength += baseMultiplier;
-      }
-      if (effectStat.includes('dig speed')) {
-        stats.digSpeed += baseMultiplier;
-      }
-      if (effectStat.includes('shake strength')) {
-        stats.shakeStrength += baseMultiplier;
-      }
-      if (effectStat.includes('shake speed')) {
-        stats.shakeSpeed += baseMultiplier;
-      }
-      if (effectStat.includes('capacity')) {
-        stats.capacity += baseMultiplier;
-      }
-      if (effectStat.includes('sell boost')) {
-        stats.sellBoost += baseMultiplier;
-      }
-      if (effectStat.includes('size boost')) {
-        stats.sizeBoost += baseMultiplier;
-      }
-      if (effectStat.includes('modifier boost')) {
-        stats.modifierBoost += baseMultiplier;
-      }
-
-      // Handle special cases
-      if (ore.name === 'Flarebloom') {
-        stats.luck += 1;
-        stats.sizeBoost -= 0.5;
-      }
-      if (ore.name === 'Cryogenic Artifact') {
-        stats.digStrength += 1.5;
-        stats.shakeStrength += 1.5;
-        stats.digSpeed -= 1;
-        stats.shakeSpeed -= 1;
-      }
-      if (ore.name === 'Prismara') {
-        stats.luck += 0.25;
-        stats.capacity += 0.25;
-        stats.digStrength += 0.25;
-        stats.shakeStrength += 0.25;
+        // Apply the effect based on the ore's museum effect
+        const effectStat = ore.museumEffect.stat.toLowerCase();
+        
+        if (effectStat.includes('luck')) {
+          stats.luck += baseMultiplier;
+        }
+        if (effectStat.includes('dig strength')) {
+          stats.digStrength += baseMultiplier;
+        }
+        if (effectStat.includes('dig speed')) {
+          stats.digSpeed += baseMultiplier;
+        }
+        if (effectStat.includes('shake strength')) {
+          stats.shakeStrength += baseMultiplier;
+        }
+        if (effectStat.includes('shake speed')) {
+          stats.shakeSpeed += baseMultiplier;
+        }
+        if (effectStat.includes('capacity')) {
+          stats.capacity += baseMultiplier;
+        }
+        if (effectStat.includes('sell boost')) {
+          stats.sellBoost += baseMultiplier;
+        }
+        if (effectStat.includes('size boost')) {
+          stats.sizeBoost += baseMultiplier;
+        }
+        if (effectStat.includes('modifier boost')) {
+          stats.modifierBoost += baseMultiplier;
+        }
       }
     });
 
@@ -191,17 +162,14 @@ export function Museum() {
       'Exotic': 1
     };
 
-    Object.entries(raritySlotCounts).forEach(([rarity, slotsPerOre]) => {
-      const rarityOres = ores.filter(ore => ore.rarity === rarity);
-      
+    Object.entries(raritySlotCounts).forEach(([rarity, slotsCount]) => {
       grouped[rarity] = [];
-      rarityOres.forEach((ore, oreIndex) => {
-        for (let slotIndex = 0; slotIndex < slotsPerOre; slotIndex++) {
-          const slotId = `${rarity.toLowerCase()}-${oreIndex * slotsPerOre + slotIndex}`;
-          const existingSlot = museumSlots.find(s => s.id === slotId);
-          grouped[rarity].push(existingSlot || { id: slotId });
-        }
-      });
+      
+      for (let slotIndex = 0; slotIndex < slotsCount; slotIndex++) {
+        const slotId = `${rarity.toLowerCase()}-${slotIndex}`;
+        const existingSlot = museumSlots.find(s => s.id === slotId);
+        grouped[rarity].push(existingSlot || { id: slotId });
+      }
     });
 
     return grouped;

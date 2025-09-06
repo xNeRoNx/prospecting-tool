@@ -20,8 +20,6 @@ export function Crafting() {
   const { craftingItems, setCraftingItems, ownedMaterials, setOwnedMaterials } = useAppData();
   const [selectedItem, setSelectedItem] = useState<CraftableItem | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [showMinimal, setShowMinimal] = useState(true);
-
   const addToCraftingList = (item: CraftableItem, qty: number) => {
     const id = Date.now().toString();
     const newCraftingItem: CraftingItem = {
@@ -86,35 +84,7 @@ export function Crafting() {
     return summary;
   };
 
-  const calculateMinimalMaterials = (): MaterialSummary => {
-    const items = craftingItems.filter(item => !item.completed);
-    const summary: MaterialSummary = {};
-    
-    // Group items by recipe to find optimal crafting order
-    const materialNeeds: { [material: string]: number } = {};
-    
-    items.forEach(craftingItem => {
-      craftingItem.item.recipe.forEach(recipe => {
-        const key = recipe.material;
-        if (!materialNeeds[key]) materialNeeds[key] = 0;
-        materialNeeds[key] += recipe.amount * craftingItem.quantity;
-      });
-    });
-    
-    Object.entries(materialNeeds).forEach(([material, needed]) => {
-      summary[material] = {
-        needed,
-        owned: ownedMaterials[material] || 0,
-        weight: craftableItems.find(item => 
-          item.recipe.some(r => r.material === material)
-        )?.recipe.find(r => r.material === material)?.weight
-      };
-    });
-
-    return summary;
-  };
-
-  const materialSummary = showMinimal ? calculateMinimalMaterials() : calculateMaterialSummary();
+  const materialSummary = calculateMaterialSummary();
 
   const updateOwnedMaterial = (material: string, amount: number) => {
     setOwnedMaterials(current => ({
@@ -249,14 +219,24 @@ export function Crafting() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">{t('craftingList')}</h3>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Checkbox
-                checked={showMinimal}
-                onCheckedChange={setShowMinimal}
-              />
-              {t('showMinimal')}
-            </div>
           </div>
+
+          {canCraftItems().length > 0 && (
+            <Card className="border-green-500/20 bg-green-500/5">
+              <CardContent className="p-4">
+                <h4 className="font-medium text-green-400 flex items-center gap-2 mb-3">
+                  <Check size={16} />
+                  {t('canCraft')}
+                </h4>
+                {canCraftItems().map(item => (
+                  <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
+                    <Hammer size={14} />
+                    {item.item.name} x{item.quantity}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           <div className="space-y-3">
             {craftingItems.length === 0 ? (
@@ -364,21 +344,6 @@ export function Crafting() {
                 ))}
                 
                 <Separator />
-                
-                {canCraftItems().length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-green-400 flex items-center gap-2">
-                      <Check size={16} />
-                      {t('canCraft')}
-                    </h4>
-                    {canCraftItems().map(item => (
-                      <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
-                        <Hammer size={14} />
-                        {item.item.name} x{item.quantity}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}
