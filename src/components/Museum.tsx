@@ -292,21 +292,33 @@ export function Museum() {
 
                           {slot.ore && (
                             <>
-                              <Select
-                                value={slot.modifier || ''}
-                                onValueChange={(value) => updateSlot(slot.id, { modifier: value || undefined })}
-                              >
-                                <SelectTrigger className="text-xs">
-                                  <SelectValue placeholder="Select modifier" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {modifiers.map(modifier => (
-                                    <SelectItem key={modifier.name} value={modifier.name}>
-                                      {modifier.name} - {modifier.effect}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <div className="flex gap-1">
+                                <Select
+                                  value={slot.modifier || ''}
+                                  onValueChange={(value) => updateSlot(slot.id, { modifier: value || undefined })}
+                                >
+                                  <SelectTrigger className="text-xs flex-1">
+                                    <SelectValue placeholder="Select modifier" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {modifiers.map(modifier => (
+                                      <SelectItem key={modifier.name} value={modifier.name}>
+                                        {modifier.name} - {modifier.effect}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                {slot.modifier && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => updateSlot(slot.id, { modifier: undefined })}
+                                    className="h-8 w-8 p-0 flex-shrink-0"
+                                  >
+                                    <X size={12} />
+                                  </Button>
+                                )}
+                              </div>
 
                               <Input
                                 type="number"

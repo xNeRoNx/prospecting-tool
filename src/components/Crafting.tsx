@@ -96,7 +96,32 @@ export function Crafting() {
     );
   };
 
-  const calculateMaterialSummary = (): MaterialSummary => {
+  const calculateTotalCost = (): number => {
+    let totalCost = 0;
+    
+    craftingItems.forEach(craftingItem => {
+      if (craftingItem.completed) return;
+      
+      if (showMinimalMaterials) {
+        // For minimal mode, calculate cost for one of each unique item type
+        const uniqueItems = new Set<string>();
+        craftingItems.forEach(ci => {
+          if (!ci.completed) {
+            uniqueItems.add(ci.item.name);
+          }
+        });
+        
+        if (uniqueItems.has(craftingItem.item.name)) {
+          totalCost += craftingItem.item.cost;
+        }
+      } else {
+        // For total mode, multiply by quantity
+        totalCost += craftingItem.item.cost * craftingItem.quantity;
+      }
+    });
+    
+    return totalCost;
+  };
     const summary: MaterialSummary = {};
     const materialMaxNeeded: { [key: string]: number } = {};
     
@@ -138,28 +163,41 @@ export function Crafting() {
     return summary;
   };
 
-  const materialSummary = calculateMaterialSummary();
+  const calculateMaterialSummary = (): MaterialSummary => {
 
-  const updateOwnedMaterial = (material: string, amount: number) => {
+  const materialSummary = calculateMaterialSummary();
+  const totalCost = calculateTotalCost();
     setOwnedMaterials(current => ({
       ...current,
       [material]: Math.max(0, amount)
     }));
   };
 
-  const canCraftItems = () => {
-    return craftingItems.filter(craftingItem => {
-      if (craftingItem.completed) return false;
+  const updateOwnedMaterial = (material: string, amount: number) => {
+    const craftableItems: Array<{ item: CraftingItem; maxQuantity: number }> = [];
+    
+    craftingItems.forEach(craftingItem => {
+      if (craftingItem.completed) return;
       
-      return craftingItem.item.recipe.every(recipe => {
+      let maxCraftable = craftingItem.quantity;
+      
+      // Check each recipe requirement
+      for (const recipe of craftingItem.item.recipe) {
         const owned = ownedMaterials[recipe.material] || 0;
-        const needed = recipe.amount * craftingItem.quantity;
-        return owned >= needed;
-      });
+        const neededPerItem = recipe.amount;
+        const maxPossible = Math.floor(owned / neededPerItem);
+        maxCraftable = Math.min(maxCraftable, maxPossible);
+      }
+      
+      if (maxCraftable > 0) {
+        craftableItems.push({ item: craftingItem, maxQuantity: maxCraftable });
+      }
     });
+    
+    return craftableItems;
   };
 
-  const formatStats = (item: CraftableItem) => {
+  const canCraftItems = () => {
     return Object.entries(item.stats).map(([key, value]) => {
       if (Array.isArray(value)) {
         const [min, max] = value;
@@ -170,7 +208,7 @@ export function Crafting() {
     }).filter(Boolean);
   };
 
-  const getRarityClass = (rarity: string) => {
+  const formatStats = (item: CraftableItem) => {
     return `rarity-${rarity.toLowerCase()}`;
   };
 
@@ -289,10 +327,15 @@ export function Crafting() {
                   <Check size={16} />
                   {t('canCraft')}
                 </h4>
-                {canCraftItems().map(item => (
+                {canCraftItems().map(({ item, maxQuantity }) => (
                   <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
                     <Hammer size={14} />
-                    {item.item.name} x{item.quantity}
+                    {item.item.name} x{maxQuantity}
+                    {maxQuantity < item.quantity && (
+                      <span className="text-xs text-muted-foreground">
+                        (of {item.quantity} wanted)
+                      </span>
+                    )}
                   </div>
                 ))}
               </CardContent>
@@ -404,16 +447,41 @@ export function Crafting() {
                   <div key={material} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{material}</span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateOwnedMaterial(material, data.owned - 1)}
+                          className="h-6 w-6 p-0"
+                          disabled={data.owned <= 0}
+                        >
+                          <Minus size={12} />
+                        </Button>
                         <Input
                           type="number"
                           min="0"
                           value={data.owned}
                           onChange={(e) => updateOwnedMaterial(material, parseInt(e.target.value) || 0)}
-                          className="w-20 h-8"
+                          className="w-16 h-6 text-xs text-center"
                           placeholder="0"
                         />
-                        <span className="text-sm text-muted-foreground">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateOwnedMaterial(material, data.owned + 1)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <Plus size={12} />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateOwnedMaterial(material, data.needed)}
+                          className="h-6 px-2 text-xs"
+                        >
+                          Full
+                        </Button>
+                        <span className="text-xs text-muted-foreground min-w-0">
                           / {data.needed}
                           {data.weight && ` (+${data.weight}kg)`}
                         </span>
@@ -432,6 +500,15 @@ export function Crafting() {
                 ))}
                 
                 <Separator />
+                
+                <div className="pt-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">{t('totalCost')}</span>
+                    <span className="text-green-600 font-mono">
+                      ${totalCost.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}

@@ -51,6 +51,7 @@ export const translations = {
     addToEquipment: "Add to equipment",
     materialsSummary: "Materials Summary",
     canCraft: "Can craft",
+    totalCost: "Total Cost",
     
     // Museum
     displayCase: "Display Case",
@@ -155,6 +156,7 @@ export const translations = {
     addToEquipment: "Dodaj do ekwipunku",
     materialsSummary: "Podsumowanie Materiałów",
     canCraft: "Można stworzyć",
+    totalCost: "Łączny Koszt",
     
     // Museum  
     displayCase: "Gablota",
