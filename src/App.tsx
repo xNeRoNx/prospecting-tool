@@ -17,22 +17,22 @@ function App() {
       
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="crafting" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="crafting" className="gap-2">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+            <TabsTrigger value="crafting" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Hammer size={16} />
-              <span className="hidden sm:inline">{t('crafting')}</span>
+              <span className="text-xs sm:text-sm">{t('crafting')}</span>
             </TabsTrigger>
-            <TabsTrigger value="museum" className="gap-2">
+            <TabsTrigger value="museum" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Bank size={16} />
-              <span className="hidden sm:inline">{t('museum')}</span>
+              <span className="text-xs sm:text-sm">{t('museum')}</span>
             </TabsTrigger>
-            <TabsTrigger value="equipment" className="gap-2">
+            <TabsTrigger value="equipment" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Calculator size={16} />
-              <span className="hidden sm:inline">{t('equipment')}</span>
+              <span className="text-xs sm:text-sm">{t('equipment')}</span>
             </TabsTrigger>
-            <TabsTrigger value="collectibles" className="gap-2">
+            <TabsTrigger value="collectibles" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Archive size={16} />
-              <span className="hidden sm:inline">{t('collectibles')}</span>
+              <span className="text-xs sm:text-sm break-words">{t('collectibles')}</span>
             </TabsTrigger>
           </TabsList>
           

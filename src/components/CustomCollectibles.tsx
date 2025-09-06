@@ -286,24 +286,30 @@ export function CustomCollectibles() {
                   className={`${collectible.completed ? 'opacity-60' : ''} transition-opacity`}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
                         <Checkbox
                           checked={collectible.completed}
                           onCheckedChange={() => toggleCompleted(collectible.id)}
+                          className="mt-1 flex-shrink-0"
                         />
                         
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                        <div className="space-y-2 flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Badge className={getRarityClass(rarity)} variant="outline">
                               {rarity}
                             </Badge>
-                            <span className={`font-medium ${collectible.completed ? 'line-through' : ''}`}>
+                            <span className={`font-medium break-words ${collectible.completed ? 'line-through' : ''}`}>
                               {collectible.ore}
                             </span>
+                            {collectible.modifier && (
+                              <Badge variant="outline" className="text-xs">
+                                {collectible.modifier}
+                              </Badge>
+                            )}
                           </div>
                           
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
                             <span>{t('quantity')}: {collectible.quantity}</span>
                             {collectible.ownedQuantity !== undefined && (
                               <span>Owned: {collectible.ownedQuantity}</span>
@@ -311,13 +317,8 @@ export function CustomCollectibles() {
                             {collectible.weight && (
                               <span>Weight: {collectible.weight}kg</span>
                             )}
-                            {collectible.modifier && (
-                              <Badge variant="outline" size="sm">
-                                {collectible.modifier}
-                              </Badge>
-                            )}
                             {collectible.completed && (
-                              <Badge variant="secondary" size="sm">
+                              <Badge variant="secondary" className="text-xs">
                                 <Check size={12} className="mr-1" />
                                 {t('completed')}
                               </Badge>
@@ -325,9 +326,9 @@ export function CustomCollectibles() {
                           </div>
                           
                           {/* Editable fields for owned quantity and weight */}
-                          <div className="flex items-center gap-2 mt-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <div className="flex items-center gap-1">
-                              <Label className="text-xs">Owned:</Label>
+                              <Label className="text-xs whitespace-nowrap">Owned:</Label>
                               <Input
                                 type="number"
                                 min="0"
@@ -338,7 +339,7 @@ export function CustomCollectibles() {
                               />
                             </div>
                             <div className="flex items-center gap-1">
-                              <Label className="text-xs">Weight:</Label>
+                              <Label className="text-xs whitespace-nowrap">Weight:</Label>
                               <Input
                                 type="number"
                                 step="0.1"
@@ -352,38 +353,40 @@ export function CustomCollectibles() {
                             </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateQuantity(collectible.id, collectible.quantity - 1)}
-                          disabled={collectible.quantity <= 1}
-                        >
-                          <Minus size={14} />
-                        </Button>
                         
-                        <span className="w-8 text-center text-sm font-mono">
-                          {collectible.quantity}
-                        </span>
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateQuantity(collectible.id, collectible.quantity + 1)}
-                        >
-                          <Plus size={14} />
-                        </Button>
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => removeOre(collectible.id)}
-                          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                        >
-                          <X size={14} />
-                        </Button>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuantity(collectible.id, collectible.quantity - 1)}
+                            disabled={collectible.quantity <= 1}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Minus size={12} />
+                          </Button>
+                          
+                          <span className="w-8 text-center text-sm font-mono">
+                            {collectible.quantity}
+                          </span>
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuantity(collectible.id, collectible.quantity + 1)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Plus size={12} />
+                          </Button>
+                          
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeOre(collectible.id)}
+                            className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          >
+                            <X size={12} />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

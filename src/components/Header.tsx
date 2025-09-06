@@ -52,16 +52,16 @@ export function Header() {
   return (
     <header className="border-b border-border bg-card/50 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-xl font-bold text-accent">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-w-0 flex-1">
+            <h1 className="text-lg sm:text-xl font-bold text-accent truncate">
               Prospecting Tools
             </h1>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-24 sm:w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -70,25 +70,50 @@ export function Header() {
               </SelectContent>
             </Select>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-              className="gap-2"
-            >
-              <Download size={16} />
-              {t('export')} (beta)
-            </Button>
+            <div className="hidden sm:flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="gap-2"
+              >
+                <Download size={16} />
+                <span className="hidden md:inline">{t('export')}</span>
+              </Button>
 
-            <Button
-              variant="outline" 
-              size="sm"
-              onClick={handleImport}
-              className="gap-2"
-            >
-              <Upload size={16} />
-              {t('import')} (beta)
-            </Button>
+              <Button
+                variant="outline" 
+                size="sm"
+                onClick={handleImport}
+                className="gap-2"
+              >
+                <Upload size={16} />
+                <span className="hidden md:inline">{t('import')}</span>
+              </Button>
+            </div>
+
+            {/* Mobile menu for export/import */}
+            <div className="sm:hidden flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="p-2"
+                title={t('export')}
+              >
+                <Download size={14} />
+              </Button>
+
+              <Button
+                variant="outline" 
+                size="sm"
+                onClick={handleImport}
+                className="p-2"
+                title={t('import')}
+              >
+                <Upload size={14} />
+              </Button>
+            </div>
 
             <Button
               variant="default"
@@ -97,7 +122,7 @@ export function Header() {
               className="gap-2 bg-accent hover:bg-accent/90"
             >
               <Heart size={16} />
-              {t('supportCreator')}
+              <span className="hidden sm:inline">{t('supportCreator')}</span>
             </Button>
 
             <input

@@ -320,7 +320,7 @@ export function Crafting() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">{t('craftingList')}</h3>
@@ -333,17 +333,21 @@ export function Crafting() {
                   <Check size={16} />
                   {t('canCraft')}
                 </h4>
-                {canCraftItems().map(({ item, maxQuantity }) => (
-                  <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
-                    <Hammer size={14} />
-                    {item.item.name} x{maxQuantity}
-                    {maxQuantity < item.quantity && (
-                      <span className="text-xs text-muted-foreground">
-                        (of {item.quantity} wanted)
+                <div className="space-y-1">
+                  {canCraftItems().map(({ item, maxQuantity }) => (
+                    <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
+                      <Hammer size={14} />
+                      <span className="truncate">
+                        {item.item.name} x{maxQuantity}
+                        {maxQuantity < item.quantity && (
+                          <span className="text-xs text-muted-foreground ml-1">
+                            (of {item.quantity} wanted)
+                          </span>
+                        )}
                       </span>
-                    )}
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
@@ -359,62 +363,80 @@ export function Crafting() {
               craftingItems.map(craftingItem => (
                 <Card key={craftingItem.id} className={`${craftingItem.completed ? 'opacity-60' : ''}`}>
                   <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2 flex-1">
-                        <div className="flex items-center gap-3">
+                    <div className="space-y-3">
+                      {/* Mobile-friendly layout */}
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-3 flex-1 min-w-0">
                           <Checkbox
                             checked={craftingItem.completed}
                             onCheckedChange={() => toggleCompleted(craftingItem.id)}
+                            className="mt-1"
                           />
-                          <Badge className={getRarityClass(craftingItem.item.rarity)} variant="outline">
-                            {craftingItem.item.rarity}
-                          </Badge>
-                          <span className="font-medium">{craftingItem.item.name}</span>
-                          <Badge variant="secondary">{craftingItem.item.position}</Badge>
+                          <div className="space-y-2 flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Badge className={getRarityClass(craftingItem.item.rarity)} variant="outline">
+                                {craftingItem.item.rarity}
+                              </Badge>
+                              <span className="font-medium break-words">{craftingItem.item.name}</span>
+                              <Badge variant="secondary" className="text-xs">{craftingItem.item.position}</Badge>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                              <span>{t('quantity')}: {craftingItem.quantity}</span>
+                              <span>
+                                {t('cost')}: $
+                                {showMinimalMaterials 
+                                  ? craftingItem.item.cost.toLocaleString()
+                                  : (craftingItem.item.cost * craftingItem.quantity).toLocaleString()
+                                }
+                              </span>
+                            </div>
+                            
+                            <div className="text-xs">
+                              <div className="flex items-center gap-1 mb-1">
+                                <Wrench size={12} className="text-muted-foreground flex-shrink-0" />
+                                <span className="text-muted-foreground font-medium">Materials:</span>
+                              </div>
+                              <div className="text-muted-foreground break-words">
+                                {showMinimalMaterials 
+                                  ? craftingItem.item.recipe.map(r => 
+                                      `${r.amount} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
+                                    ).join(', ')
+                                  : craftingItem.item.recipe.map(r => 
+                                      `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
+                                    ).join(', ')
+                                }
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>{t('quantity')}: {craftingItem.quantity}</span>
-                          <span>{t('cost')}: ${(craftingItem.item.cost * craftingItem.quantity).toLocaleString()}</span>
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuantity(craftingItem.id, craftingItem.quantity - 1)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Minus size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuantity(craftingItem.id, craftingItem.quantity + 1)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Plus size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => removeCraftingItem(craftingItem.id)}
+                            className="h-8 w-8 p-0 text-destructive"
+                          >
+                            <X size={12} />
+                          </Button>
                         </div>
-                        
-                        <div className="flex items-center gap-2 text-xs">
-                          <Wrench size={12} className="text-muted-foreground" />
-                          <span className="text-muted-foreground">
-                            {showMinimalMaterials 
-                              ? craftingItem.item.recipe.map(r => 
-                                  `${r.amount} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
-                                ).join(', ')
-                              : craftingItem.item.recipe.map(r => 
-                                  `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
-                                ).join(', ')
-                            }
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateQuantity(craftingItem.id, craftingItem.quantity - 1)}
-                        >
-                          <Minus size={14} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateQuantity(craftingItem.id, craftingItem.quantity + 1)}
-                        >
-                          <Plus size={14} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => removeCraftingItem(craftingItem.id)}
-                        >
-                          <X size={14} />
-                        </Button>
                       </div>
                     </div>
                   </CardContent>
@@ -451,43 +473,46 @@ export function Crafting() {
               <CardContent className="p-4 space-y-3">
                 {Object.entries(materialSummary).map(([material, data]) => (
                   <div key={material} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{material}</span>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateOwnedMaterial(material, data.owned - 1)}
-                          className="h-6 w-6 p-0"
-                          disabled={data.owned <= 0}
-                        >
-                          <Minus size={12} />
-                        </Button>
-                        <Input
-                          type="number"
-                          min="0"
-                          value={data.owned}
-                          onChange={(e) => updateOwnedMaterial(material, parseInt(e.target.value) || 0)}
-                          className="w-16 h-6 text-xs text-center"
-                          placeholder="0"
-                        />
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateOwnedMaterial(material, data.owned + 1)}
-                          className="h-6 w-6 p-0"
-                        >
-                          <Plus size={12} />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateOwnedMaterial(material, data.needed)}
-                          className="h-6 px-2 text-xs"
-                        >
-                          Full
-                        </Button>
-                        <span className="text-xs text-muted-foreground min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-medium min-w-0 break-words flex-1">{material}</span>
+                      <div className="flex flex-col gap-1 items-end flex-shrink-0">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateOwnedMaterial(material, data.owned - 1)}
+                            className="h-6 w-6 p-0"
+                            disabled={data.owned <= 0}
+                          >
+                            <Minus size={12} />
+                          </Button>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={data.owned}
+                            onChange={(e) => updateOwnedMaterial(material, parseInt(e.target.value) || 0)}
+                            className="w-14 h-6 text-xs text-center"
+                            placeholder="0"
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateOwnedMaterial(material, data.owned + 1)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <Plus size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateOwnedMaterial(material, data.needed)}
+                            className="h-6 px-1 text-xs"
+                            title="Set to max needed"
+                          >
+                            Max
+                          </Button>
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
                           / {data.needed}
                           {data.weight && ` (+${data.weight}kg)`}
                         </span>

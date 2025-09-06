@@ -467,12 +467,12 @@ export function EquipmentSimulation() {
               <CardTitle>{t('customStats')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Select
                   value={customStatName}
                   onValueChange={setCustomStatName}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Select stat to boost" />
                   </SelectTrigger>
                   <SelectContent>
@@ -488,25 +488,28 @@ export function EquipmentSimulation() {
                     <SelectItem value="toughness">Toughness</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input
-                  type="number"
-                  placeholder="Value"
-                  value={customStatValue}
-                  onChange={(e) => setCustomStatValue(parseFloat(e.target.value) || 0)}
-                  className="w-24"
-                />
-                <Button onClick={addCustomStat}>
-                  <Plus size={16} />
-                </Button>
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Value"
+                    value={customStatValue}
+                    onChange={(e) => setCustomStatValue(parseFloat(e.target.value) || 0)}
+                    className="w-20 sm:w-24"
+                  />
+                  <Button onClick={addCustomStat} className="flex-shrink-0">
+                    <Plus size={16} />
+                  </Button>
+                </div>
               </div>
               
               {Object.entries(equipment.customStats).map(([name, value]) => (
                 <div key={name} className="flex items-center justify-between bg-muted p-2 rounded">
-                  <span>{name}: {value}</span>
+                  <span className="text-sm truncate">{name}: {value}</span>
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => removeCustomStat(name)}
+                    className="flex-shrink-0"
                   >
                     <X size={12} />
                   </Button>
