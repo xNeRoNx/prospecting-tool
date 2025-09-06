@@ -197,7 +197,7 @@ export function Crafting() {
     return craftableItems;
   };
 
-  const canCraftItems = () => {
+  const formatStats = (item: CraftableItem) => {
     return Object.entries(item.stats).map(([key, value]) => {
       if (Array.isArray(value)) {
         const [min, max] = value;
@@ -208,8 +208,12 @@ export function Crafting() {
     }).filter(Boolean);
   };
 
-  const formatStats = (item: CraftableItem) => {
+  const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
+  };
+
+  const canCraftItems = () => {
+    return calculateCraftableItems();
   };
 
   const craftableItemsSorted = [...craftableItems].sort((a, b) => {
