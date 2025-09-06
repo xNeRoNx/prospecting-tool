@@ -292,7 +292,9 @@ export function Museum() {
                                   onValueChange={(value) => updateSlot(slot.id, { modifier: value || undefined })}
                                 >
                                   <SelectTrigger className="text-xs flex-1">
-                                    <SelectValue placeholder="Select modifier" />
+                                    <SelectValue placeholder="Select modifier">
+                                      {slot.modifier}
+                                    </SelectValue>
                                   </SelectTrigger>
                                   <SelectContent>
                                     {modifiers.map(modifier => (
