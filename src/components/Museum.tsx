@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +50,15 @@ export function Museum() {
   }
 
   const updateSlot = (id: string, updates: Partial<MuseumSlot>) => {
+    // Check if trying to place the same ore in different slots
+    if (updates.ore) {
+      const existingOreSlot = museumSlots.find(slot => slot.ore === updates.ore && slot.id !== id);
+      if (existingOreSlot) {
+        // Don't allow duplicate ores in different slots
+        return;
+      }
+    }
+    
     setMuseumSlots(current => 
       current.map(slot => 
         slot.id === id ? { ...slot, ...updates } : slot
@@ -104,11 +113,6 @@ export function Museum() {
         // Handle normal single-stat effects
         let baseMultiplier = ore.museumEffect.maxMultiplier;
         
-        // Add modifier bonus if present
-        if (slot.modifier) {
-          baseMultiplier += getModifierBonus(ore.rarity);
-        }
-
         // Apply the effect based on the ore's museum effect
         const effectStat = ore.museumEffect.stat.toLowerCase();
         
@@ -138,6 +142,43 @@ export function Museum() {
         }
         if (effectStat.includes('modifier boost')) {
           stats.modifierBoost += baseMultiplier;
+        }
+      }
+
+      // Apply modifier effects separately
+      if (slot.modifier) {
+        const modifier = modifiers.find(m => m.name === slot.modifier);
+        if (modifier) {
+          const modifierValue = getModifierBonus(ore.rarity);
+          
+          switch (modifier.effect) {
+            case 'Dig Speed':
+              stats.digSpeed += modifierValue;
+              break;
+            case 'Shake Strength':
+              stats.shakeStrength += modifierValue;
+              break;
+            case 'Shake Speed':
+              stats.shakeSpeed += modifierValue;
+              break;
+            case 'Dig Strength':
+              stats.digStrength += modifierValue;
+              break;
+            case 'Luck':
+              stats.luck += modifierValue;
+              break;
+            case 'Modifier Boost':
+              stats.modifierBoost += modifierValue;
+              break;
+            case 'Dig and Shake Speed':
+              stats.digSpeed += modifierValue;
+              stats.shakeSpeed += modifierValue;
+              break;
+            case 'Luck and Capacity':
+              stats.luck += modifierValue;
+              stats.capacity += modifierValue;
+              break;
+          }
         }
       }
     });
@@ -177,6 +218,15 @@ export function Museum() {
 
   const museumStats = calculateMuseumStats();
   const groupedSlots = groupSlotsByRarity();
+  
+  // Get already used ores
+  const usedOres = useMemo(() => {
+    const used = new Set<string>();
+    museumSlots.forEach(slot => {
+      if (slot.ore) used.add(slot.ore);
+    });
+    return used;
+  }, [museumSlots]);
 
   return (
     <div className="space-y-6">
@@ -229,8 +279,12 @@ export function Museum() {
                               {ores
                                 .filter(ore => ore.rarity === rarity)
                                 .map(ore => (
-                                  <SelectItem key={ore.name} value={ore.name}>
-                                    {ore.name}
+                                  <SelectItem 
+                                    key={ore.name} 
+                                    value={ore.name}
+                                    disabled={usedOres.has(ore.name) && slot.ore !== ore.name}
+                                  >
+                                    {ore.name} {usedOres.has(ore.name) && slot.ore !== ore.name ? '(Used)' : ''}
                                   </SelectItem>
                                 ))}
                             </SelectContent>
@@ -290,7 +344,7 @@ export function Museum() {
         </div>
 
         <div className="space-y-4">
-          <Card>
+          <Card className="sticky top-4">
             <CardHeader>
               <CardTitle>{t('museumStats')}</CardTitle>
             </CardHeader>

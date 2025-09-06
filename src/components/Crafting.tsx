@@ -3,13 +3,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Minus, Check, X, Hammer } from '@phosphor-icons/react';
+import { Plus, Minus, Check, X, Hammer, Wrench } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
 import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData';
@@ -20,6 +21,7 @@ export function Crafting() {
   const { craftingItems, setCraftingItems, ownedMaterials, setOwnedMaterials } = useAppData();
   const [selectedItem, setSelectedItem] = useState<CraftableItem | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
   const addToCraftingList = (item: CraftableItem, qty: number) => {
     const id = Date.now().toString();
     const newCraftingItem: CraftingItem = {
@@ -35,7 +37,42 @@ export function Crafting() {
   };
 
   const removeCraftingItem = (id: string) => {
+    const itemToRemove = craftingItems.find(item => item.id === id);
+    if (!itemToRemove) return;
+
+    // Remove the item from crafting list
     setCraftingItems(current => current.filter(item => item.id !== id));
+    
+    // Check if any materials are only used by the removed item and reset their quantity
+    const remainingItems = craftingItems.filter(item => item.id !== id);
+    const materialsStillNeeded = new Set<string>();
+    
+    // Collect all materials still needed by remaining items
+    remainingItems.forEach(craftingItem => {
+      if (!craftingItem.completed) {
+        craftingItem.item.recipe.forEach(recipe => {
+          materialsStillNeeded.add(recipe.material);
+        });
+      }
+    });
+    
+    // Reset materials that are no longer needed
+    const materialsToReset: string[] = [];
+    itemToRemove.item.recipe.forEach(recipe => {
+      if (!materialsStillNeeded.has(recipe.material)) {
+        materialsToReset.push(recipe.material);
+      }
+    });
+    
+    if (materialsToReset.length > 0) {
+      setOwnedMaterials(current => {
+        const updated = { ...current };
+        materialsToReset.forEach(material => {
+          delete updated[material];
+        });
+        return updated;
+      });
+    }
   };
 
   const toggleCompleted = (id: string) => {
@@ -61,7 +98,9 @@ export function Crafting() {
 
   const calculateMaterialSummary = (): MaterialSummary => {
     const summary: MaterialSummary = {};
+    const materialMaxNeeded: { [key: string]: number } = {};
     
+    // Calculate totals or maximums based on showMinimalMaterials flag
     craftingItems.forEach(craftingItem => {
       if (craftingItem.completed) return;
       
@@ -75,11 +114,26 @@ export function Crafting() {
             owned: ownedMaterials[materialName] || 0,
             weight: recipe.weight
           };
+          materialMaxNeeded[materialName] = 0;
         }
         
-        summary[materialName].needed += needed;
+        if (showMinimalMaterials) {
+          // For minimal materials, keep track of the maximum amount needed per item
+          const neededPerItem = recipe.amount;
+          materialMaxNeeded[materialName] = Math.max(materialMaxNeeded[materialName], neededPerItem);
+        } else {
+          // For total materials, sum all needed amounts
+          summary[materialName].needed += needed;
+        }
       });
     });
+
+    // If showing minimal materials, use the maximum needed per item type
+    if (showMinimalMaterials) {
+      Object.keys(materialMaxNeeded).forEach(material => {
+        summary[material].needed = materialMaxNeeded[material];
+      });
+    }
 
     return summary;
   };
@@ -106,15 +160,14 @@ export function Crafting() {
   };
 
   const formatStats = (item: CraftableItem) => {
-    const stats = [];
-    Object.entries(item.stats).forEach(([key, value]) => {
+    return Object.entries(item.stats).map(([key, value]) => {
       if (Array.isArray(value)) {
         const [min, max] = value;
         const suffix = key.includes('Speed') || key.includes('Boost') ? '%' : '';
-        stats.push(`${key}: ${min}${suffix} - ${max}${suffix}`);
+        return `${key}: ${min}${suffix} - ${max}${suffix}`;
       }
-    });
-    return stats.join(', ');
+      return '';
+    }).filter(Boolean);
   };
 
   const getRarityClass = (rarity: string) => {
@@ -154,21 +207,29 @@ export function Crafting() {
                     onClick={() => setSelectedItem(item)}
                   >
                     <CardContent className="p-3">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Badge className={getRarityClass(item.rarity)} variant="outline">
                               {item.rarity}
                             </Badge>
                             <span className="font-medium">{item.name}</span>
                             <Badge variant="secondary">{item.position}</Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {formatStats(item)}
-                          </p>
-                          <p className="text-sm font-medium">
-                            ${item.cost.toLocaleString()}
-                          </p>
+                          
+                          <div className="text-xs space-y-1">
+                            {formatStats(item).map((stat, index) => (
+                              <div key={index} className="text-muted-foreground">{stat}</div>
+                            ))}
+                          </div>
+                          
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="font-medium text-green-600">${item.cost.toLocaleString()}</span>
+                            <Wrench size={12} className="text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              {item.recipe.map(r => `${r.amount} ${r.material}`).join(', ')}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -250,7 +311,7 @@ export function Crafting() {
                 <Card key={craftingItem.id} className={`${craftingItem.completed ? 'opacity-60' : ''}`}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="space-y-2">
+                      <div className="space-y-2 flex-1">
                         <div className="flex items-center gap-3">
                           <Checkbox
                             checked={craftingItem.completed}
@@ -266,6 +327,15 @@ export function Crafting() {
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span>{t('quantity')}: {craftingItem.quantity}</span>
                           <span>{t('cost')}: ${(craftingItem.item.cost * craftingItem.quantity).toLocaleString()}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-xs">
+                          <Wrench size={12} className="text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {craftingItem.item.recipe.map(r => 
+                              `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
+                            ).join(', ')}
+                          </span>
                         </div>
                       </div>
                       
@@ -301,7 +371,20 @@ export function Crafting() {
         </div>
 
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">{t('materialsSummary')}</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">{t('materialsSummary')}</h3>
+            
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="minimal-materials"
+                checked={showMinimalMaterials}
+                onCheckedChange={setShowMinimalMaterials}
+              />
+              <Label htmlFor="minimal-materials" className="text-sm">
+                Minimal needed
+              </Label>
+            </div>
+          </div>
           
           {Object.keys(materialSummary).length === 0 ? (
             <Card>

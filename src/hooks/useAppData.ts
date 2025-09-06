@@ -41,6 +41,8 @@ export interface CollectibleOre {
   completed: boolean;
   modifier?: string;
   id: string;
+  ownedQuantity?: number;
+  weight?: number;
 }
 
 export function useAppData() {

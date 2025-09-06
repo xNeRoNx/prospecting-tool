@@ -19,6 +19,8 @@ export function CustomCollectibles() {
   const [selectedOre, setSelectedOre] = useState('');
   const [selectedModifier, setSelectedModifier] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [ownedQuantity, setOwnedQuantity] = useState(0);
+  const [weight, setWeight] = useState<number | undefined>(undefined);
 
   const addOre = () => {
     if (!selectedOre) return;
@@ -29,6 +31,8 @@ export function CustomCollectibles() {
       quantity,
       completed: false,
       modifier: selectedModifier || undefined,
+      ownedQuantity: ownedQuantity || 0,
+      weight: weight || undefined,
       id
     };
     
@@ -36,6 +40,8 @@ export function CustomCollectibles() {
     setSelectedOre('');
     setSelectedModifier('');
     setQuantity(1);
+    setOwnedQuantity(0);
+    setWeight(undefined);
   };
 
   const removeOre = (id: string) => {
@@ -51,6 +57,22 @@ export function CustomCollectibles() {
     setCollectibles(current =>
       current.map(item =>
         item.id === id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  const updateOwnedQuantity = (id: string, newOwnedQuantity: number) => {
+    setCollectibles(current =>
+      current.map(item =>
+        item.id === id ? { ...item, ownedQuantity: Math.max(0, newOwnedQuantity) } : item
+      )
+    );
+  };
+
+  const updateWeight = (id: string, newWeight: number | undefined) => {
+    setCollectibles(current =>
+      current.map(item =>
+        item.id === id ? { ...item, weight: newWeight } : item
       )
     );
   };
@@ -173,6 +195,30 @@ export function CustomCollectibles() {
                 />
               </div>
               
+              <div>
+                <Label htmlFor="owned-quantity">Owned Quantity</Label>
+                <Input
+                  id="owned-quantity"
+                  type="number"
+                  min="0"
+                  value={ownedQuantity}
+                  onChange={(e) => setOwnedQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="weight">Weight (kg)</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  placeholder="Optional"
+                  value={weight || ''}
+                  onChange={(e) => setWeight(e.target.value ? parseFloat(e.target.value) || 0 : undefined)}
+                />
+              </div>
+              
               <Button onClick={addOre} disabled={!selectedOre} className="w-full">
                 {t('add')}
               </Button>
@@ -259,6 +305,12 @@ export function CustomCollectibles() {
                           
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>{t('quantity')}: {collectible.quantity}</span>
+                            {collectible.ownedQuantity !== undefined && (
+                              <span>Owned: {collectible.ownedQuantity}</span>
+                            )}
+                            {collectible.weight && (
+                              <span>Weight: {collectible.weight}kg</span>
+                            )}
                             {collectible.modifier && (
                               <Badge variant="outline" size="sm">
                                 {collectible.modifier}
@@ -270,6 +322,34 @@ export function CustomCollectibles() {
                                 {t('completed')}
                               </Badge>
                             )}
+                          </div>
+                          
+                          {/* Editable fields for owned quantity and weight */}
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-1">
+                              <Label className="text-xs">Owned:</Label>
+                              <Input
+                                type="number"
+                                min="0"
+                                max={collectible.quantity}
+                                value={collectible.ownedQuantity || 0}
+                                onChange={(e) => updateOwnedQuantity(collectible.id, parseInt(e.target.value) || 0)}
+                                className="w-16 h-6 text-xs"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Label className="text-xs">Weight:</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                placeholder="0"
+                                value={collectible.weight || ''}
+                                onChange={(e) => updateWeight(collectible.id, e.target.value ? parseFloat(e.target.value) || 0 : undefined)}
+                                className="w-16 h-6 text-xs"
+                              />
+                              <span className="text-xs text-muted-foreground">kg</span>
+                            </div>
                           </div>
                         </div>
                       </div>
