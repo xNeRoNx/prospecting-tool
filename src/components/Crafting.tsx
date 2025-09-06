@@ -122,6 +122,8 @@ export function Crafting() {
     
     return totalCost;
   };
+
+  const calculateMaterialSummary = (): MaterialSummary => {
     const summary: MaterialSummary = {};
     const materialMaxNeeded: { [key: string]: number } = {};
     
@@ -163,17 +165,17 @@ export function Crafting() {
     return summary;
   };
 
-  const calculateMaterialSummary = (): MaterialSummary => {
-
   const materialSummary = calculateMaterialSummary();
   const totalCost = calculateTotalCost();
+
+  const updateOwnedMaterial = (material: string, amount: number) => {
     setOwnedMaterials(current => ({
       ...current,
       [material]: Math.max(0, amount)
     }));
   };
 
-  const updateOwnedMaterial = (material: string, amount: number) => {
+  const calculateCraftableItems = () => {
     const craftableItems: Array<{ item: CraftingItem; maxQuantity: number }> = [];
     
     craftingItems.forEach(craftingItem => {
