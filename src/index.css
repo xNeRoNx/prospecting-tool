@@ -180,4 +180,9 @@ body{
     min-height: auto !important;
     padding: 8px !important;
   }
+  
+  /* Dialog improvements for data management */
+  [data-radix-dialog-content] {
+    max-width: 95vw !important;
+  }
 }

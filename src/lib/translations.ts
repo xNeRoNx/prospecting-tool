@@ -138,7 +138,14 @@ export const translations = {
     craftingTooltip: "Plan your crafting queue and track materials",
     museumTooltip: "Optimize your museum display for maximum bonuses",
     equipmentTooltip: "Simulate equipment builds and calculate stats",
-    collectiblesTooltip: "Track your ore collection progress"
+    collectiblesTooltip: "Track your ore collection progress",
+    
+    // Data Management Enhanced
+    saveSettings: "Save Settings",
+    importPreview: "Import Preview",
+    saveName: "Save Name",
+    description: "Description",
+    createdDate: "Created Date"
   },
   
   pl: {
@@ -280,7 +287,14 @@ export const translations = {
     craftingTooltip: "Zaplanuj kolejkę tworzenia i śledź materiały",
     museumTooltip: "Zoptymalizuj wystawę w muzeum dla maksymalnych bonusów",
     equipmentTooltip: "Symuluj zestawy ekwipunku i obliczaj statystyki",
-    collectiblesTooltip: "Śledź postęp kolekcji rud"
+    collectiblesTooltip: "Śledź postęp kolekcji rud",
+    
+    // Data Management Enhanced
+    saveSettings: "Ustawienia Zapisu",
+    importPreview: "Podgląd Importu",
+    saveName: "Nazwa Zapisu", 
+    description: "Opis",
+    createdDate: "Data Utworzenia"
   }
 } as const;
 

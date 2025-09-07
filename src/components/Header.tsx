@@ -5,7 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, Upload, Heart, Link, FileArrowDown, FileArrowUp, Database, Palette } from '@phosphor-icons/react';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Download, Upload, Heart, Link, FileArrowDown, FileArrowUp, Database, Palette, Eye, Check, Calendar, FileText, Tag } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
 import { useTheme } from '@/hooks/useTheme';
@@ -18,6 +22,28 @@ interface DataSelection {
   equipment: boolean;
   collectibles: boolean;
   ownedMaterials: boolean;
+}
+
+interface SaveMetadata {
+  name: string;
+  description: string;
+  createdAt: string;
+  version: string;
+}
+
+interface ImportData {
+  metadata?: SaveMetadata;
+  craftingItems?: any[];
+  museumSlots?: any[];
+  equipment?: any;
+  collectibles?: any[];
+  ownedMaterials?: any;
+}
+
+interface ImportPreview {
+  data: ImportData;
+  source: 'file' | 'url';
+  fileName?: string;
 }
 
 export function Header() {
@@ -42,6 +68,25 @@ export function Header() {
     collectibles: true,
     ownedMaterials: true
   });
+  
+  // New states for enhanced data management
+  const [saveMetadata, setSaveMetadata] = useState<SaveMetadata>({
+    name: 'Prospecting Save',
+    description: '',
+    createdAt: new Date().toISOString(),
+    version: '1.0'
+  });
+  const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  // Reset preview when dialog closes
+  useEffect(() => {
+    if (!dataDialogOpen) {
+      setImportPreview(null);
+      setShowPreview(false);
+      setUrlInput('');
+    }
+  }, [dataDialogOpen]);
 
   // Check for URL data on mount
   useEffect(() => {
@@ -54,9 +99,15 @@ export function Header() {
           
           const decompressed = atob(hashData);
           const data = JSON.parse(decompressed);
-          importDataSelective(data, importSelection);
           
-          toast.success(t('importSuccess'));
+          // Show preview instead of importing directly
+          setImportPreview({
+            data,
+            source: 'url'
+          });
+          setShowPreview(true);
+          setDataDialogOpen(true);
+          
           // Clear the hash to prevent re-importing on refresh
           window.history.replaceState({}, document.title, window.location.pathname);
         } catch (error) {
@@ -67,12 +118,30 @@ export function Header() {
     };
     
     checkForUrlData();
-  }, [importDataSelective, importSelection, t]);
+  }, [t]);
 
   const handleExportFile = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
-      exportDataSelective(selectedData);
+      const dataWithMetadata = {
+        metadata: {
+          ...saveMetadata,
+          createdAt: new Date().toISOString()
+        },
+        ...selectedData
+      };
+      
+      const dataStr = JSON.stringify(dataWithMetadata, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${saveMetadata.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
       toast.success(t('exportSuccess'));
       setDataDialogOpen(false);
     } catch (error) {
@@ -84,15 +153,20 @@ export function Header() {
   const handleExportToUrl = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
-      const result = exportToUrlSelective(selectedData);
-      if (result.success) {
-        setUrlInput(result.url);
-        navigator.clipboard.writeText(result.url);
-        toast.success(t('urlCopied'));
-        setDataDialogOpen(false);
-      } else {
-        toast.error(t('urlCopyError'));
-      }
+      const dataWithMetadata = {
+        metadata: {
+          ...saveMetadata,
+          createdAt: new Date().toISOString()
+        },
+        ...selectedData
+      };
+      
+      const compressed = btoa(JSON.stringify(dataWithMetadata));
+      const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
+      
+      navigator.clipboard.writeText(url);
+      toast.success(t('urlCopied'));
+      setDataDialogOpen(false);
     } catch (error) {
       console.error('URL export error:', error);
       toast.error(t('urlCopyError'));
@@ -110,15 +184,20 @@ export function Header() {
     }
 
     try {
-      const result = importFromUrl(urlInput);
-      if (result.success && result.data) {
-        importDataSelective(result.data, importSelection);
-        toast.success(t('importSuccess'));
-        setDataDialogOpen(false);
-        setUrlInput('');
-      } else {
+      const hashData = urlInput.includes('#data=') ? urlInput.split('#data=')[1] : urlInput;
+      if (!hashData) {
         toast.error(t('importError'));
+        return;
       }
+      
+      const decompressed = atob(hashData);
+      const data = JSON.parse(decompressed);
+      
+      setImportPreview({
+        data,
+        source: 'url'
+      });
+      setShowPreview(true);
     } catch (error) {
       console.error('URL import error:', error);
       toast.error(t('importError'));
@@ -133,9 +212,12 @@ export function Header() {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target?.result as string);
-        importDataSelective(data, importSelection);
-        toast.success(t('importSuccess'));
-        setDataDialogOpen(false);
+        setImportPreview({
+          data,
+          source: 'file',
+          fileName: file.name
+        });
+        setShowPreview(true);
       } catch (error) {
         toast.error(t('importError'));
       }
@@ -145,6 +227,29 @@ export function Header() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handleConfirmImport = () => {
+    if (!importPreview) return;
+    
+    try {
+      const { metadata, ...dataToImport } = importPreview.data;
+      importDataSelective(dataToImport, importSelection);
+      toast.success(t('importSuccess'));
+      setDataDialogOpen(false);
+      setImportPreview(null);
+      setShowPreview(false);
+      setUrlInput('');
+    } catch (error) {
+      console.error('Import error:', error);
+      toast.error(t('importError'));
+    }
+  };
+
+  const handleCancelImport = () => {
+    setImportPreview(null);
+    setShowPreview(false);
+    setUrlInput('');
   };
 
   const getSelectedData = (selection: DataSelection) => {
@@ -229,7 +334,7 @@ export function Header() {
               onCheckedChange={(checked) => updateSelection('craftingItems', !!checked, isExport)}
             />
             <label htmlFor={`crafting-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
-              {t('crafting')} ({craftingItems.length} items)
+              {t('crafting')} ({isExport ? craftingItems.length : (importPreview?.data.craftingItems?.length || 0)} items)
             </label>
           </div>
           
@@ -240,7 +345,7 @@ export function Header() {
               onCheckedChange={(checked) => updateSelection('museumSlots', !!checked, isExport)}
             />
             <label htmlFor={`museum-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
-              {t('museum')} ({museumSlots.length} slots)
+              {t('museum')} ({isExport ? museumSlots.length : (importPreview?.data.museumSlots?.length || 0)} slots)
             </label>
           </div>
           
@@ -262,7 +367,7 @@ export function Header() {
               onCheckedChange={(checked) => updateSelection('collectibles', !!checked, isExport)}
             />
             <label htmlFor={`collectibles-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
-              {t('collectibles')} ({collectibles.length} items)
+              {t('collectibles')} ({isExport ? collectibles.length : (importPreview?.data.collectibles?.length || 0)} items)
             </label>
           </div>
           
@@ -273,11 +378,138 @@ export function Header() {
               onCheckedChange={(checked) => updateSelection('ownedMaterials', !!checked, isExport)}
             />
             <label htmlFor={`materials-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
-              {t('ownedMaterials')} ({Object.keys(ownedMaterials).length} materials)
+              {t('ownedMaterials')} ({isExport ? Object.keys(ownedMaterials).length : Object.keys(importPreview?.data.ownedMaterials || {}).length} materials)
             </label>
           </div>
         </div>
       </div>
+    );
+  };
+
+  const renderImportPreview = () => {
+    if (!importPreview || !showPreview) return null;
+
+    const { data } = importPreview;
+    const metadata = data.metadata;
+
+    return (
+      <Card className="border-accent">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Eye size={16} />
+              {t('importPreview')}
+            </CardTitle>
+            <Badge variant="secondary">
+              {importPreview.source === 'file' ? 'File' : 'URL'}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Metadata Section */}
+          {metadata && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <Tag size={14} />
+                  <div>
+                    <div className="text-xs text-muted-foreground">Save Name</div>
+                    <div className="text-sm font-medium">{metadata.name || 'Unnamed Save'}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} />
+                  <div>
+                    <div className="text-xs text-muted-foreground">Created</div>
+                    <div className="text-sm">{metadata.createdAt ? new Date(metadata.createdAt).toLocaleDateString() : 'Unknown'}</div>
+                  </div>
+                </div>
+              </div>
+              
+              {metadata.description && (
+                <div className="flex items-start gap-2">
+                  <FileText size={14} className="mt-1" />
+                  <div>
+                    <div className="text-xs text-muted-foreground">Description</div>
+                    <div className="text-sm">{metadata.description}</div>
+                  </div>
+                </div>
+              )}
+              
+              {importPreview.fileName && (
+                <div className="text-xs text-muted-foreground">
+                  File: {importPreview.fileName}
+                </div>
+              )}
+              
+              <Separator />
+            </div>
+          )}
+
+          {/* Data Summary */}
+          <div>
+            <h4 className="text-sm font-medium mb-3">Available Data:</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+              {data.craftingItems && (
+                <div className="flex justify-between">
+                  <span>Crafting Items:</span>
+                  <Badge variant="outline">{data.craftingItems.length}</Badge>
+                </div>
+              )}
+              {data.museumSlots && (
+                <div className="flex justify-between">
+                  <span>Museum Slots:</span>
+                  <Badge variant="outline">{data.museumSlots.length}</Badge>
+                </div>
+              )}
+              {data.equipment && (
+                <div className="flex justify-between">
+                  <span>Equipment:</span>
+                  <Badge variant="outline">✓</Badge>
+                </div>
+              )}
+              {data.collectibles && (
+                <div className="flex justify-between">
+                  <span>Collectibles:</span>
+                  <Badge variant="outline">{data.collectibles.length}</Badge>
+                </div>
+              )}
+              {data.ownedMaterials && (
+                <div className="flex justify-between">
+                  <span>Materials:</span>
+                  <Badge variant="outline">{Object.keys(data.ownedMaterials).length}</Badge>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Selection */}
+          <div>
+            <h4 className="text-sm font-medium mb-3">Select data to import:</h4>
+            {renderDataSelection(importSelection, false)}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              onClick={handleConfirmImport}
+              disabled={!Object.values(importSelection).some(Boolean)}
+              className="flex-1"
+            >
+              <Check size={16} className="mr-2" />
+              Import Selected Data
+            </Button>
+            <Button
+              onClick={handleCancelImport}
+              variant="outline"
+            >
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   };
 
@@ -351,7 +583,7 @@ export function Header() {
                   <span className="hidden sm:inline">{t('dataManagement')}</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="sm:max-w-4xl max-h-[95vh] w-[95vw] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>{t('dataManagement')}</DialogTitle>
                 </DialogHeader>
@@ -369,6 +601,34 @@ export function Header() {
                   </TabsList>
                   
                   <TabsContent value="export" className="space-y-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base">{t('saveSettings')}</CardTitle>
+                        <CardDescription>Set save name and description</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <label htmlFor="save-name" className="text-sm font-medium">Save Name</label>
+                          <Input
+                            id="save-name"
+                            value={saveMetadata.name}
+                            onChange={(e) => setSaveMetadata(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="My Prospecting Save"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label htmlFor="save-description" className="text-sm font-medium">Description (Optional)</label>
+                          <Textarea
+                            id="save-description"
+                            value={saveMetadata.description}
+                            onChange={(e) => setSaveMetadata(prev => ({ ...prev, description: e.target.value }))}
+                            placeholder="Description of this save..."
+                            rows={2}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">{t('selectDataToExport')}</CardTitle>
@@ -401,45 +661,46 @@ export function Header() {
                   </TabsContent>
                   
                   <TabsContent value="import" className="space-y-4">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-base">{t('selectDataToImport')}</CardTitle>
-                        <CardDescription>{t('selectDataToImportDesc')}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        {renderDataSelection(importSelection, false)}
-                      </CardContent>
-                    </Card>
-                    
-                    <div className="space-y-4">
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          onClick={handleImportFile}
-                          className="flex-1 gap-2"
-                          disabled={!Object.values(importSelection).some(Boolean)}
-                        >
-                          <FileArrowUp size={16} />
-                          {t('importFromFile')}
-                        </Button>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Input
-                          value={urlInput}
-                          onChange={(e) => setUrlInput(e.target.value)}
-                          placeholder={t('pasteUrlHere')}
-                        />
-                        <Button
-                          onClick={handleImportFromUrl}
-                          variant="outline"
-                          className="w-full gap-2"
-                          disabled={!urlInput.trim() || !Object.values(importSelection).some(Boolean)}
-                        >
-                          <Link size={16} />
-                          {t('importFromUrl')}
-                        </Button>
-                      </div>
-                    </div>
+                    {showPreview && importPreview ? (
+                      renderImportPreview()
+                    ) : (
+                      <>
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base">{t('importData')}</CardTitle>
+                            <CardDescription>Import save data from file or URL</CardDescription>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <Button
+                                onClick={handleImportFile}
+                                className="flex-1 gap-2"
+                              >
+                                <FileArrowUp size={16} />
+                                {t('importFromFile')}
+                              </Button>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Input
+                                value={urlInput}
+                                onChange={(e) => setUrlInput(e.target.value)}
+                                placeholder={t('pasteUrlHere')}
+                              />
+                              <Button
+                                onClick={handleImportFromUrl}
+                                variant="outline"
+                                className="w-full gap-2"
+                                disabled={!urlInput.trim()}
+                              >
+                                <Link size={16} />
+                                {t('importFromUrl')}
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </>
+                    )}
                   </TabsContent>
                 </Tabs>
               </DialogContent>
