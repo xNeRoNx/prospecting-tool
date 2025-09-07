@@ -734,7 +734,7 @@ export function EquipmentSimulation() {
             <CardHeader>
               <CardTitle className="text-accent">{t('withMuseum')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               {Object.entries(finalStats).map(([stat, value]) => (
                 <div key={stat} className="flex items-center justify-between">
                   <span className="text-sm capitalize">
@@ -745,6 +745,25 @@ export function EquipmentSimulation() {
                   </span>
                 </div>
               ))}
+              
+              <Separator />
+              
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')}</h4>
+                {Object.entries(calculateMuseumBonuses()).map(([stat, bonus]) => {
+                  if (bonus === 0) return null;
+                  return (
+                    <div key={stat} className="flex items-center justify-between text-xs">
+                      <span className="capitalize text-muted-foreground">
+                        {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                      </span>
+                      <span className="font-mono text-accent">
+                        +{(bonus * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
 
