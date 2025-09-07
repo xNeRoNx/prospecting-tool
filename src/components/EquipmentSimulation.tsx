@@ -16,7 +16,7 @@ import { craftableItems, shovels, pans, enchants, events, type CraftableItem } f
 
 export function EquipmentSimulation() {
   const { t } = useLanguage();
-  const { equipment, setEquipment, museumSlots, craftingItems } = useAppData();
+  const { isLoading, equipment, setEquipment, museumSlots, craftingItems } = useAppData();
   const [customStatName, setCustomStatName] = useState('');
   const [customStatValue, setCustomStatValue] = useState(0);
 
@@ -260,6 +260,7 @@ export function EquipmentSimulation() {
                 <Select
                   value={equipment.shovel || ''}
                   onValueChange={(value) => updateEquipment({ shovel: value || null })}
+                  disabled={isLoading}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select shovel" />
@@ -284,6 +285,7 @@ export function EquipmentSimulation() {
                   <Select
                     value={equipment.pan || ''}
                     onValueChange={(value) => updateEquipment({ pan: value || null })}
+                    disabled={isLoading}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select pan" />
@@ -301,6 +303,7 @@ export function EquipmentSimulation() {
                     <Select
                       value={equipment.enchant || ''}
                       onValueChange={(value) => updateEquipment({ enchant: value || null })}
+                      disabled={isLoading}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select enchant" />
@@ -340,6 +343,7 @@ export function EquipmentSimulation() {
                               variant="outline"
                               onClick={() => unequipItem('rings', index)}
                               className="h-6 w-6 p-0"
+                              disabled={isLoading}
                             >
                               <X size={12} />
                             </Button>
@@ -366,6 +370,7 @@ export function EquipmentSimulation() {
                                     variant="outline"
                                     onClick={() => equipItem(item, 'rings', index)}
                                     className="w-full justify-start"
+                                    disabled={isLoading}
                                   >
                                     <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
                                       {item.rarity}
@@ -401,6 +406,7 @@ export function EquipmentSimulation() {
                         size="sm"
                         variant="outline"
                         onClick={() => unequipItem('necklace')}
+                        disabled={isLoading}
                       >
                         <X size={12} />
                       </Button>
@@ -427,6 +433,7 @@ export function EquipmentSimulation() {
                               variant="outline"
                               onClick={() => equipItem(item, 'necklace')}
                               className="w-full justify-start"
+                              disabled={isLoading}
                             >
                               <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
                                 {item.rarity}
@@ -456,6 +463,7 @@ export function EquipmentSimulation() {
                         size="sm"
                         variant="outline"
                         onClick={() => unequipItem('charm')}
+                        disabled={isLoading}
                       >
                         <X size={12} />
                       </Button>
@@ -482,6 +490,7 @@ export function EquipmentSimulation() {
                               variant="outline"
                               onClick={() => equipItem(item, 'charm')}
                               className="w-full justify-start"
+                              disabled={isLoading}
                             >
                               <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
                                 {item.rarity}
@@ -513,6 +522,7 @@ export function EquipmentSimulation() {
                       id={event.name}
                       checked={(equipment.activeEvents || []).includes(event.name)}
                       onCheckedChange={() => toggleEvent(event.name)}
+                      disabled={isLoading}
                     />
                     <Label htmlFor={event.name} className="text-sm">
                       {t(event.name.toLowerCase().replace(/\s+/g, '') as any) || event.name}
@@ -555,6 +565,7 @@ export function EquipmentSimulation() {
                 <Select
                   value={customStatName}
                   onValueChange={setCustomStatName}
+                  disabled={isLoading}
                 >
                   <SelectTrigger className="flex-1">
                     <SelectValue placeholder="Select stat to boost" />
@@ -579,8 +590,9 @@ export function EquipmentSimulation() {
                     value={customStatValue}
                     onChange={(e) => setCustomStatValue(parseFloat(e.target.value) || 0)}
                     className="w-20 sm:w-24"
+                    disabled={isLoading}
                   />
-                  <Button onClick={addCustomStat} className="flex-shrink-0">
+                  <Button onClick={addCustomStat} className="flex-shrink-0" disabled={isLoading}>
                     <Plus size={16} />
                   </Button>
                 </div>
@@ -594,6 +606,7 @@ export function EquipmentSimulation() {
                     variant="outline"
                     onClick={() => removeCustomStat(name)}
                     className="flex-shrink-0"
+                    disabled={isLoading}
                   >
                     <X size={12} />
                   </Button>

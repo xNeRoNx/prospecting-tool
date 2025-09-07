@@ -48,7 +48,7 @@ interface ImportPreview {
 
 export function Header() {
   const { language, setLanguage, t } = useLanguage();
-  const { craftingItems, museumSlots, equipment, collectibles, ownedMaterials, exportDataSelective, importDataSelective, exportToUrlSelective, importFromUrl } = useAppData();
+  const { isLoading, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, exportDataSelective, importDataSelective, exportToUrlSelective, importFromUrl } = useAppData();
   const { currentTheme, setTheme, themes } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
@@ -315,6 +315,7 @@ export function Header() {
             size="sm"
             onClick={() => selectAll(isExport)}
             className="w-full sm:w-auto"
+            disabled={isLoading}
           >
             {t('selectAll')}
           </Button>
@@ -323,6 +324,7 @@ export function Header() {
             size="sm"
             onClick={() => selectNone(isExport)}
             className="w-full sm:w-auto"
+            disabled={isLoading}
           >
             {t('selectNone')}
           </Button>
@@ -335,6 +337,7 @@ export function Header() {
               checked={currentSelection.craftingItems}
               onCheckedChange={(checked) => updateSelection('craftingItems', !!checked, isExport)}
               className="mt-0.5 shrink-0"
+              disabled={isLoading}
             />
             <label htmlFor={`crafting-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('crafting')} ({isExport ? craftingItems.length : (importPreview?.data.craftingItems?.length || 0)} items)
@@ -347,6 +350,7 @@ export function Header() {
               checked={currentSelection.museumSlots}
               onCheckedChange={(checked) => updateSelection('museumSlots', !!checked, isExport)}
               className="mt-0.5 shrink-0"
+              disabled={isLoading}
             />
             <label htmlFor={`museum-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('museum')} ({isExport ? museumSlots.length : (importPreview?.data.museumSlots?.length || 0)} slots)
@@ -359,6 +363,7 @@ export function Header() {
               checked={currentSelection.equipment}
               onCheckedChange={(checked) => updateSelection('equipment', !!checked, isExport)}
               className="mt-0.5 shrink-0"
+              disabled={isLoading}
             />
             <label htmlFor={`equipment-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('equipment')}
@@ -371,6 +376,7 @@ export function Header() {
               checked={currentSelection.collectibles}
               onCheckedChange={(checked) => updateSelection('collectibles', !!checked, isExport)}
               className="mt-0.5 shrink-0"
+              disabled={isLoading}
             />
             <label htmlFor={`collectibles-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('collectibles')} ({isExport ? collectibles.length : (importPreview?.data.collectibles?.length || 0)} items)
@@ -383,6 +389,7 @@ export function Header() {
               checked={currentSelection.ownedMaterials}
               onCheckedChange={(checked) => updateSelection('ownedMaterials', !!checked, isExport)}
               className="mt-0.5 shrink-0"
+              disabled={isLoading}
             />
             <label htmlFor={`materials-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('ownedMaterials')} ({isExport ? Object.keys(ownedMaterials).length : Object.keys(importPreview?.data.ownedMaterials || {}).length} materials)
@@ -502,7 +509,7 @@ export function Header() {
           <div className="flex flex-col sm:flex-row gap-2 pt-2 import-preview-actions">
             <Button
               onClick={handleConfirmImport}
-              disabled={!Object.values(importSelection).some(Boolean)}
+              disabled={!Object.values(importSelection).some(Boolean) || isLoading}
               className="flex-1 w-full sm:w-auto"
             >
               <Check size={16} className="mr-2" />
@@ -512,6 +519,7 @@ export function Header() {
               onClick={handleCancelImport}
               variant="outline"
               className="w-full sm:w-auto"
+              disabled={isLoading}
             >
               Cancel
             </Button>
@@ -530,7 +538,7 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Select value={currentTheme} onValueChange={setTheme}>
+            <Select value={currentTheme} onValueChange={setTheme} disabled={isLoading}>
               <SelectTrigger className="w-16 sm:w-34">
                 <SelectValue>
                   <div className="flex items-center justify-center w-full">
@@ -551,7 +559,7 @@ export function Header() {
               </SelectContent>
             </Select>
 
-            <Select value={language} onValueChange={setLanguage}>
+            <Select value={language} onValueChange={setLanguage} disabled={isLoading}>
               <SelectTrigger className="w-16 sm:w-32">
                 <SelectValue>
                   <div className="flex items-center justify-center w-full">
@@ -586,6 +594,7 @@ export function Header() {
                   variant="outline"
                   size="sm"
                   className="gap-2"
+                  disabled={isLoading}
                 >
                   <Database size={16} />
                   <span className="hidden sm:inline">{t('dataManagement')}</span>
@@ -622,6 +631,7 @@ export function Header() {
                             value={saveMetadata.name}
                             onChange={(e) => setSaveMetadata(prev => ({ ...prev, name: e.target.value }))}
                             placeholder="My Prospecting Save"
+                            disabled={isLoading}
                           />
                         </div>
                         <div className="space-y-2">
@@ -632,6 +642,7 @@ export function Header() {
                             onChange={(e) => setSaveMetadata(prev => ({ ...prev, description: e.target.value }))}
                             placeholder="Description of this save..."
                             rows={2}
+                            disabled={isLoading}
                           />
                         </div>
                       </CardContent>
@@ -651,7 +662,7 @@ export function Header() {
                       <Button
                         onClick={handleExportFile}
                         className="flex-1 gap-2"
-                        disabled={!Object.values(exportSelection).some(Boolean)}
+                        disabled={!Object.values(exportSelection).some(Boolean) || isLoading}
                       >
                         <FileArrowDown size={16} />
                         {t('exportToFile')}
@@ -660,7 +671,7 @@ export function Header() {
                         onClick={handleExportToUrl}
                         variant="outline"
                         className="flex-1 gap-2"
-                        disabled={!Object.values(exportSelection).some(Boolean)}
+                        disabled={!Object.values(exportSelection).some(Boolean) || isLoading}
                       >
                         <Link size={16} />
                         {t('exportToUrl')}
@@ -683,6 +694,7 @@ export function Header() {
                               <Button
                                 onClick={handleImportFile}
                                 className="flex-1 gap-2"
+                                disabled={isLoading}
                               >
                                 <FileArrowUp size={16} />
                                 {t('importFromFile')}
@@ -694,12 +706,13 @@ export function Header() {
                                 value={urlInput}
                                 onChange={(e) => setUrlInput(e.target.value)}
                                 placeholder={t('pasteUrlHere')}
+                                disabled={isLoading}
                               />
                               <Button
                                 onClick={handleImportFromUrl}
                                 variant="outline"
                                 className="w-full gap-2"
-                                disabled={!urlInput.trim()}
+                                disabled={!urlInput.trim() || isLoading}
                               >
                                 <Link size={16} />
                                 {t('importFromUrl')}
@@ -719,6 +732,7 @@ export function Header() {
               size="sm"
               onClick={handleSupportCreator}
               className="gap-2 bg-accent hover:bg-accent/90"
+              disabled={isLoading}
             >
               <Heart size={16} />
               <span className="hidden sm:inline">{t('supportCreator')}</span>

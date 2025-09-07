@@ -1,4 +1,5 @@
 import { useKV } from '@github/spark/hooks';
+import { useState, useEffect } from 'react';
 import type { CraftableItem } from '../lib/gameData';
 
 export interface CraftingItem {
@@ -47,6 +48,8 @@ export interface CollectibleOre {
 }
 
 export function useAppData() {
+  const [isLoading, setIsLoading] = useState(true);
+  
   const [craftingItems, setCraftingItems] = useKV<CraftingItem[]>('crafting-items', []);
   const [museumSlots, setMuseumSlots] = useKV<MuseumSlot[]>('museum-slots', []);
   const [equipment, setEquipment] = useKV<EquipmentSlot>('equipment', {
@@ -67,6 +70,29 @@ export function useAppData() {
   
   const [collectibles, setCollectibles] = useKV<CollectibleOre[]>('collectibles', []);
   const [ownedMaterials, setOwnedMaterials] = useKV<{[key: string]: number}>('owned-materials', {});
+
+  // Check if all data is loaded
+  useEffect(() => {
+    const checkLoading = () => {
+      // All hooks should have resolved their initial values
+      if (craftingItems !== null && 
+          museumSlots !== null && 
+          equipment !== null && 
+          collectibles !== null && 
+          ownedMaterials !== null) {
+        setIsLoading(false);
+      }
+    };
+
+    checkLoading();
+  }, [craftingItems, museumSlots, equipment, collectibles, ownedMaterials]);
+  
+  // Migration for activeEvents if it doesn't exist
+  useEffect(() => {
+    if (equipment && !equipment.activeEvents && !isLoading) {
+      setEquipment({ ...equipment, activeEvents: [] });
+    }
+  }, [equipment, setEquipment, isLoading]);
 
   const exportData = () => {
     const data = {
@@ -206,6 +232,7 @@ export function useAppData() {
   };
 
   return {
+    isLoading,
     craftingItems,
     setCraftingItems,
     museumSlots,

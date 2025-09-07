@@ -15,7 +15,7 @@ import { ores, modifiers } from '@/lib/gameData';
 
 export function CustomCollectibles() {
   const { t } = useLanguage();
-  const { collectibles, setCollectibles } = useAppData();
+  const { isLoading, collectibles, setCollectibles } = useAppData();
   const [selectedOre, setSelectedOre] = useState('');
   const [selectedModifier, setSelectedModifier] = useState('');
   const [quantity, setQuantity] = useState(1);
@@ -129,7 +129,7 @@ export function CustomCollectibles() {
         
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2" disabled={isLoading}>
               <Plus size={16} />
               {t('addOre')}
             </Button>
@@ -142,7 +142,7 @@ export function CustomCollectibles() {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="ore-select">{t('selectOre')}</Label>
-                <Select value={selectedOre} onValueChange={setSelectedOre}>
+                <Select value={selectedOre} onValueChange={setSelectedOre} disabled={isLoading}>
                   <SelectTrigger>
                     <SelectValue placeholder={t('selectOre')} />
                   </SelectTrigger>
@@ -170,7 +170,7 @@ export function CustomCollectibles() {
               
               <div>
                 <Label htmlFor="modifier-select">{t('modifier')} (Optional)</Label>
-                <Select value={selectedModifier} onValueChange={setSelectedModifier}>
+                <Select value={selectedModifier} onValueChange={setSelectedModifier} disabled={isLoading}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select modifier" />
                   </SelectTrigger>
@@ -192,6 +192,7 @@ export function CustomCollectibles() {
                   min="1"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  disabled={isLoading}
                 />
               </div>
               
@@ -203,6 +204,7 @@ export function CustomCollectibles() {
                   min="0"
                   value={ownedQuantity}
                   onChange={(e) => setOwnedQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                  disabled={isLoading}
                 />
               </div>
               
@@ -216,10 +218,11 @@ export function CustomCollectibles() {
                   placeholder="Optional"
                   value={weight || ''}
                   onChange={(e) => setWeight(e.target.value ? parseFloat(e.target.value) || 0 : undefined)}
+                  disabled={isLoading}
                 />
               </div>
               
-              <Button onClick={addOre} disabled={!selectedOre} className="w-full">
+              <Button onClick={addOre} disabled={!selectedOre || isLoading} className="w-full">
                 {t('add')}
               </Button>
             </div>
@@ -292,6 +295,7 @@ export function CustomCollectibles() {
                           checked={collectible.completed}
                           onCheckedChange={() => toggleCompleted(collectible.id)}
                           className="mt-1 flex-shrink-0"
+                          disabled={isLoading}
                         />
                         
                         <div className="space-y-2 flex-1 min-w-0">
@@ -336,6 +340,7 @@ export function CustomCollectibles() {
                                 value={collectible.ownedQuantity || 0}
                                 onChange={(e) => updateOwnedQuantity(collectible.id, parseInt(e.target.value) || 0)}
                                 className="w-16 h-6 text-xs"
+                                disabled={isLoading}
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -348,6 +353,7 @@ export function CustomCollectibles() {
                                 value={collectible.weight || ''}
                                 onChange={(e) => updateWeight(collectible.id, e.target.value ? parseFloat(e.target.value) || 0 : undefined)}
                                 className="w-16 h-6 text-xs"
+                                disabled={isLoading}
                               />
                               <span className="text-xs text-muted-foreground">kg</span>
                             </div>
@@ -359,7 +365,7 @@ export function CustomCollectibles() {
                             size="sm"
                             variant="outline"
                             onClick={() => updateQuantity(collectible.id, collectible.quantity - 1)}
-                            disabled={collectible.quantity <= 1}
+                            disabled={collectible.quantity <= 1 || isLoading}
                             className="h-8 w-8 p-0"
                           >
                             <Minus size={12} />
@@ -374,6 +380,7 @@ export function CustomCollectibles() {
                             variant="outline"
                             onClick={() => updateQuantity(collectible.id, collectible.quantity + 1)}
                             className="h-8 w-8 p-0"
+                            disabled={isLoading}
                           >
                             <Plus size={12} />
                           </Button>
@@ -383,6 +390,7 @@ export function CustomCollectibles() {
                             variant="outline"
                             onClick={() => removeOre(collectible.id)}
                             className="h-8 w-8 p-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                            disabled={isLoading}
                           >
                             <X size={12} />
                           </Button>

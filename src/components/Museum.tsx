@@ -15,9 +15,7 @@ import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
 
 export function Museum() {
   const { t } = useLanguage();
-  const { museumSlots, setMuseumSlots } = useAppData();
-  // Bezpieczna referencja (może się pojawić ostrzeżenie TS, że potencjalnie undefined)
-  const museumSlotsSafe: MuseumSlot[] = (museumSlots || []) as MuseumSlot[];
+  const { isLoading, museumSlots, setMuseumSlots } = useAppData();
 
   // Inicjalizacja slotów tylko jeśli NIE istnieją w storage (zapobiega nadpisaniu po opóźnionym załadowaniu)
   const initializedRef = useRef(false);
@@ -377,6 +375,7 @@ export function Museum() {
                                 variant="outline"
                                 onClick={() => clearSlot(slot.id)}
                                 className="h-6 w-6 p-0"
+                                disabled={isLoading}
                               >
                                 <X size={12} />
                               </Button>
@@ -386,6 +385,7 @@ export function Museum() {
                           <Select
                             value={slot.ore || ''}
                             onValueChange={(value) => updateSlot(slot.id, { ore: value || undefined })}
+                            disabled={isLoading}
                           >
                             <SelectTrigger className="text-xs">
                               <SelectValue placeholder="Select ore">
@@ -439,6 +439,7 @@ export function Museum() {
                                 <Select
                                   value={slot.modifier || ''}
                                   onValueChange={(value) => updateSlot(slot.id, { modifier: value || undefined })}
+                                  disabled={isLoading}
                                 >
                                   <SelectTrigger className="text-xs flex-1">
                                     <SelectValue placeholder="Select modifier">
@@ -459,6 +460,7 @@ export function Museum() {
                                     variant="outline"
                                     onClick={() => updateSlot(slot.id, { modifier: undefined })}
                                     className="h-8 w-8 p-0 flex-shrink-0"
+                                    disabled={isLoading}
                                   >
                                     <X size={12} />
                                   </Button>
@@ -475,6 +477,7 @@ export function Museum() {
                                   weight: parseFloat(e.target.value) || undefined 
                                 })}
                                 className="text-xs"
+                                disabled={isLoading}
                               />
 
                               <div className="text-xs text-muted-foreground">
@@ -512,7 +515,7 @@ export function Museum() {
                     {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
                   </span>
                   <span className="font-mono text-accent">
-                    +{value.toFixed(3)}x
+                    {value > 0 ? "+" : ""}{value.toFixed(3)}x
                   </span>
                 </div>
               ))}

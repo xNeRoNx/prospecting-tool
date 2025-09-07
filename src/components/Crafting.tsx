@@ -18,7 +18,7 @@ import { craftableItems, ores, type CraftableItem } from '@/lib/gameData';
 
 export function Crafting() {
   const { t } = useLanguage();
-  const { craftingItems, setCraftingItems, ownedMaterials, setOwnedMaterials } = useAppData();
+  const { isLoading, craftingItems, setCraftingItems, ownedMaterials, setOwnedMaterials } = useAppData();
   const [selectedItem, setSelectedItem] = useState<CraftableItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
@@ -297,9 +297,13 @@ export function Crafting() {
                       value={quantity}
                       onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                       className="w-20"
+                      disabled={isLoading}
                     />
                     
-                    <Button onClick={() => addToCraftingList(selectedItem, quantity)}>
+                    <Button 
+                      onClick={() => addToCraftingList(selectedItem, quantity)}
+                      disabled={isLoading}
+                    >
                       {t('add')}
                     </Button>
                   </div>
@@ -376,6 +380,7 @@ export function Crafting() {
                             checked={craftingItem.completed}
                             onCheckedChange={() => toggleCompleted(craftingItem.id)}
                             className="mt-1"
+                            disabled={isLoading}
                           />
                           <div className="space-y-2 flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
@@ -422,6 +427,7 @@ export function Crafting() {
                             variant="outline"
                             onClick={() => updateQuantity(craftingItem.id, craftingItem.quantity - 1)}
                             className="h-8 w-8 p-0"
+                            disabled={isLoading}
                           >
                             <Minus size={12} />
                           </Button>
@@ -430,6 +436,7 @@ export function Crafting() {
                             variant="outline"
                             onClick={() => updateQuantity(craftingItem.id, craftingItem.quantity + 1)}
                             className="h-8 w-8 p-0"
+                            disabled={isLoading}
                           >
                             <Plus size={12} />
                           </Button>
@@ -438,6 +445,7 @@ export function Crafting() {
                             variant="outline"
                             onClick={() => removeCraftingItem(craftingItem.id)}
                             className="h-8 w-8 p-0 text-destructive"
+                            disabled={isLoading}
                           >
                             <X size={12} />
                           </Button>
@@ -460,6 +468,7 @@ export function Crafting() {
                 id="minimal-materials"
                 checked={showMinimalMaterials}
                 onCheckedChange={setShowMinimalMaterials}
+                disabled={isLoading}
               />
               <Label htmlFor="minimal-materials" className="text-sm">
                 {t('minimalNeeded')}
@@ -502,7 +511,7 @@ export function Crafting() {
                             variant="outline"
                             onClick={() => updateOwnedMaterial(material, data.owned - 1)}
                             className="h-6 w-6 p-0"
-                            disabled={data.owned <= 0}
+                            disabled={data.owned <= 0 || isLoading}
                           >
                             <Minus size={12} />
                           </Button>
@@ -513,12 +522,14 @@ export function Crafting() {
                             onChange={(e) => updateOwnedMaterial(material, parseInt(e.target.value) || 0)}
                             className="w-14 h-6 text-xs text-center"
                             placeholder="0"
+                            disabled={isLoading}
                           />
                           <Button
                             size="sm"
                             variant="outline"
                             onClick={() => updateOwnedMaterial(material, data.owned + 1)}
                             className="h-6 w-6 p-0"
+                            disabled={isLoading}
                           >
                             <Plus size={12} />
                           </Button>
@@ -528,6 +539,7 @@ export function Crafting() {
                             onClick={() => updateOwnedMaterial(material, data.needed)}
                             className="h-6 px-1 text-xs"
                             title="Set to max needed"
+                            disabled={isLoading}
                           >
                             Max
                           </Button>
