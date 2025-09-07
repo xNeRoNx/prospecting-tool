@@ -284,23 +284,27 @@ export function Header() {
   return (
     <header className="border-b border-border bg-card/50 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4 min-w-0 flex-1">
-            <h1 className="text-lg sm:text-xl sm:flex-1 font-bold text-accent" title="Prospecting Tools">Prospecting Tools</h1>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="w-full sm:flex-1">
+            <h1 className="text-lg sm:text-xl font-bold text-accent text-center sm:text-left" title="Prospecting Tools">Prospecting Tools</h1>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <Select value={currentTheme} onValueChange={setTheme}>
-              <SelectTrigger className="w-24 sm:w-32">
-                <SelectValue />
+              <SelectTrigger className="w-10 sm:w-32">
+                <SelectValue>
+                  <div className="flex items-center justify-center w-full">
+                    <Palette size={14} />
+                    <span className="hidden sm:inline ml-2">{t(themes[currentTheme]?.nameKey as any)}</span>
+                  </div>
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(themes).map(([key, theme]) => (
                   <SelectItem key={key} value={key}>
                     <div className="flex items-center gap-2">
                       <Palette size={14} />
-                      <span className="hidden sm:inline">{t(theme.nameKey as any)}</span>
-                      <span className="sm:hidden">{t(theme.nameKey as any).slice(0, 3)}</span>
+                      <span>{t(theme.nameKey as any)}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -308,12 +312,31 @@ export function Header() {
             </Select>
 
             <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-24 sm:w-32">
-                <SelectValue />
+              <SelectTrigger className="w-10 sm:w-32">
+                <SelectValue>
+                  <div className="flex items-center justify-center w-full">
+                    <span className="text-sm font-medium">
+                      {language === 'en' ? '🇺🇸' : '🇵🇱'}
+                    </span>
+                    <span className="hidden sm:inline ml-2">
+                      {language === 'en' ? t('english') : t('polish')}
+                    </span>
+                  </div>
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">{t('english')}</SelectItem>
-                <SelectItem value="pl">{t('polish')}</SelectItem>
+                <SelectItem value="en">
+                  <div className="flex items-center gap-2">
+                    <span>🇺🇸</span>
+                    <span>{t('english')}</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="pl">
+                  <div className="flex items-center gap-2">
+                    <span>🇵🇱</span>
+                    <span>{t('polish')}</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
 

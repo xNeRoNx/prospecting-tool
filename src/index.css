@@ -151,4 +151,21 @@ body{
   input[type="number"] {
     min-width: 0;
   }
+  
+  /* Header improvements for mobile */
+  .header-title {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Museum overview mobile fixes */
+  .museum-overview-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  
+  .museum-overview-ore-name {
+    max-width: none;
+    white-space: normal;
+  }
 }

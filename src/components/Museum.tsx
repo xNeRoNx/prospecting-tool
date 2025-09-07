@@ -299,29 +299,31 @@ export function Museum() {
                       </h3>
                       <div className="space-y-0.25 border-l-2 border-muted pl-2">
                         {ores.map((item, index) => (
-                          <div key={index} className="flex items-center justify-between text-sm py-1 border-b border-muted-foreground/10 last:border-b-0">
-                            <div className="flex items-center gap-3 min-w-0 flex-1">
-                              <span className={`font-medium ${getRarityClass(item.rarity)} truncate`}>
-                                {item.ore}
-                              </span>
-                              {item.modifier && (
-                                <span className="text-accent text-xs font-medium bg-accent/10 px-2 py-1 rounded">
-                                  {item.modifier}
+                          <div key={index} className="text-sm py-1 border-b border-muted-foreground/10 last:border-b-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-3">
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <span className={`font-medium ${getRarityClass(item.rarity)} break-words`}>
+                                  {item.ore}
                                 </span>
-                              )}
-                              {item.weight && (
-                                <span className="text-muted-foreground text-xs">
-                                  {item.weight}kg
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs text-muted-foreground text-right ml-2 flex-shrink-0">
-                              {item.effect}: +{item.maxMultiplier}x
-                              {item.modifier && (
-                                <div>
-                                  {item.modifierEffect}: +{item.modifierBonus}x
-                                </div>
-                              )}
+                                {item.modifier && (
+                                  <span className="text-accent text-xs font-medium bg-accent/10 px-2 py-1 rounded flex-shrink-0">
+                                    {item.modifier}
+                                  </span>
+                                )}
+                                {item.weight && (
+                                  <span className="text-muted-foreground text-xs flex-shrink-0">
+                                    {item.weight}kg
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground text-left sm:text-right sm:ml-2 flex-shrink-0">
+                                {item.effect}: +{item.maxMultiplier}x
+                                {item.modifier && (
+                                  <div>
+                                    {item.modifierEffect}: +{item.modifierBonus}x
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
