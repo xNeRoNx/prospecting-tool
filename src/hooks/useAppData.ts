@@ -1,5 +1,5 @@
 import { useKV } from '@github/spark/hooks';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { CraftableItem } from '../lib/gameData';
 
 export interface CraftingItem {
@@ -47,45 +47,55 @@ export interface CollectibleOre {
   weight?: number;
 }
 
+// Używamy sentinela null aby odróżnić stan "jeszcze się hydrate'uje" od realnej pustej wartości [] / {}.
+const DEFAULT_EQUIPMENT: EquipmentSlot = {
+  rings: new Array(8).fill(null),
+  necklace: null,
+  charm: null,
+  shovel: null,
+  pan: null,
+  enchant: null,
+  customStats: {},
+  activeEvents: []
+};
+
 export function useAppData() {
   const [isLoading, setIsLoading] = useState(true);
-  
-  const [craftingItems, setCraftingItems] = useKV<CraftingItem[]>('crafting-items', []);
-  const [museumSlots, setMuseumSlots] = useKV<MuseumSlot[]>('museum-slots', []);
-  const [equipment, setEquipment] = useKV<EquipmentSlot>('equipment', {
-    rings: new Array(8).fill(null),
-    necklace: null,
-    charm: null,
-    shovel: null,
-    pan: null,
-    enchant: null,
-    customStats: {},
-    activeEvents: []
-  });
-  
-  // Migration for activeEvents if it doesn't exist
-  if (equipment && !equipment.activeEvents) {
-    setEquipment({ ...equipment, activeEvents: [] });
-  }
-  
-  const [collectibles, setCollectibles] = useKV<CollectibleOre[]>('collectibles', []);
-  const [ownedMaterials, setOwnedMaterials] = useKV<{[key: string]: number}>('owned-materials', {});
 
-  // Check if all data is loaded
+  // Wszystkie wartości startują jako null (sentinel). Po hydracji useKV nadpisze je danymi z magazynu.
+  const [craftingItems, setCraftingItems] = useKV<CraftingItem[] | null>('crafting-items', null);
+  const [museumSlots, setMuseumSlots] = useKV<MuseumSlot[] | null>('museum-slots', null);
+  const [equipment, setEquipment] = useKV<EquipmentSlot | null>('equipment', null);
+  const [collectibles, setCollectibles] = useKV<CollectibleOre[] | null>('collectibles', null);
+  const [ownedMaterials, setOwnedMaterials] = useKV<{[key: string]: number} | null>('owned-materials', null);
+
+  // Flaga do zabezpieczenia że nie ustawimy domyślnych wartości zanim wszystkie hooki dostaną szansę na hydrację.
+  const postHydrationDefaultsApplied = useRef(false);
+
+  // Sprawdzamy hydrację: dopiero gdy wszystkie wartości !== null kończymy loading.
   useEffect(() => {
-    const checkLoading = () => {
-      // All hooks should have resolved their initial values
-      if (craftingItems !== null && 
-          museumSlots !== null && 
-          equipment !== null && 
-          collectibles !== null && 
-          ownedMaterials !== null) {
-        setIsLoading(false);
-      }
-    };
-
-    checkLoading();
+    if (
+      craftingItems !== null &&
+      museumSlots !== null &&
+      equipment !== null &&
+      collectibles !== null &&
+      ownedMaterials !== null
+    ) {
+      setIsLoading(false);
+    }
   }, [craftingItems, museumSlots, equipment, collectibles, ownedMaterials]);
+
+  // Po zakończeniu ładowania uzupełniamy brakujące (null) wartości domyślne i robimy to raz.
+  useEffect(() => {
+    if (!isLoading && !postHydrationDefaultsApplied.current) {
+      if (craftingItems === null) setCraftingItems([]);
+      if (museumSlots === null) setMuseumSlots([]);
+      if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
+      if (collectibles === null) setCollectibles([]);
+      if (ownedMaterials === null) setOwnedMaterials({});
+      postHydrationDefaultsApplied.current = true;
+    }
+  }, [isLoading, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, setCraftingItems, setMuseumSlots, setEquipment, setCollectibles, setOwnedMaterials]);
   
   // Migration for activeEvents if it doesn't exist
   useEffect(() => {
@@ -233,15 +243,16 @@ export function useAppData() {
 
   return {
     isLoading,
-    craftingItems,
+    // Ekspozycja zawsze jako nie-null dla wygody komponentów konsumujących hook.
+    craftingItems: (craftingItems ?? []),
     setCraftingItems,
-    museumSlots,
+    museumSlots: (museumSlots ?? []),
     setMuseumSlots,
-    equipment,
+    equipment: (equipment ?? DEFAULT_EQUIPMENT),
     setEquipment,
-    collectibles,
+    collectibles: (collectibles ?? []),
     setCollectibles,
-    ownedMaterials,
+    ownedMaterials: (ownedMaterials ?? {}),
     setOwnedMaterials,
     exportData,
     exportDataSelective,

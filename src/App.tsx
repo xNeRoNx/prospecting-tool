@@ -18,7 +18,9 @@ function App() {
 
   // Apply theme on mount
   useEffect(() => {
-    setTheme(currentTheme);
+    if (currentTheme) {
+      setTheme(currentTheme);
+    }
   }, [currentTheme, setTheme]);
 
   if (isLoading) {

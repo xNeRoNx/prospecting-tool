@@ -36,7 +36,7 @@ export function CustomCollectibles() {
       id
     };
     
-    setCollectibles(current => [...current, newCollectible]);
+    setCollectibles(current => [...(current ?? []), newCollectible]);
     setSelectedOre('');
     setSelectedModifier('');
     setQuantity(1);
@@ -45,7 +45,7 @@ export function CustomCollectibles() {
   };
 
   const removeOre = (id: string) => {
-    setCollectibles(current => current.filter(item => item.id !== id));
+    setCollectibles(current => (current ?? []).filter(item => item.id !== id));
   };
 
   const updateQuantity = (id: string, newQuantity: number) => {
@@ -55,7 +55,7 @@ export function CustomCollectibles() {
     }
     
     setCollectibles(current =>
-      current.map(item =>
+      (current ?? []).map(item =>
         item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );
@@ -63,7 +63,7 @@ export function CustomCollectibles() {
 
   const updateOwnedQuantity = (id: string, newOwnedQuantity: number) => {
     setCollectibles(current =>
-      current.map(item =>
+      (current ?? []).map(item =>
         item.id === id ? { ...item, ownedQuantity: Math.max(0, newOwnedQuantity) } : item
       )
     );
@@ -71,7 +71,7 @@ export function CustomCollectibles() {
 
   const updateWeight = (id: string, newWeight: number | undefined) => {
     setCollectibles(current =>
-      current.map(item =>
+      (current ?? []).map(item =>
         item.id === id ? { ...item, weight: newWeight } : item
       )
     );
@@ -79,7 +79,7 @@ export function CustomCollectibles() {
 
   const toggleCompleted = (id: string) => {
     setCollectibles(current =>
-      current.map(item =>
+      (current ?? []).map(item =>
         item.id === id ? { ...item, completed: !item.completed } : item
       )
     );

@@ -7,7 +7,8 @@ export function useLanguage() {
   
   const t = useMemo(() => {
     return (key: TranslationKey): string => {
-      return translations[language][key] || key;
+      const lang = language ?? 'en';
+      return translations[lang]?.[key] ?? key;
     };
   }, [language]);
   

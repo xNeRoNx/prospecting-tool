@@ -31,7 +31,7 @@ export function Crafting() {
       id
     };
     
-    setCraftingItems(current => [...current, newCraftingItem]);
+    setCraftingItems(current => [...(current ?? []), newCraftingItem]);
     setSelectedItem(null);
     setQuantity(1);
   };
@@ -41,7 +41,7 @@ export function Crafting() {
     if (!itemToRemove) return;
 
     // Remove the item from crafting list
-    setCraftingItems(current => current.filter(item => item.id !== id));
+    setCraftingItems(current => (current ?? []).filter(item => item.id !== id));
     
     // Check if any materials are only used by the removed item and reset their quantity
     const remainingItems = craftingItems.filter(item => item.id !== id);
@@ -77,7 +77,7 @@ export function Crafting() {
 
   const toggleCompleted = (id: string) => {
     setCraftingItems(current =>
-      current.map(item =>
+      (current ?? []).map(item =>
         item.id === id ? { ...item, completed: !item.completed } : item
       )
     );
@@ -90,7 +90,7 @@ export function Crafting() {
     }
     
     setCraftingItems(current =>
-      current.map(item =>
+      (current ?? []).map(item =>
         item.id === id ? { ...item, quantity: newQuantity } : item
       )
     );

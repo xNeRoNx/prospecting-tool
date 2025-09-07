@@ -543,7 +543,11 @@ export function Header() {
                 <SelectValue>
                   <div className="flex items-center justify-center w-full">
                     <Palette size={14} />
-                    <span className="hidden sm:inline ml-2">{t(themes[currentTheme]?.nameKey as any)}</span>
+                    <span className="hidden sm:inline ml-2">
+                      {currentTheme && themes[currentTheme as keyof typeof themes]
+                        ? t(themes[currentTheme as keyof typeof themes].nameKey as any)
+                        : ''}
+                    </span>
                   </div>
                 </SelectValue>
               </SelectTrigger>
@@ -559,7 +563,7 @@ export function Header() {
               </SelectContent>
             </Select>
 
-            <Select value={language} onValueChange={setLanguage} disabled={isLoading}>
+            <Select value={language} onValueChange={(value) => setLanguage(value as 'en' | 'pl')} disabled={isLoading}>
               <SelectTrigger className="w-16 sm:w-32">
                 <SelectValue>
                   <div className="flex items-center justify-center w-full">

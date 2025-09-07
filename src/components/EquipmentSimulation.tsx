@@ -21,7 +21,7 @@ export function EquipmentSimulation() {
   const [customStatValue, setCustomStatValue] = useState(0);
 
   const updateEquipment = (updates: Partial<typeof equipment>) => {
-    setEquipment(current => ({ ...current, ...updates }));
+    setEquipment({...equipment, ...updates });
   };
 
   const equipItem = (item: CraftableItem, position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
@@ -372,7 +372,7 @@ export function EquipmentSimulation() {
                                     className="w-full justify-start"
                                     disabled={isLoading}
                                   >
-                                    <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
+                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
                                       {item.rarity}
                                     </Badge>
                                     <span className="ml-2">{item.name}</span>
@@ -435,7 +435,7 @@ export function EquipmentSimulation() {
                               className="w-full justify-start"
                               disabled={isLoading}
                             >
-                              <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
+                              <Badge className={getRarityClass(item.rarity)} variant="outline">
                                 {item.rarity}
                               </Badge>
                               <span className="ml-2">{item.name}</span>
@@ -492,7 +492,7 @@ export function EquipmentSimulation() {
                               className="w-full justify-start"
                               disabled={isLoading}
                             >
-                              <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
+                              <Badge className={getRarityClass(item.rarity)} variant="outline">
                                 {item.rarity}
                               </Badge>
                               <span className="ml-2">{item.name}</span>
