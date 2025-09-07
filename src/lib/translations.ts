@@ -27,10 +27,16 @@ export const translations = {
     weight: "Weight",
     note: "Note",
     
-    // Language
+    // Language & Theme
     language: "Language",
+    theme: "Theme", 
     english: "English",
-    polish: "Polish",
+    polish: "Polski",
+    themeDefault: "Default",
+    themeDark: "Dark",
+    themeForest: "Forest",
+    themeOcean: "Ocean", 
+    themeSunset: "Sunset",
     
     // Header
     supportCreator: "Support Creator",
@@ -96,6 +102,21 @@ export const translations = {
     importError: "Error importing data",
     exportSuccess: "Data exported successfully",
     invalidFile: "Invalid file format",
+    urlCopied: "URL copied to clipboard",
+    urlCopyError: "Error copying URL",
+    exportToUrl: "Export to URL",
+    importFromUrl: "Import from URL",
+    dataManagement: "Data Management",
+    selectDataToExport: "Select Data to Export",
+    selectDataToExportDesc: "Choose which data categories to include in your export",
+    selectDataToImport: "Select Data to Import",
+    selectDataToImportDesc: "Choose which data categories to import and replace",
+    exportToFile: "Export to File",
+    importFromFile: "Import from File",
+    selectAll: "Select All",
+    selectNone: "Select None",
+    pasteUrlHere: "Paste URL here...",
+    ownedMaterials: "Owned Materials",
     
     // Tooltips
     craftingTooltip: "Plan your crafting queue and track materials",
@@ -132,10 +153,16 @@ export const translations = {
     weight: "Waga",
     note: "Notatka",
     
-    // Language
-    language: "Język",
-    english: "Angielski", 
+    // Language & Theme
+    language: "Język", 
+    theme: "Motyw",
+    english: "English", 
     polish: "Polski",
+    themeDefault: "Domyślny",
+    themeDark: "Ciemny",
+    themeForest: "Las",
+    themeOcean: "Ocean",
+    themeSunset: "Zachód",
     
     // Header
     supportCreator: "Wspomóż Twórcę",
@@ -201,6 +228,21 @@ export const translations = {
     importError: "Błąd importowania danych",
     exportSuccess: "Dane wyeksportowane pomyślnie", 
     invalidFile: "Nieprawidłowy format pliku",
+    urlCopied: "URL skopiowany do schowka",
+    urlCopyError: "Błąd kopiowania URL",
+    exportToUrl: "Eksportuj do URL",
+    importFromUrl: "Importuj z URL",
+    dataManagement: "Zarządzanie Danymi",
+    selectDataToExport: "Wybierz Dane do Eksportu",
+    selectDataToExportDesc: "Wybierz które kategorie danych uwzględnić w eksporcie",
+    selectDataToImport: "Wybierz Dane do Importu",
+    selectDataToImportDesc: "Wybierz które kategorie danych zaimportować i zastąpić",
+    exportToFile: "Eksportuj do Pliku",
+    importFromFile: "Importuj z Pliku",
+    selectAll: "Zaznacz Wszystko",
+    selectNone: "Odznacz Wszystko",
+    pasteUrlHere: "Wklej URL tutaj...",
+    ownedMaterials: "Posiadane Materiały",
     
     // Tooltips
     craftingTooltip: "Zaplanuj kolejkę tworzenia i śledź materiały",

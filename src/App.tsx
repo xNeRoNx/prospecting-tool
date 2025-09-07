@@ -6,10 +6,18 @@ import { Museum } from '@/components/Museum';
 import { EquipmentSimulation } from '@/components/EquipmentSimulation';
 import { CustomCollectibles } from '@/components/CustomCollectibles';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useTheme } from '@/hooks/useTheme';
 import { Hammer, Bank, Calculator, Archive } from '@phosphor-icons/react';
+import { useEffect } from 'react';
 
 function App() {
   const { t } = useLanguage();
+  const { currentTheme, setTheme } = useTheme();
+
+  // Apply theme on mount
+  useEffect(() => {
+    setTheme(currentTheme);
+  }, [currentTheme, setTheme]);
 
   return (
     <div className="min-h-screen bg-background">

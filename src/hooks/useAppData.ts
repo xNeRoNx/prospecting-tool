@@ -67,7 +67,8 @@ export function useAppData() {
       equipment,
       collectibles,
       ownedMaterials,
-      exportDate: new Date().toISOString()
+      exportDate: new Date().toISOString(),
+      version: '1.0'
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -84,12 +85,116 @@ export function useAppData() {
     URL.revokeObjectURL(url);
   };
 
+  const exportDataSelective = (selectedData: any) => {
+    const data = {
+      ...selectedData,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: 'application/json'
+    });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prospecting-tools-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportToUrl = () => {
+    const data = {
+      craftingItems,
+      museumSlots,
+      equipment,
+      collectibles,
+      ownedMaterials,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    try {
+      const compressed = btoa(JSON.stringify(data));
+      const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
+      navigator.clipboard.writeText(url);
+      return { success: true, url };
+    } catch (error) {
+      console.error('Error creating URL:', error);
+      return { success: false, error };
+    }
+  };
+
+  const exportToUrlSelective = (selectedData: any) => {
+    const data = {
+      ...selectedData,
+      exportDate: new Date().toISOString(),
+      version: '1.0'
+    };
+    
+    try {
+      const compressed = btoa(JSON.stringify(data));
+      const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
+      return { success: true, url };
+    } catch (error) {
+      console.error('Error creating URL:', error);
+      return { success: false, error };
+    }
+  };
+
   const importData = (data: any) => {
-    if (data.craftingItems) setCraftingItems(data.craftingItems);
-    if (data.museumSlots) setMuseumSlots(data.museumSlots);
-    if (data.equipment) setEquipment(data.equipment);
-    if (data.collectibles) setCollectibles(data.collectibles);
-    if (data.ownedMaterials) setOwnedMaterials(data.ownedMaterials);
+    if (data.craftingItems) {
+      setCraftingItems(data.craftingItems);
+    }
+    if (data.museumSlots) {
+      setMuseumSlots(data.museumSlots);
+    }
+    if (data.equipment) {
+      setEquipment(data.equipment);
+    }
+    if (data.collectibles) {
+      setCollectibles(data.collectibles);
+    }
+    if (data.ownedMaterials) {
+      setOwnedMaterials(data.ownedMaterials);
+    }
+  };
+
+  const importDataSelective = (data: any, selection: any) => {
+    if (selection.craftingItems && data.craftingItems) {
+      setCraftingItems(data.craftingItems);
+    }
+    if (selection.museumSlots && data.museumSlots) {
+      setMuseumSlots(data.museumSlots);
+    }
+    if (selection.equipment && data.equipment) {
+      setEquipment(data.equipment);
+    }
+    if (selection.collectibles && data.collectibles) {
+      setCollectibles(data.collectibles);
+    }
+    if (selection.ownedMaterials && data.ownedMaterials) {
+      setOwnedMaterials(data.ownedMaterials);
+    }
+  };
+
+  const importFromUrl = (url: string) => {
+    try {
+      const hashData = url.split('#data=')[1];
+      if (!hashData) {
+        throw new Error('No data found in URL');
+      }
+      
+      const decompressed = atob(hashData);
+      const data = JSON.parse(decompressed);
+      return { success: true, data };
+    } catch (error) {
+      console.error('Error importing from URL:', error);
+      return { success: false, error };
+    }
   };
 
   return {
@@ -104,6 +209,11 @@ export function useAppData() {
     ownedMaterials,
     setOwnedMaterials,
     exportData,
-    importData
+    exportDataSelective,
+    exportToUrl,
+    exportToUrlSelective,
+    importData,
+    importDataSelective,
+    importFromUrl
   };
 }

@@ -14,7 +14,7 @@ import { Plus, Minus, Check, X, Hammer, Wrench } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
 import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData';
-import { craftableItems, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, ores, type CraftableItem } from '@/lib/gameData';
 
 export function Crafting() {
   const { t } = useLanguage();
@@ -212,6 +212,11 @@ export function Crafting() {
 
   const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
+  };
+
+  const getMaterialRarity = (materialName: string): string => {
+    const ore = ores.find(ore => ore.name === materialName);
+    return ore ? ore.rarity : 'Common'; // Default to Common if not found
   };
 
   const canCraftItems = () => {
@@ -471,10 +476,25 @@ export function Crafting() {
           ) : (
             <Card>
               <CardContent className="p-4 space-y-3">
-                {Object.entries(materialSummary).map(([material, data]) => (
+                {Object.entries(materialSummary)
+                  .sort(([materialA], [materialB]) => {
+                    const rarityOrder = ['Exotic', 'Mythic', 'Legendary', 'Epic', 'Rare', 'Uncommon', 'Common'];
+                    const rarityA = getMaterialRarity(materialA);
+                    const rarityB = getMaterialRarity(materialB);
+                    return rarityOrder.indexOf(rarityA) - rarityOrder.indexOf(rarityB);
+                  })
+                  .map(([material, data]) => (
                   <div key={material} className="space-y-2">
                     <div className="flex items-start justify-between gap-2">
-                      <span className="font-medium min-w-0 break-words flex-1">{material}</span>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Badge 
+                          className={getRarityClass(getMaterialRarity(material))} 
+                          variant="outline"
+                        >
+                          {getMaterialRarity(material)}
+                        </Badge>
+                        <span className="font-medium min-w-0 break-words flex-1">{material}</span>
+                      </div>
                       <div className="flex flex-col gap-1 items-end flex-shrink-0">
                         <div className="flex items-center gap-1">
                           <Button
@@ -511,11 +531,11 @@ export function Crafting() {
                           >
                             Max
                           </Button>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            / {data.needed}
+                            {data.weight && ` (+${data.weight}kg)`}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          / {data.needed}
-                          {data.weight && ` (+${data.weight}kg)`}
-                        </span>
                       </div>
                     </div>
                     

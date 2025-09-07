@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,14 @@ import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
 export function Museum() {
   const { t } = useLanguage();
   const { museumSlots, setMuseumSlots } = useAppData();
+
+  // Initialize museum slots if empty
+  useEffect(() => {
+    if (museumSlots.length === 0) {
+      const slots = initializeMuseumSlots();
+      setMuseumSlots(slots);
+    }
+  }, [museumSlots, setMuseumSlots]);
 
   const initializeMuseumSlots = () => {
     const slots: MuseumSlot[] = [];
@@ -225,7 +233,7 @@ export function Museum() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('museum')}</h2>
+        <h2 className="text-2xl font-bold">{t('museum')} (Not work in 100%)</h2>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
