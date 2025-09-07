@@ -286,12 +286,12 @@ export function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="w-full sm:flex-1">
-            <h1 className="text-lg sm:text-xl font-bold text-accent text-center sm:text-left" title="Prospecting Tools">Prospecting Tools</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-accent text-center" title="Prospecting Tools">Prospecting Tools</h1>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
             <Select value={currentTheme} onValueChange={setTheme}>
-              <SelectTrigger className="w-10 sm:w-32">
+              <SelectTrigger className="w-16 sm:w-34">
                 <SelectValue>
                   <div className="flex items-center justify-center w-full">
                     <Palette size={14} />
@@ -312,7 +312,7 @@ export function Header() {
             </Select>
 
             <Select value={language} onValueChange={setLanguage}>
-              <SelectTrigger className="w-10 sm:w-32">
+              <SelectTrigger className="w-16 sm:w-32">
                 <SelectValue>
                   <div className="flex items-center justify-center w-full">
                     <span className="text-sm font-medium">
