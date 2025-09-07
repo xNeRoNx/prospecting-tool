@@ -403,7 +403,7 @@ export function Header() {
               disabled={isLoading}
             />
             <label htmlFor={`crafting-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
-              {t('crafting')} ({isExport ? craftingItems.length : (importPreview?.data.craftingItems?.length || 0)} items)
+              {t('crafting')} ({isExport ? craftingItems.length : (importPreview?.data.craftingItems?.length || 0)} {t('items')})
             </label>
           </div>
           
@@ -416,7 +416,7 @@ export function Header() {
               disabled={isLoading}
             />
             <label htmlFor={`museum-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
-              {t('museum')} ({isExport ? museumSlots.length : (importPreview?.data.museumSlots?.length || 0)} slots)
+              {t('museum')} ({isExport ? museumSlots.length : (importPreview?.data.museumSlots?.length || 0)} {t('slots')})
             </label>
           </div>
           
@@ -442,7 +442,7 @@ export function Header() {
               disabled={isLoading}
             />
             <label htmlFor={`collectibles-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
-              {t('collectibles')} ({isExport ? collectibles.length : (importPreview?.data.collectibles?.length || 0)} items)
+              {t('collectibles')} ({isExport ? collectibles.length : (importPreview?.data.collectibles?.length || 0)} {t('items')})
             </label>
           </div>
           
@@ -455,7 +455,7 @@ export function Header() {
               disabled={isLoading}
             />
             <label htmlFor={`materials-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
-              {t('ownedMaterials')} ({isExport ? Object.keys(ownedMaterials).length : Object.keys(importPreview?.data.ownedMaterials || {}).length} materials)
+              {t('ownedMaterials')} ({isExport ? Object.keys(ownedMaterials).length : Object.keys(importPreview?.data.ownedMaterials || {}).length} {t('materials')})
             </label>
           </div>
         </div>
@@ -490,14 +490,14 @@ export function Header() {
                 <div className="flex items-center gap-2">
                   <Tag size={14} className="shrink-0" />
                   <div className="min-w-0">
-                    <div className="text-xs text-muted-foreground">Save Name</div>
-                    <div className="text-sm font-medium truncate">{metadata.name || 'Unnamed Save'}</div>
+                    <div className="text-xs text-muted-foreground">{t('saveName')}</div>
+                    <div className="text-sm font-medium truncate">{metadata.name || t('unnamedSave')}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar size={14} className="shrink-0" />
                   <div className="min-w-0">
-                    <div className="text-xs text-muted-foreground">Created</div>
+                    <div className="text-xs text-muted-foreground">{t('created')}</div>
                     <div className="text-sm truncate">{metadata.createdAt ? new Date(metadata.createdAt).toLocaleDateString() : 'Unknown'}</div>
                   </div>
                 </div>
@@ -507,7 +507,7 @@ export function Header() {
                 <div className="flex items-start gap-2">
                   <FileText size={14} className="mt-1 shrink-0" />
                   <div className="min-w-0">
-                    <div className="text-xs text-muted-foreground">Description</div>
+                    <div className="text-xs text-muted-foreground">{t('description')}</div>
                     <div className="text-sm break-words">{metadata.description}</div>
                   </div>
                 </div>
@@ -515,7 +515,7 @@ export function Header() {
               
               {importPreview.fileName && (
                 <div className="text-xs text-muted-foreground break-all">
-                  File: {importPreview.fileName}
+                  {t('file')}: {importPreview.fileName}
                 </div>
               )}
               
@@ -525,35 +525,35 @@ export function Header() {
 
           {/* Data Summary */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Available Data:</h4>
+            <h4 className="text-sm font-medium mb-3">{t('availableData')}:</h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm import-preview-data-summary">
               {data.craftingItems && (
                 <div className="flex justify-between items-center gap-2">
-                  <span className="truncate">Crafting Items:</span>
+                  <span className="truncate">{t('crafting')}:</span>
                   <Badge variant="outline" className="shrink-0">{data.craftingItems.length}</Badge>
                 </div>
               )}
               {data.museumSlots && (
                 <div className="flex justify-between items-center gap-2">
-                  <span className="truncate">Museum Slots:</span>
+                  <span className="truncate">{t('museum')}:</span>
                   <Badge variant="outline" className="shrink-0">{data.museumSlots.length}</Badge>
                 </div>
               )}
               {data.equipment && (
                 <div className="flex justify-between items-center gap-2">
-                  <span className="truncate">Equipment:</span>
+                  <span className="truncate">{t('equipment')}:</span>
                   <Badge variant="outline" className="shrink-0">✓</Badge>
                 </div>
               )}
               {data.collectibles && (
                 <div className="flex justify-between items-center gap-2">
-                  <span className="truncate">Collectibles:</span>
+                  <span className="truncate">{t('collectibles')}:</span>
                   <Badge variant="outline" className="shrink-0">{data.collectibles.length}</Badge>
                 </div>
               )}
               {data.ownedMaterials && (
                 <div className="flex justify-between items-center gap-2">
-                  <span className="truncate">Materials:</span>
+                  <span className="truncate">{t('materials')}:</span>
                   <Badge variant="outline" className="shrink-0">{Object.keys(data.ownedMaterials).length}</Badge>
                 </div>
               )}
@@ -564,7 +564,7 @@ export function Header() {
 
           {/* Selection */}
           <div>
-            <h4 className="text-sm font-medium mb-3">Select data to import:</h4>
+            <h4 className="text-sm font-medium mb-3">{t('selectDataToImport')}:</h4>
             {renderDataSelection(importSelection, false)}
           </div>
 
@@ -576,7 +576,7 @@ export function Header() {
               className="flex-1 w-full sm:w-auto"
             >
               <Check size={16} className="mr-2" />
-              Import Selected Data
+              {t('importSelectedData')}
             </Button>
             <Button
               onClick={handleCancelImport}
@@ -584,7 +584,7 @@ export function Header() {
               className="w-full sm:w-auto"
               disabled={isLoading}
             >
-              Cancel
+              {t('cancel')}
             </Button>
           </div>
         </CardContent>
@@ -611,7 +611,7 @@ export function Header() {
                         {save.metadata?.name || `${t('saveSlot')} ${index + 1}`}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {save.metadata?.createdAt ? new Date(save.metadata.createdAt).toLocaleString() : 'Unknown date'}
+                        {save.metadata?.createdAt ? new Date(save.metadata.createdAt).toLocaleString() : t('unknownDate')}
                       </div>
                       {save.metadata?.description && (
                         <div className="text-xs text-muted-foreground truncate mt-1">
@@ -668,10 +668,10 @@ export function Header() {
                       {t('backupSlot')}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {saves[5].metadata?.createdAt ? new Date(saves[5].metadata.createdAt).toLocaleString() : 'Unknown date'}
+                      {saves[5].metadata?.createdAt ? new Date(saves[5].metadata.createdAt).toLocaleString() : t('unknownDate')}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {saves[5].metadata?.description || 'Automatic backup before import'}
+                      {saves[5].metadata?.description || t('backupSlotDescription')}
                     </div>
                   </div>
                   <div className="flex gap-2 ml-3">
@@ -712,13 +712,13 @@ export function Header() {
               <div className="p-3 border border-accent rounded-md bg-accent/10">
                 <div className="text-sm font-medium">{t('confirmDelete')}</div>
                 <div className="text-xs text-muted-foreground mt-1">
-                  Current save: {existingSave.metadata?.name || 'Unnamed Save'}
+                  {t('currentSave')}: {existingSave.metadata?.name || t('unnamedSave')}
                 </div>
               </div>
             )}
             
             <div className="space-y-2">
-              <label htmlFor="save-name-dialog" className="text-sm font-medium">Save Name</label>
+              <label htmlFor="save-name-dialog" className="text-sm font-medium">{t('saveName')}</label>
               <Input
                 id="save-name-dialog"
                 value={saveMetadata.name}
@@ -729,7 +729,7 @@ export function Header() {
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="save-description-dialog" className="text-sm font-medium">Description (Optional)</label>
+              <label htmlFor="save-description-dialog" className="text-sm font-medium">{t('descriptionOptional')}</label>
               <Textarea
                 id="save-description-dialog"
                 value={saveMetadata.description}
@@ -774,7 +774,7 @@ export function Header() {
           
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Are you sure you want to delete this save?
+              {t('deleteSaveConfirmQuestion')}
             </p>
             {saves[deleteConfirmSlot] && (
               <div className="p-3 border border-destructive rounded-md bg-destructive/10">
@@ -782,9 +782,9 @@ export function Header() {
                   {saves[deleteConfirmSlot].metadata?.name || `Save Slot ${deleteConfirmSlot + 1}`}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {saves[deleteConfirmSlot].metadata?.createdAt ? 
-                    new Date(saves[deleteConfirmSlot].metadata.createdAt).toLocaleString() : 
-                    'Unknown date'
+                  {saves[deleteConfirmSlot].metadata?.createdAt
+                    ? new Date(saves[deleteConfirmSlot].metadata.createdAt).toLocaleString()
+                    : t('unknownDate')
                   }
                 </div>
               </div>
@@ -917,11 +917,11 @@ export function Header() {
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">{t('saveSettings')}</CardTitle>
-                        <CardDescription>Set save name and description</CardDescription>
+                        <CardDescription>{t('saveSettingsDesc')}</CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
-                          <label htmlFor="save-name" className="text-sm font-medium">Save Name</label>
+                          <label htmlFor="save-name" className="text-sm font-medium">{t('saveName')}</label>
                           <Input
                             id="save-name"
                             value={saveMetadata.name}
@@ -931,7 +931,7 @@ export function Header() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <label htmlFor="save-description" className="text-sm font-medium">Description (Optional)</label>
+                          <label htmlFor="save-description" className="text-sm font-medium">{t('descriptionOptional')}</label>
                           <Textarea
                             id="save-description"
                             value={saveMetadata.description}
@@ -983,7 +983,7 @@ export function Header() {
                         <Card>
                           <CardHeader>
                             <CardTitle className="text-base">{t('importData')}</CardTitle>
-                            <CardDescription>Import save data from file or URL</CardDescription>
+                            <CardDescription>{t('importDataDesc')}</CardDescription>
                           </CardHeader>
                           <CardContent className="space-y-4">
                             <div className="flex flex-col sm:flex-row gap-2">
