@@ -373,9 +373,11 @@ export function Museum() {
                             onValueChange={(value) => updateSlot(slot.id, { ore: value || undefined })}
                           >
                             <SelectTrigger className="text-xs">
-                              <SelectValue placeholder="Select ore" />
+                              <SelectValue placeholder="Select ore">
+                                {slot.ore}
+                              </SelectValue>
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-w-xs sm:max-w-sm">
                               {ores
                                 .filter(ore => ore.rarity === rarity)
                                 .map(ore => {
@@ -397,17 +399,18 @@ export function Museum() {
                                       key={ore.name} 
                                       value={ore.name}
                                       disabled={usedOres.has(ore.name) && slot.ore !== ore.name}
+                                      className="flex-col items-start"
                                     >
-                                      <div className="flex flex-col w-full">
-                                        <div className="flex items-center justify-between w-full">
-                                          <span>{ore.name}</span>
+                                      <div className="w-full">
+                                        <div className="flex items-center justify-between w-full mb-1">
+                                          <span className="font-medium">{ore.name}</span>
                                           {usedOres.has(ore.name) && slot.ore !== ore.name && (
                                             <span className="text-xs text-muted-foreground ml-1">(Used)</span>
                                           )}
                                         </div>
-                                        <span className="text-muted-foreground text-xs text-left">
+                                        <div className="text-muted-foreground text-xs break-words whitespace-normal">
                                           {statInfo}
-                                        </span>
+                                        </div>
                                       </div>
                                     </SelectItem>
                                   );

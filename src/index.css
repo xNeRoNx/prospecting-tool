@@ -168,4 +168,16 @@ body{
     max-width: none;
     white-space: normal;
   }
+  
+  /* Museum select ore mobile improvements */
+  [data-radix-select-content] {
+    max-width: 90vw !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  
+  [data-radix-select-item] {
+    min-height: auto !important;
+    padding: 8px !important;
+  }
 }
