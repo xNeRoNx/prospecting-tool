@@ -146,7 +146,24 @@ export const translations = {
     importPreview: "Import Preview",
     saveName: "Save Name",
     description: "Description",
-    createdDate: "Created Date"
+    createdDate: "Created Date",
+    saveSlots: "Save Slots",
+    loadSave: "Load Save",
+    deleteSave: "Delete Save",
+    confirmDelete: "Confirm Delete",
+    saveSlot: "Save Slot",
+    emptySaveSlot: "Empty Save Slot",
+    backupSlot: "Import Backup",
+    saveData: "Save Data",
+    loadData: "Load Data",
+    saveToSlot: "Save to Slot",
+    overwriteSave: "Overwrite Save",
+    saveSuccessful: "Save successful",
+    loadSuccessful: "Data loaded successfully",
+    deleteSuccessful: "Save deleted successfully",
+    saveError: "Error saving data",
+    loadError: "Error loading data",
+    deleteError: "Error deleting save"
   },
   
   pl: {
@@ -296,7 +313,24 @@ export const translations = {
     importPreview: "Podgląd Importu",
     saveName: "Nazwa Zapisu", 
     description: "Opis",
-    createdDate: "Data Utworzenia"
+    createdDate: "Data Utworzenia",
+    saveSlots: "Sloty Zapisów",
+    loadSave: "Załaduj Zapis",
+    deleteSave: "Usuń Zapis",
+    confirmDelete: "Potwierdź Usunięcie",
+    saveSlot: "Slot Zapisu",
+    emptySaveSlot: "Pusty Slot",
+    backupSlot: "Kopia Zapasowa Importu",
+    saveData: "Zapisz Dane",
+    loadData: "Załaduj Dane",
+    saveToSlot: "Zapisz do Slotu",
+    overwriteSave: "Zastąp Zapis",
+    saveSuccessful: "Zapis pomyślny",
+    loadSuccessful: "Dane załadowane pomyślnie",
+    deleteSuccessful: "Zapis usunięty pomyślnie",
+    saveError: "Błąd zapisu danych",
+    loadError: "Błąd ładowania danych",
+    deleteError: "Błąd usuwania zapisu"
   }
 } as const;
 

@@ -237,6 +237,9 @@ export function useAppData() {
   };
 
   const importDataSelective = (data: any, selection: any) => {
+    // Create backup before import
+    createBackupBeforeImport();
+    
     if (selection.craftingItems && 'craftingItems' in data) setCraftingItems(data.craftingItems ?? []);
     if (selection.museumSlots && 'museumSlots' in data) setMuseumSlots(data.museumSlots ?? []);
     if (selection.equipment && 'equipment' in data) {
@@ -263,6 +266,89 @@ export function useAppData() {
     }
   };
 
+  // Backup system for imports
+  const createBackupBeforeImport = () => {
+    const snapshot = buildSnapshot();
+    const backupData = {
+      metadata: {
+        name: 'Import Backup',
+        description: 'Automatic backup created before import',
+        createdAt: new Date().toISOString(),
+        version: '1.1',
+        isBackup: true
+      },
+      ...snapshot
+    };
+    
+    // Store backup in slot 6 (index 5)
+    const saves = getSaves();
+    saves[5] = backupData;
+    localStorage.setItem('prospecting-saves', JSON.stringify(saves));
+  };
+
+  // Save system (5 slots + 1 backup slot)
+  const getSaves = () => {
+    try {
+      const saves = localStorage.getItem('prospecting-saves');
+      return saves ? JSON.parse(saves) : new Array(6).fill(null);
+    } catch (error) {
+      console.error('Error loading saves:', error);
+      return new Array(6).fill(null);
+    }
+  };
+
+  const saveToSlot = (slotIndex: number, metadata: any) => {
+    if (slotIndex < 0 || slotIndex >= 5) {
+      throw new Error('Invalid save slot index. Must be 0-4.');
+    }
+
+    const snapshot = buildSnapshot();
+    const saveData = {
+      metadata: {
+        ...metadata,
+        createdAt: new Date().toISOString(),
+        version: '1.1'
+      },
+      ...snapshot
+    };
+
+    const saves = getSaves();
+    saves[slotIndex] = saveData;
+    localStorage.setItem('prospecting-saves', JSON.stringify(saves));
+  };
+
+  const loadFromSlot = (slotIndex: number) => {
+    if (slotIndex < 0 || slotIndex >= 6) {
+      throw new Error('Invalid save slot index. Must be 0-5.');
+    }
+
+    const saves = getSaves();
+    const saveData = saves[slotIndex];
+    
+    if (!saveData) {
+      throw new Error('No save data in this slot.');
+    }
+
+    // Create backup before loading (except when loading backup itself)
+    if (slotIndex !== 5) {
+      createBackupBeforeImport();
+    }
+
+    // Import the save data
+    importData(saveData);
+    return saveData;
+  };
+
+  const deleteSave = (slotIndex: number) => {
+    if (slotIndex < 0 || slotIndex >= 5) {
+      throw new Error('Invalid save slot index. Must be 0-4.');
+    }
+
+    const saves = getSaves();
+    saves[slotIndex] = null;
+    localStorage.setItem('prospecting-saves', JSON.stringify(saves));
+  };
+
   return {
     isLoading,
   dataRevision,
@@ -283,6 +369,12 @@ export function useAppData() {
     exportToUrlSelective,
     importData,
     importDataSelective,
-    importFromUrl
+    importFromUrl,
+    // Save system
+    getSaves,
+    saveToSlot,
+    loadFromSlot,
+    deleteSave,
+    createBackupBeforeImport
   };
 }

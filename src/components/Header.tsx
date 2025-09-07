@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Download, Upload, Heart, Link, FileArrowDown, FileArrowUp, Database, Palette, Eye, Check, Calendar, FileText, Tag } from '@phosphor-icons/react';
+import { Download, Upload, Heart, Link, FileArrowDown, FileArrowUp, Database, Palette, Eye, Check, Calendar, FileText, Tag, Trash } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
 import { useTheme } from '@/hooks/useTheme';
@@ -47,12 +47,12 @@ interface ImportPreview {
 
 export function Header() {
   const { language, setLanguage, t } = useLanguage();
-  const { isLoading, dataRevision, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, exportDataSelective, importDataSelective, exportToUrlSelective, importFromUrl } = useAppData();
+  const { isLoading, dataRevision, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, exportDataSelective, importDataSelective, exportToUrlSelective, importFromUrl, getSaves, saveToSlot, loadFromSlot, deleteSave } = useAppData();
   const { currentTheme, setTheme, themes } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [urlInput, setUrlInput] = useState('');
-  const [activeTab, setActiveTab] = useState('export');
+  const [activeTab, setActiveTab] = useState('slots');
   const [exportSelection, setExportSelection] = useState<DataSelection>({
     craftingItems: true,
     museumSlots: true,
@@ -77,6 +77,19 @@ export function Header() {
   });
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  
+  // Save system states
+  const [saves, setSaves] = useState<any[]>([]);
+  const [selectedSaveSlot, setSelectedSaveSlot] = useState<number | null>(null);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [deleteConfirmSlot, setDeleteConfirmSlot] = useState<number | null>(null);
+
+  // Load saves on mount and when dialog opens
+  useEffect(() => {
+    if (dataDialogOpen) {
+      setSaves(getSaves());
+    }
+  }, [dataDialogOpen, getSaves, dataRevision]);
 
   // Gdy dane w store się zmienią a dialog exportu jest otwarty, upewnij się że preview/checkboxy mają aktualne liczby.
   useEffect(() => {
@@ -92,6 +105,9 @@ export function Header() {
       setImportPreview(null);
       setShowPreview(false);
       setUrlInput('');
+      setSaveDialogOpen(false);
+      setSelectedSaveSlot(null);
+      setDeleteConfirmSlot(null);
     }
   }, [dataDialogOpen]);
 
@@ -309,6 +325,48 @@ export function Header() {
 
   const handleSupportCreator = () => {
     window.open('https://github.com/sponsors/xNeRoNx', '_blank');
+  };
+
+  // Save system handlers
+  const handleSaveToSlot = (slotIndex: number) => {
+    try {
+      saveToSlot(slotIndex, saveMetadata);
+      setSaves(getSaves());
+      toast.success(t('saveSuccessful'));
+      setSaveDialogOpen(false);
+      setSelectedSaveSlot(null);
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error(t('saveError'));
+    }
+  };
+
+  const handleLoadFromSlot = (slotIndex: number) => {
+    try {
+      loadFromSlot(slotIndex);
+      toast.success(t('loadSuccessful'));
+      setDataDialogOpen(false);
+    } catch (error) {
+      console.error('Load error:', error);
+      toast.error(t('loadError'));
+    }
+  };
+
+  const handleDeleteSave = (slotIndex: number) => {
+    try {
+      deleteSave(slotIndex);
+      setSaves(getSaves());
+      toast.success(t('deleteSuccessful'));
+      setDeleteConfirmSlot(null);
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error(t('deleteError'));
+    }
+  };
+
+  const openSaveDialog = (slotIndex: number) => {
+    setSelectedSaveSlot(slotIndex);
+    setSaveDialogOpen(true);
   };
 
   const renderDataSelection = (selection: DataSelection, isExport: boolean) => {
@@ -536,6 +594,227 @@ export function Header() {
     );
   };
 
+  const renderSaveSlots = () => {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t('saveSlots')}</CardTitle>
+          <CardDescription>Save and load your data to/from slots</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 gap-3">
+            {/* Regular save slots (0-4) */}
+            {saves.slice(0, 5).map((save, index) => (
+              <div key={index} className="flex items-center justify-between p-3 border border-border rounded-md">
+                <div className="flex-1 min-w-0">
+                  {save ? (
+                    <div>
+                      <div className="font-medium text-sm truncate">
+                        {save.metadata?.name || `${t('saveSlot')} ${index + 1}`}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {save.metadata?.createdAt ? new Date(save.metadata.createdAt).toLocaleString() : 'Unknown date'}
+                      </div>
+                      {save.metadata?.description && (
+                        <div className="text-xs text-muted-foreground truncate mt-1">
+                          {save.metadata.description}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      {t('emptySaveSlot')}
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-2 ml-3">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openSaveDialog(index)}
+                    disabled={isLoading}
+                  >
+                    {t('saveData')}
+                  </Button>
+                  {save && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleLoadFromSlot(index)}
+                        disabled={isLoading}
+                      >
+                        {t('loadData')}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => setDeleteConfirmSlot(index)}
+                        disabled={isLoading}
+                      >
+                        {t('delete')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+            
+            {/* Backup slot (index 5) */}
+            {saves[5] && (
+              <>
+                <Separator />
+                <div className="flex items-center justify-between p-3 border border-accent/50 rounded-md bg-accent/10">
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium text-sm text-accent">
+                      {t('backupSlot')}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {saves[5].metadata?.createdAt ? new Date(saves[5].metadata.createdAt).toLocaleString() : 'Unknown date'}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {saves[5].metadata?.description || 'Automatic backup before import'}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 ml-3">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleLoadFromSlot(5)}
+                      disabled={isLoading}
+                    >
+                      {t('loadData')}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const renderSaveDialog = () => {
+    if (!saveDialogOpen || selectedSaveSlot === null) return null;
+
+    const existingSave = saves[selectedSaveSlot];
+
+    return (
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {existingSave ? t('overwriteSave') : t('saveToSlot')} {selectedSaveSlot + 1}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {existingSave && (
+              <div className="p-3 border border-accent rounded-md bg-accent/10">
+                <div className="text-sm font-medium">{t('confirmDelete')}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Current save: {existingSave.metadata?.name || 'Unnamed Save'}
+                </div>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <label htmlFor="save-name-dialog" className="text-sm font-medium">Save Name</label>
+              <Input
+                id="save-name-dialog"
+                value={saveMetadata.name}
+                onChange={(e) => setSaveMetadata(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="My Prospecting Save"
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="save-description-dialog" className="text-sm font-medium">Description (Optional)</label>
+              <Textarea
+                id="save-description-dialog"
+                value={saveMetadata.description}
+                onChange={(e) => setSaveMetadata(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Description of this save..."
+                rows={2}
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+          
+          <div className="flex gap-2 pt-4">
+            <Button
+              onClick={() => handleSaveToSlot(selectedSaveSlot)}
+              disabled={isLoading}
+              className="flex-1"
+            >
+              {existingSave ? t('overwriteSave') : t('saveData')}
+            </Button>
+            <Button
+              onClick={() => setSaveDialogOpen(false)}
+              variant="outline"
+              disabled={isLoading}
+            >
+              {t('cancel')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  const renderDeleteConfirmDialog = () => {
+    if (deleteConfirmSlot === null) return null;
+
+    return (
+      <Dialog open={deleteConfirmSlot !== null} onOpenChange={() => setDeleteConfirmSlot(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('confirmDelete')}</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete this save?
+            </p>
+            {saves[deleteConfirmSlot] && (
+              <div className="p-3 border border-destructive rounded-md bg-destructive/10">
+                <div className="text-sm font-medium">
+                  {saves[deleteConfirmSlot].metadata?.name || `Save Slot ${deleteConfirmSlot + 1}`}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {saves[deleteConfirmSlot].metadata?.createdAt ? 
+                    new Date(saves[deleteConfirmSlot].metadata.createdAt).toLocaleString() : 
+                    'Unknown date'
+                  }
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex gap-2 pt-4">
+            <Button
+              onClick={() => handleDeleteSave(deleteConfirmSlot)}
+              variant="destructive"
+              disabled={isLoading}
+              className="flex-1"
+            >
+              {t('deleteSave')}
+            </Button>
+            <Button
+              onClick={() => setDeleteConfirmSlot(null)}
+              variant="outline"
+              disabled={isLoading}
+            >
+              {t('cancel')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <header className="border-b border-border bg-card/50 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-3">
@@ -617,7 +896,11 @@ export function Header() {
                 </DialogHeader>
                 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="slots" className="gap-2">
+                      <Database size={16} />
+                      {t('saveSlots')}
+                    </TabsTrigger>
                     <TabsTrigger value="export" className="gap-2">
                       <Download size={16} />
                       {t('export')}
@@ -627,6 +910,10 @@ export function Header() {
                       {t('import')}
                     </TabsTrigger>
                   </TabsList>
+                  
+                  <TabsContent value="slots" className="space-y-4">
+                    {renderSaveSlots()}
+                  </TabsContent>
                   
                   <TabsContent value="export" className="space-y-4">
                     <Card>
@@ -759,6 +1046,12 @@ export function Header() {
           </div>
         </div>
       </div>
+      
+      {/* Save dialog */}
+      {renderSaveDialog()}
+      
+      {/* Delete confirmation dialog */}
+      {renderDeleteConfirmDialog()}
     </header>
   );
 }
