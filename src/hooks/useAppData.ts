@@ -33,6 +33,7 @@ export interface EquipmentSlot {
   customStats: {
     [key: string]: number;
   };
+  activeEvents: string[];
 }
 
 export interface CollectibleOre {
@@ -55,8 +56,15 @@ export function useAppData() {
     shovel: null,
     pan: null,
     enchant: null,
-    customStats: {}
+    customStats: {},
+    activeEvents: []
   });
+  
+  // Migration for activeEvents if it doesn't exist
+  if (equipment && !equipment.activeEvents) {
+    setEquipment(current => ({ ...current, activeEvents: [] }));
+  }
+  
   const [collectibles, setCollectibles] = useKV<CollectibleOre[]>('collectibles', []);
   const [ownedMaterials, setOwnedMaterials] = useKV<{[key: string]: number}>('owned-materials', {});
 

@@ -8,10 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, X, Calculator } from '@phosphor-icons/react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
-import { craftableItems, shovels, pans, enchants, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, shovels, pans, enchants, events, type CraftableItem } from '@/lib/gameData';
 
 export function EquipmentSimulation() {
   const { t } = useLanguage();
@@ -65,10 +66,43 @@ export function EquipmentSimulation() {
     setCustomStatValue(0);
   };
 
+  const toggleEvent = (eventName: string) => {
+    const currentEvents = equipment.activeEvents || [];
+    const isActive = currentEvents.includes(eventName);
+    
+    if (isActive) {
+      updateEquipment({
+        activeEvents: currentEvents.filter(e => e !== eventName)
+      });
+    } else {
+      updateEquipment({
+        activeEvents: [...currentEvents, eventName]
+      });
+    }
+  };
+
   const removeCustomStat = (statName: string) => {
     const newStats = { ...equipment.customStats };
     delete newStats[statName];
     updateEquipment({ customStats: newStats });
+  };
+
+  const calculateEventBonuses = (finalStats: { [key: string]: number }) => {
+    const eventStats = { ...finalStats };
+    const activeEvents = equipment.activeEvents || [];
+
+    activeEvents.forEach(eventName => {
+      const event = events.find(e => e.name === eventName);
+      if (event) {
+        Object.entries(event.effects).forEach(([stat, multiplier]) => {
+          if (eventStats[stat] !== undefined) {
+            eventStats[stat] = eventStats[stat] * multiplier;
+          }
+        });
+      }
+    });
+
+    return eventStats;
   };
 
   const calculateBaseStats = () => {
@@ -191,11 +225,13 @@ export function EquipmentSimulation() {
       finalStats[key] = base + (base * bonus);
     });
 
-    return { baseStats, finalStats };
+    const eventStats = calculateEventBonuses(finalStats);
+
+    return { baseStats, finalStats, eventStats };
   };
 
   const availableItems = [...craftableItems, ...craftingItems.map(ci => ci.item)];
-  const { baseStats, finalStats } = calculateFinalStats();
+  const { baseStats, finalStats, eventStats } = calculateFinalStats();
 
   const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
@@ -392,6 +428,54 @@ export function EquipmentSimulation() {
             </Card>
           </div>
 
+          {/* Events */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar size={20} />
+                {t('activeEvents')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {events.map(event => (
+                  <div key={event.name} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={event.name}
+                      checked={(equipment.activeEvents || []).includes(event.name)}
+                      onCheckedChange={() => toggleEvent(event.name)}
+                    />
+                    <Label htmlFor={event.name} className="text-sm">
+                      {t(event.name.toLowerCase().replace(/\s+/g, '') as any) || event.name}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {(equipment.activeEvents || []).length > 0 && (
+                <div className="mt-4 p-3 bg-muted rounded-lg">
+                  <p className="text-sm font-medium mb-2">{t('events')}:</p>
+                  <div className="space-y-1">
+                    {(equipment.activeEvents || []).map(eventName => {
+                      const event = events.find(e => e.name === eventName);
+                      if (!event) return null;
+                      
+                      return (
+                        <div key={eventName} className="text-xs">
+                          <span className="font-medium">{t(eventName.toLowerCase().replace(/\s+/g, '') as any) || eventName}:</span>
+                          <span className="ml-1">
+                            {Object.entries(event.effects).map(([stat, mult]) => 
+                              `${stat.replace(/([A-Z])/g, ' $1').toLowerCase()} ${mult}x`
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Tools */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
@@ -553,6 +637,24 @@ export function EquipmentSimulation() {
                     {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
                   </span>
                   <span className="font-mono text-accent">
+                    {formatStatValue(stat, value)}
+                  </span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-primary">{t('withEventBonuses')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Object.entries(eventStats).map(([stat, value]) => (
+                <div key={stat} className="flex items-center justify-between">
+                  <span className="text-sm capitalize">
+                    {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                  </span>
+                  <span className="font-mono text-primary">
                     {formatStatValue(stat, value)}
                   </span>
                 </div>

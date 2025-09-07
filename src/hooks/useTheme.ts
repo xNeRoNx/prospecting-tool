@@ -1,6 +1,6 @@
 import { useKV } from '@github/spark/hooks';
 
-export type Theme = 'default' | 'dark' | 'slate' | 'forest' | 'ocean' | 'sunset';
+export type Theme = 'default' | 'medium' | 'dark' | 'slate' | 'forest' | 'ocean' | 'sunset';
 
 interface ThemeConfig {
   nameKey: string;
@@ -50,6 +50,30 @@ export const themes: Record<Theme, ThemeConfig> = {
       border: 'oklch(0.88 0.02 85)',
       input: 'oklch(0.88 0.02 85)',
       ring: 'oklch(0.48 0.12 75)',
+    }
+  },
+  medium: {
+    nameKey: 'themeMedium',
+    colors: {
+      background: 'oklch(0.35 0.01 240)',
+      foreground: 'oklch(0.88 0.01 85)',
+      card: 'oklch(0.38 0.01 240)',
+      cardForeground: 'oklch(0.88 0.01 85)',
+      popover: 'oklch(0.32 0.01 240)',
+      popoverForeground: 'oklch(0.88 0.01 85)',
+      primary: 'oklch(0.62 0.14 250)',
+      primaryForeground: 'oklch(0.35 0.01 240)',
+      secondary: 'oklch(0.45 0.02 240)',
+      secondaryForeground: 'oklch(0.82 0.01 85)',
+      accent: 'oklch(0.52 0.08 270)',
+      accentForeground: 'oklch(0.88 0.01 85)',
+      destructive: 'oklch(0.58 0.16 20)',
+      destructiveForeground: 'oklch(0.35 0.01 240)',
+      muted: 'oklch(0.42 0.01 240)',
+      mutedForeground: 'oklch(0.62 0.01 85)',
+      border: 'oklch(0.50 0.02 240)',
+      input: 'oklch(0.50 0.02 240)',
+      ring: 'oklch(0.62 0.14 250)',
     }
   },
   dark: {

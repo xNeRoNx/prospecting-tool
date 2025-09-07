@@ -599,3 +599,19 @@ export const enchants: Enchant[] = [
   { name: "Prismatic", effects: { capacity: 20, shakeStrength: 2, sizeBoost: 10, luck: 10, shakeSpeed: 10, modifierBoost: 10 } },
   { name: "Infernal", effects: { luck: 80, capacity: -20, sizeBoost: -10 } }
 ];
+
+export interface Event {
+  name: string;
+  effects: {
+    luck?: number;
+    digStrength?: number;
+    shakeStrength?: number;
+  };
+}
+
+export const events: Event[] = [
+  { name: "Meteor Shower", effects: { luck: 2 } },
+  { name: "Admin Shower", effects: { luck: 2, digStrength: 2, shakeStrength: 2 } },
+  { name: "Luck Totem", effects: { luck: 2 } },
+  { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } }
+];
