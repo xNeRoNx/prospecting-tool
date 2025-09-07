@@ -291,16 +291,13 @@ export function Museum() {
                   {t('noOresInMuseum')}
                 </p>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {Object.entries(getMuseumOverview()).map(([rarity, ores]) => (
-                    <div key={rarity} className="space-y-2">
-                      <h3 className={`font-semibold text-lg ${getRarityClass(rarity)} flex items-center gap-2`}>
-                        <Badge className={getRarityClass(rarity)} variant="outline" size="sm">
-                          {rarity}
-                        </Badge>
+                    <div key={rarity} className="space-y-0.5">
+                      <h3 className={`font-semibold text-lg ${getRarityClass(rarity)}`}>
                         {rarity}
                       </h3>
-                      <div className="space-y-1 border-l-2 border-muted pl-4">
+                      <div className="space-y-0.25 border-l-2 border-muted pl-2">
                         {ores.map((item, index) => (
                           <div key={index} className="flex items-center justify-between text-sm py-1 border-b border-muted-foreground/10 last:border-b-0">
                             <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -344,9 +341,6 @@ export function Museum() {
             <Card key={rarity}>
               <CardHeader>
                 <CardTitle className={`${getRarityClass(rarity)} flex items-center gap-2`}>
-                  <Badge className={getRarityClass(rarity)} variant="outline">
-                    {rarity}
-                  </Badge>
                   <span>{rarity} Ores</span>
                 </CardTitle>
               </CardHeader>

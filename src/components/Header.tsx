@@ -286,7 +286,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 min-w-0 flex-1">
-            <h1 className="text-lg sm:text-xl font-bold text-accent truncate" title="Prospecting Tools">Prospecting Tools</h1>
+            <h1 className="text-lg sm:text-xl sm:flex-1 font-bold text-accent" title="Prospecting Tools">Prospecting Tools</h1>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
