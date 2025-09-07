@@ -502,7 +502,7 @@ export function Museum() {
                     {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
                   </span>
                   <span className="font-mono text-accent">
-                    +{value.toFixed(3)}x
+                    {value > 0 ? "+" : ""}{value.toFixed(3)}x
                   </span>
                 </div>
               ))}

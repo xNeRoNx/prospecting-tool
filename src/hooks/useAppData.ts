@@ -85,7 +85,7 @@ export function useAppData() {
   // Migration for activeEvents if it doesn't exist
   useEffect(() => {
     if (equipment && !equipment.activeEvents && !isLoading) {
-      setEquipment(current => ({ ...current, activeEvents: [] }));
+      setEquipment({ ...equipment, activeEvents: [] });
     }
   }, [equipment, setEquipment, isLoading]);
 
