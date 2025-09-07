@@ -378,15 +378,40 @@ export function Museum() {
                             <SelectContent>
                               {ores
                                 .filter(ore => ore.rarity === rarity)
-                                .map(ore => (
-                                  <SelectItem 
-                                    key={ore.name} 
-                                    value={ore.name}
-                                    disabled={usedOres.has(ore.name) && slot.ore !== ore.name}
-                                  >
-                                    {ore.name} {usedOres.has(ore.name) && slot.ore !== ore.name ? '(Used)' : ''}
-                                  </SelectItem>
-                                ))}
+                                .map(ore => {
+                                  let statInfo = `${ore.museumEffect.stat}: +${ore.museumEffect.maxMultiplier}x`;
+                                  
+                                  // If ore has special effects, show them instead
+                                  if (ore.specialEffects) {
+                                    const effects = Object.entries(ore.specialEffects)
+                                      .map(([stat, value]) => {
+                                        const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
+                                        return `${displayStat}: ${value > 0 ? '+' : ''}${value}x`;
+                                      })
+                                      .join(', ');
+                                    statInfo = effects;
+                                  }
+                                  
+                                  return (
+                                    <SelectItem 
+                                      key={ore.name} 
+                                      value={ore.name}
+                                      disabled={usedOres.has(ore.name) && slot.ore !== ore.name}
+                                    >
+                                      <div className="flex flex-col w-full">
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>{ore.name}</span>
+                                          {usedOres.has(ore.name) && slot.ore !== ore.name && (
+                                            <span className="text-xs text-muted-foreground ml-1">(Used)</span>
+                                          )}
+                                        </div>
+                                        <span className="text-muted-foreground text-xs text-left">
+                                          {statInfo}
+                                        </span>
+                                      </div>
+                                    </SelectItem>
+                                  );
+                                })}
                             </SelectContent>
                           </Select>
 
