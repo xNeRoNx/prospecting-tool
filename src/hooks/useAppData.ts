@@ -62,7 +62,7 @@ export function useAppData() {
   
   // Migration for activeEvents if it doesn't exist
   if (equipment && !equipment.activeEvents) {
-    setEquipment(current => ({ ...current, activeEvents: [] }));
+    setEquipment({ ...equipment, activeEvents: [] });
   }
   
   const [collectibles, setCollectibles] = useKV<CollectibleOre[]>('collectibles', []);

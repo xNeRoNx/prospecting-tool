@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,14 +16,30 @@ import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
 export function Museum() {
   const { t } = useLanguage();
   const { museumSlots, setMuseumSlots } = useAppData();
+  // Bezpieczna referencja (może się pojawić ostrzeżenie TS, że potencjalnie undefined)
+  const museumSlotsSafe: MuseumSlot[] = (museumSlots || []) as MuseumSlot[];
 
-  // Initialize museum slots if empty
+  // Inicjalizacja slotów tylko jeśli NIE istnieją w storage (zapobiega nadpisaniu po opóźnionym załadowaniu)
+  const initializedRef = useRef(false);
   useEffect(() => {
-    if (museumSlots.length === 0) {
-      const slots = initializeMuseumSlots();
-      setMuseumSlots(slots);
+    if (initializedRef.current) return; // już próbowało inicjalizować
+    if (museumSlotsSafe.length > 0) { // dane już są
+      initializedRef.current = true;
+      return;
     }
-  }, [museumSlots, setMuseumSlots]);
+
+    try {
+      if (typeof window !== 'undefined') {
+        const existing = window.localStorage.getItem('museum-slots');
+        if (existing === null) {
+          const slots = initializeMuseumSlots();
+          setMuseumSlots(slots);
+        }
+      }
+    } finally {
+      initializedRef.current = true; // żeby nie pętlić przy kolejnych renderach
+    }
+  }, [museumSlotsSafe.length, setMuseumSlots]);
 
   const initializeMuseumSlots = () => {
     const slots: MuseumSlot[] = [];
@@ -55,28 +71,18 @@ export function Museum() {
   const updateSlot = (id: string, updates: Partial<MuseumSlot>) => {
     // Check if trying to place the same ore in different slots
     if (updates.ore) {
-      const existingOreSlot = museumSlots.find(slot => slot.ore === updates.ore && slot.id !== id);
+      const existingOreSlot = museumSlotsSafe.find(slot => slot.ore === updates.ore && slot.id !== id);
       if (existingOreSlot) {
         // Don't allow duplicate ores in different slots
         return;
       }
     }
     
-    setMuseumSlots(current => 
-      current.map(slot => 
-        slot.id === id ? { ...slot, ...updates } : slot
-      )
-    );
+  setMuseumSlots(current => (current || []).map(slot => slot.id === id ? { ...slot, ...updates } : slot));
   };
 
   const clearSlot = (id: string) => {
-    setMuseumSlots(current =>
-      current.map(slot =>
-        slot.id === id 
-          ? { ...slot, ore: undefined, modifier: undefined, weight: undefined }
-          : slot
-      )
-    );
+  setMuseumSlots(current => (current || []).map(slot => slot.id === id ? { ...slot, ore: undefined, modifier: undefined, weight: undefined } : slot));
   };
 
   const calculateMuseumStats = () => {
@@ -92,7 +98,7 @@ export function Museum() {
       modifierBoost: 0
     };
 
-    museumSlots.forEach(slot => {
+  museumSlotsSafe.forEach(slot => {
       if (!slot.ore) return;
       
       const ore = ores.find(o => o.name === slot.ore);
@@ -211,7 +217,7 @@ export function Museum() {
       
       for (let slotIndex = 0; slotIndex < slotsCount; slotIndex++) {
         const slotId = `${rarity.toLowerCase()}-${slotIndex}`;
-        const existingSlot = museumSlots.find(s => s.id === slotId);
+  const existingSlot = museumSlotsSafe.find(s => s.id === slotId);
         grouped[rarity].push(existingSlot || { id: slotId });
       }
     });
@@ -225,47 +231,56 @@ export function Museum() {
   // Get already used ores
   const usedOres = useMemo(() => {
     const used = new Set<string>();
-    museumSlots.forEach(slot => {
+    museumSlotsSafe.forEach(slot => {
       if (slot.ore) used.add(slot.ore);
     });
     return used;
-  }, [museumSlots]);
+  }, [museumSlotsSafe]);
 
   // Get museum overview data grouped by rarity (rarest to common)
-  const getMuseumOverview = () => {
+  interface MuseumOverviewItem {
+    ore: string;
+    rarity: string;
+    effect: string;
+    maxMultiplier: number;
+    modifier?: string;
+    modifierEffect?: string;
+    modifierBonus: number;
+    weight?: number;
+    specialEffects?: Record<string, number>;
+  }
+
+  const getMuseumOverview = (): Record<string, MuseumOverviewItem[]> => {
     const rarityOrder = ['Exotic', 'Mythic', 'Legendary', 'Epic', 'Rare', 'Uncommon', 'Common'];
     
-    const overviewData = museumSlots
-      .filter(slot => slot.ore)
-      .map(slot => {
-        const ore = ores.find(o => o.name === slot.ore);
-        if (!ore) return null;
-        
-        const modifier = slot.modifier ? modifiers.find(m => m.name === slot.modifier) : null;
-        const modifierBonus = modifier ? getModifierBonus(ore.rarity) : 0;
-        
-        return {
-          ore: ore.name,
-          rarity: ore.rarity,
-          effect: ore.museumEffect.stat,
-          maxMultiplier: ore.museumEffect.maxMultiplier,
-          modifier: modifier?.name,
-          modifierEffect: modifier?.effect,
-          modifierBonus,
-          weight: slot.weight,
-          specialEffects: ore.specialEffects
-        };
-      })
-      .filter(Boolean);
+    const overviewData: MuseumOverviewItem[] = [];
+    museumSlotsSafe.forEach(slot => {
+      if (!slot.ore) return;
+      const ore = ores.find(o => o.name === slot.ore);
+      if (!ore) return;
+      const modifier = slot.modifier ? modifiers.find(m => m.name === slot.modifier) : undefined;
+      const modifierBonus = modifier ? getModifierBonus(ore.rarity) : 0;
+      overviewData.push({
+        ore: ore.name,
+        rarity: ore.rarity,
+        effect: ore.museumEffect.stat,
+        maxMultiplier: ore.museumEffect.maxMultiplier,
+        modifier: modifier?.name,
+        modifierEffect: modifier?.effect,
+        modifierBonus,
+        weight: slot.weight,
+        specialEffects: ore.specialEffects
+      });
+    });
 
     // Group by rarity and sort by rarity order
-    const grouped = rarityOrder.reduce((acc, rarity) => {
+    const grouped = rarityOrder.reduce<Record<string, MuseumOverviewItem[]>>((acc, rarity) => {
       const oresOfRarity = overviewData.filter(item => item.rarity === rarity);
       if (oresOfRarity.length > 0) {
-        acc[rarity] = oresOfRarity.sort((a, b) => a.ore.localeCompare(b.ore));
+        acc[rarity] = [...oresOfRarity].sort((a, b) => a.ore.localeCompare(b.ore));
       }
       return acc;
-    }, {} as Record<string, typeof overviewData>);
+    }, {});
 
     return grouped;
   };
