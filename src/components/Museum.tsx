@@ -449,23 +449,50 @@ export function Museum() {
                                 step="0.1"
                                 min="0"
                                 placeholder="Weight (kg)"
-                                value={slot.weight || ''}
-                                onChange={(e) => updateSlot(slot.id, { 
-                                  weight: parseFloat(e.target.value) || undefined 
-                                })}
+                                value={slot.weight !== undefined ? slot.weight.toString() : ''}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  if (value === '' || value === null) {
+                                    updateSlot(slot.id, { weight: undefined });
+                                  } else {
+                                    const numValue = parseFloat(value);
+                                    if (!isNaN(numValue) && numValue >= 0) {
+                                      updateSlot(slot.id, { weight: numValue });
+                                    }
+                                  }
+                                }}
                                 className="text-xs"
                                 disabled={isLoading}
                               />
 
                               <div className="text-xs text-muted-foreground">
-                                {ores.find(o => o.name === slot.ore)?.museumEffect.stat}
-                                <br />
-                                Max: {ores.find(o => o.name === slot.ore)?.museumEffect.maxMultiplier}x
+                                {(() => {
+                                  const ore = ores.find(o => o.name === slot.ore);
+                                  if (!ore) return null;
+                                  
+                                  if (ore.specialEffects) {
+                                    // Show all special effects
+                                    return Object.entries(ore.specialEffects).map(([stat, value], index) => {
+                                      const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
+                                      return (
+                                        <div key={stat}>
+                                          {displayStat}: {value > 0 ? '+' : ''}{value}x
+                                        </div>
+                                      );
+                                    });
+                                  } else {
+                                    // Show normal museum effect
+                                    return (
+                                      <>
+                                        {ore.museumEffect.stat}: +{ore.museumEffect.maxMultiplier}x
+                                      </>
+                                    );
+                                  }
+                                })()}
                                 {slot.modifier && (
-                                  <>
-                                    <br />
+                                  <div>
                                     {modifiers.find(m => m.name === slot.modifier)?.effect}: +{getModifierBonus(ores.find(o => o.name === slot.ore)?.rarity || 'Common')}x
-                                  </>
+                                  </div>
                                 )}
                               </div>
                             </>
