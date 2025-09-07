@@ -28,15 +28,15 @@ export function Museum() {
   const initializeMuseumSlots = () => {
     const slots: MuseumSlot[] = [];
     
-    // Get slot counts for each rarity
+    // Get slot counts for each rarity (rarest to common)
     const raritySlotCounts = {
-      'Common': 3,
-      'Uncommon': 3, 
-      'Rare': 3,
-      'Epic': 3,
-      'Legendary': 3,
+      'Exotic': 1,
       'Mythic': 2,
-      'Exotic': 1
+      'Legendary': 3,
+      'Epic': 3,
+      'Rare': 3,
+      'Uncommon': 3,
+      'Common': 3
     };
 
     Object.entries(raritySlotCounts).forEach(([rarity, slotsCount]) => {
@@ -197,13 +197,13 @@ export function Museum() {
     const grouped: { [key: string]: MuseumSlot[] } = {};
     
     const raritySlotCounts = {
-      'Common': 3,
-      'Uncommon': 3,
-      'Rare': 3,
-      'Epic': 3,
-      'Legendary': 3,
+      'Exotic': 1,
       'Mythic': 2,
-      'Exotic': 1
+      'Legendary': 3,
+      'Epic': 3,
+      'Rare': 3,
+      'Uncommon': 3,
+      'Common': 3
     };
 
     Object.entries(raritySlotCounts).forEach(([rarity, slotsCount]) => {
@@ -231,9 +231,11 @@ export function Museum() {
     return used;
   }, [museumSlots]);
 
-  // Get museum overview data
+  // Get museum overview data grouped by rarity (rarest to common)
   const getMuseumOverview = () => {
-    return museumSlots
+    const rarityOrder = ['Exotic', 'Mythic', 'Legendary', 'Epic', 'Rare', 'Uncommon', 'Common'];
+    
+    const overviewData = museumSlots
       .filter(slot => slot.ore)
       .map(slot => {
         const ore = ores.find(o => o.name === slot.ore);
@@ -255,6 +257,17 @@ export function Museum() {
         };
       })
       .filter(Boolean);
+
+    // Group by rarity and sort by rarity order
+    const grouped = rarityOrder.reduce((acc, rarity) => {
+      const oresOfRarity = overviewData.filter(item => item.rarity === rarity);
+      if (oresOfRarity.length > 0) {
+        acc[rarity] = oresOfRarity.sort((a, b) => a.ore.localeCompare(b.ore));
+      }
+      return acc;
+    }, {} as Record<string, typeof overviewData>);
+
+    return grouped;
   };
 
   return (
@@ -273,62 +286,50 @@ export function Museum() {
               <DialogTitle>{t('museumOverview')}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              {getMuseumOverview().length === 0 ? (
+              {Object.keys(getMuseumOverview()).length === 0 ? (
                 <p className="text-muted-foreground text-center py-8">
                   {t('noOresInMuseum')}
                 </p>
               ) : (
-                <div className="grid gap-3">
-                  {getMuseumOverview().map((item, index) => (
-                    <Card key={index} className="p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Ore</Label>
-                          <div className={`font-medium ${getRarityClass(item.rarity)}`}>
-                            {item.ore}
-                          </div>
-                          <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
-                            {item.rarity}
-                          </Badge>
-                        </div>
-                        
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Museum Effect</Label>
-                          <div className="font-medium">
-                            {item.effect}: +{item.maxMultiplier}x
-                          </div>
-                          {item.specialEffects && (
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {Object.entries(item.specialEffects).map(([stat, value]) => (
-                                <div key={stat}>
-                                  {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}: +{value}x
+                <div className="space-y-4">
+                  {Object.entries(getMuseumOverview()).map(([rarity, ores]) => (
+                    <div key={rarity} className="space-y-2">
+                      <h3 className={`font-semibold text-lg ${getRarityClass(rarity)} flex items-center gap-2`}>
+                        <Badge className={getRarityClass(rarity)} variant="outline" size="sm">
+                          {rarity}
+                        </Badge>
+                        {rarity}
+                      </h3>
+                      <div className="space-y-1 border-l-2 border-muted pl-4">
+                        {ores.map((item, index) => (
+                          <div key={index} className="flex items-center justify-between text-sm py-1 border-b border-muted-foreground/10 last:border-b-0">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <span className={`font-medium ${getRarityClass(item.rarity)} truncate`}>
+                                {item.ore}
+                              </span>
+                              {item.modifier && (
+                                <span className="text-accent text-xs font-medium bg-accent/10 px-2 py-1 rounded">
+                                  {item.modifier}
+                                </span>
+                              )}
+                              {item.weight && (
+                                <span className="text-muted-foreground text-xs">
+                                  {item.weight}kg
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground text-right ml-2 flex-shrink-0">
+                              {item.effect}: +{item.maxMultiplier}x
+                              {item.modifier && (
+                                <div>
+                                  {item.modifierEffect}: +{item.modifierBonus}x
                                 </div>
-                              ))}
+                              )}
                             </div>
-                          )}
-                        </div>
-                        
-                        <div>
-                          {item.modifier && (
-                            <>
-                              <Label className="text-xs text-muted-foreground">Modifier</Label>
-                              <div className="font-medium text-accent">
-                                {item.modifier}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {item.modifierEffect}: +{item.modifierBonus}x
-                              </div>
-                            </>
-                          )}
-                          {item.weight && (
-                            <div className="mt-2">
-                              <Label className="text-xs text-muted-foreground">Weight</Label>
-                              <div className="text-sm">{item.weight} kg</div>
-                            </div>
-                          )}
-                        </div>
+                          </div>
+                        ))}
                       </div>
-                    </Card>
+                    </div>
                   ))}
                 </div>
               )}
