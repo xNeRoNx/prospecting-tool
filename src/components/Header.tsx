@@ -309,11 +309,12 @@ export function Header() {
     
     return (
       <div className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 data-selection-buttons">
           <Button
             variant="outline"
             size="sm"
             onClick={() => selectAll(isExport)}
+            className="w-full sm:w-auto"
           >
             {t('selectAll')}
           </Button>
@@ -321,63 +322,69 @@ export function Header() {
             variant="outline"
             size="sm"
             onClick={() => selectNone(isExport)}
+            className="w-full sm:w-auto"
           >
             {t('selectNone')}
           </Button>
         </div>
         
         <div className="space-y-3">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id={`crafting-${isExport ? 'export' : 'import'}`}
               checked={currentSelection.craftingItems}
               onCheckedChange={(checked) => updateSelection('craftingItems', !!checked, isExport)}
+              className="mt-0.5 shrink-0"
             />
-            <label htmlFor={`crafting-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
+            <label htmlFor={`crafting-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('crafting')} ({isExport ? craftingItems.length : (importPreview?.data.craftingItems?.length || 0)} items)
             </label>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id={`museum-${isExport ? 'export' : 'import'}`}
               checked={currentSelection.museumSlots}
               onCheckedChange={(checked) => updateSelection('museumSlots', !!checked, isExport)}
+              className="mt-0.5 shrink-0"
             />
-            <label htmlFor={`museum-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
+            <label htmlFor={`museum-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('museum')} ({isExport ? museumSlots.length : (importPreview?.data.museumSlots?.length || 0)} slots)
             </label>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id={`equipment-${isExport ? 'export' : 'import'}`}
               checked={currentSelection.equipment}
               onCheckedChange={(checked) => updateSelection('equipment', !!checked, isExport)}
+              className="mt-0.5 shrink-0"
             />
-            <label htmlFor={`equipment-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
+            <label htmlFor={`equipment-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('equipment')}
             </label>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id={`collectibles-${isExport ? 'export' : 'import'}`}
               checked={currentSelection.collectibles}
               onCheckedChange={(checked) => updateSelection('collectibles', !!checked, isExport)}
+              className="mt-0.5 shrink-0"
             />
-            <label htmlFor={`collectibles-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
+            <label htmlFor={`collectibles-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('collectibles')} ({isExport ? collectibles.length : (importPreview?.data.collectibles?.length || 0)} items)
             </label>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id={`materials-${isExport ? 'export' : 'import'}`}
               checked={currentSelection.ownedMaterials}
               onCheckedChange={(checked) => updateSelection('ownedMaterials', !!checked, isExport)}
+              className="mt-0.5 shrink-0"
             />
-            <label htmlFor={`materials-${isExport ? 'export' : 'import'}`} className="text-sm font-medium">
+            <label htmlFor={`materials-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">
               {t('ownedMaterials')} ({isExport ? Object.keys(ownedMaterials).length : Object.keys(importPreview?.data.ownedMaterials || {}).length} materials)
             </label>
           </div>
@@ -395,12 +402,12 @@ export function Header() {
     return (
       <Card className="border-accent">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <CardTitle className="text-base flex items-center gap-2">
               <Eye size={16} />
               {t('importPreview')}
             </CardTitle>
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="shrink-0">
               {importPreview.source === 'file' ? 'File' : 'URL'}
             </Badge>
           </div>
@@ -408,36 +415,36 @@ export function Header() {
         <CardContent className="space-y-4">
           {/* Metadata Section */}
           {metadata && (
-            <div className="space-y-3">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-3 import-preview-metadata">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="flex items-center gap-2">
-                  <Tag size={14} />
-                  <div>
+                  <Tag size={14} className="shrink-0" />
+                  <div className="min-w-0">
                     <div className="text-xs text-muted-foreground">Save Name</div>
-                    <div className="text-sm font-medium">{metadata.name || 'Unnamed Save'}</div>
+                    <div className="text-sm font-medium truncate">{metadata.name || 'Unnamed Save'}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar size={14} />
-                  <div>
+                  <Calendar size={14} className="shrink-0" />
+                  <div className="min-w-0">
                     <div className="text-xs text-muted-foreground">Created</div>
-                    <div className="text-sm">{metadata.createdAt ? new Date(metadata.createdAt).toLocaleDateString() : 'Unknown'}</div>
+                    <div className="text-sm truncate">{metadata.createdAt ? new Date(metadata.createdAt).toLocaleDateString() : 'Unknown'}</div>
                   </div>
                 </div>
               </div>
               
               {metadata.description && (
                 <div className="flex items-start gap-2">
-                  <FileText size={14} className="mt-1" />
-                  <div>
+                  <FileText size={14} className="mt-1 shrink-0" />
+                  <div className="min-w-0">
                     <div className="text-xs text-muted-foreground">Description</div>
-                    <div className="text-sm">{metadata.description}</div>
+                    <div className="text-sm break-words">{metadata.description}</div>
                   </div>
                 </div>
               )}
               
               {importPreview.fileName && (
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground break-all">
                   File: {importPreview.fileName}
                 </div>
               )}
@@ -449,35 +456,35 @@ export function Header() {
           {/* Data Summary */}
           <div>
             <h4 className="text-sm font-medium mb-3">Available Data:</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm import-preview-data-summary">
               {data.craftingItems && (
-                <div className="flex justify-between">
-                  <span>Crafting Items:</span>
-                  <Badge variant="outline">{data.craftingItems.length}</Badge>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="truncate">Crafting Items:</span>
+                  <Badge variant="outline" className="shrink-0">{data.craftingItems.length}</Badge>
                 </div>
               )}
               {data.museumSlots && (
-                <div className="flex justify-between">
-                  <span>Museum Slots:</span>
-                  <Badge variant="outline">{data.museumSlots.length}</Badge>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="truncate">Museum Slots:</span>
+                  <Badge variant="outline" className="shrink-0">{data.museumSlots.length}</Badge>
                 </div>
               )}
               {data.equipment && (
-                <div className="flex justify-between">
-                  <span>Equipment:</span>
-                  <Badge variant="outline">✓</Badge>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="truncate">Equipment:</span>
+                  <Badge variant="outline" className="shrink-0">✓</Badge>
                 </div>
               )}
               {data.collectibles && (
-                <div className="flex justify-between">
-                  <span>Collectibles:</span>
-                  <Badge variant="outline">{data.collectibles.length}</Badge>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="truncate">Collectibles:</span>
+                  <Badge variant="outline" className="shrink-0">{data.collectibles.length}</Badge>
                 </div>
               )}
               {data.ownedMaterials && (
-                <div className="flex justify-between">
-                  <span>Materials:</span>
-                  <Badge variant="outline">{Object.keys(data.ownedMaterials).length}</Badge>
+                <div className="flex justify-between items-center gap-2">
+                  <span className="truncate">Materials:</span>
+                  <Badge variant="outline" className="shrink-0">{Object.keys(data.ownedMaterials).length}</Badge>
                 </div>
               )}
             </div>
@@ -492,11 +499,11 @@ export function Header() {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 pt-2 import-preview-actions">
             <Button
               onClick={handleConfirmImport}
               disabled={!Object.values(importSelection).some(Boolean)}
-              className="flex-1"
+              className="flex-1 w-full sm:w-auto"
             >
               <Check size={16} className="mr-2" />
               Import Selected Data
@@ -504,6 +511,7 @@ export function Header() {
             <Button
               onClick={handleCancelImport}
               variant="outline"
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
