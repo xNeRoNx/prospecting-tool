@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
-import { craftableItems, shovels, pans, enchants, events, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, shovels, pans, enchants, events, ores, modifiers, getModifierBonus, type CraftableItem } from '@/lib/gameData';
 
 export function EquipmentSimulation() {
   const { t } = useLanguage();
@@ -208,9 +208,100 @@ export function EquipmentSimulation() {
       modifierBoost: 0
     };
 
-    // This would be calculated from museum slots - simplified for now
-    // In a real implementation, you'd calculate based on the Museum component's logic
-    
+    museumSlots.forEach(slot => {
+      if (!slot.ore) return;
+      
+      const ore = ores.find(o => o.name === slot.ore);
+      if (!ore) return;
+
+      // Handle special multi-stat effects first
+      if (ore.specialEffects) {
+        Object.entries(ore.specialEffects).forEach(([stat, value]) => {
+          if (museumBonuses[stat] !== undefined) {
+            let effectValue = value;
+            
+            // Add modifier bonus if present
+            if (slot.modifier) {
+              effectValue += getModifierBonus(ore.rarity);
+            }
+            
+            museumBonuses[stat] += effectValue;
+          }
+        });
+      } else {
+        // Handle normal single-stat effects
+        let baseMultiplier = ore.museumEffect.maxMultiplier;
+        
+        // Apply the effect based on the ore's museum effect
+        const effectStat = ore.museumEffect.stat.toLowerCase();
+        
+        if (effectStat.includes('luck')) {
+          museumBonuses.luck += baseMultiplier;
+        }
+        if (effectStat.includes('dig strength')) {
+          museumBonuses.digStrength += baseMultiplier;
+        }
+        if (effectStat.includes('dig speed')) {
+          museumBonuses.digSpeed += baseMultiplier;
+        }
+        if (effectStat.includes('shake strength')) {
+          museumBonuses.shakeStrength += baseMultiplier;
+        }
+        if (effectStat.includes('shake speed')) {
+          museumBonuses.shakeSpeed += baseMultiplier;
+        }
+        if (effectStat.includes('capacity')) {
+          museumBonuses.capacity += baseMultiplier;
+        }
+        if (effectStat.includes('sell boost')) {
+          museumBonuses.sellBoost += baseMultiplier;
+        }
+        if (effectStat.includes('size boost')) {
+          museumBonuses.sizeBoost += baseMultiplier;
+        }
+        if (effectStat.includes('modifier boost')) {
+          museumBonuses.modifierBoost += baseMultiplier;
+        }
+      }
+
+      // Apply modifier effects separately
+      if (slot.modifier) {
+        const modifier = modifiers.find(m => m.name === slot.modifier);
+        if (modifier) {
+          const modifierValue = getModifierBonus(ore.rarity);
+          
+          switch (modifier.effect) {
+            case 'Dig Speed':
+              museumBonuses.digSpeed += modifierValue;
+              break;
+            case 'Shake Strength':
+              museumBonuses.shakeStrength += modifierValue;
+              break;
+            case 'Shake Speed':
+              museumBonuses.shakeSpeed += modifierValue;
+              break;
+            case 'Dig Strength':
+              museumBonuses.digStrength += modifierValue;
+              break;
+            case 'Luck':
+              museumBonuses.luck += modifierValue;
+              break;
+            case 'Modifier Boost':
+              museumBonuses.modifierBoost += modifierValue;
+              break;
+            case 'Dig and Shake Speed':
+              museumBonuses.digSpeed += modifierValue;
+              museumBonuses.shakeSpeed += modifierValue;
+              break;
+            case 'Luck and Capacity':
+              museumBonuses.luck += modifierValue;
+              museumBonuses.capacity += modifierValue;
+              break;
+          }
+        }
+      }
+    });
+
     return museumBonuses;
   };
 
