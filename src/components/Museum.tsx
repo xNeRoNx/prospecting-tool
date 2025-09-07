@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, X } from '@phosphor-icons/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Plus, X, List } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData';
 import type { MuseumSlot } from '@/hooks/useAppData';
@@ -230,10 +231,110 @@ export function Museum() {
     return used;
   }, [museumSlots]);
 
+  // Get museum overview data
+  const getMuseumOverview = () => {
+    return museumSlots
+      .filter(slot => slot.ore)
+      .map(slot => {
+        const ore = ores.find(o => o.name === slot.ore);
+        if (!ore) return null;
+        
+        const modifier = slot.modifier ? modifiers.find(m => m.name === slot.modifier) : null;
+        const modifierBonus = modifier ? getModifierBonus(ore.rarity) : 0;
+        
+        return {
+          ore: ore.name,
+          rarity: ore.rarity,
+          effect: ore.museumEffect.stat,
+          maxMultiplier: ore.museumEffect.maxMultiplier,
+          modifier: modifier?.name,
+          modifierEffect: modifier?.effect,
+          modifierBonus,
+          weight: slot.weight,
+          specialEffects: ore.specialEffects
+        };
+      })
+      .filter(Boolean);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">{t('museum')} (Not work in 100%)</h2>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="flex items-center gap-2">
+              <List size={16} />
+              <span className="hidden sm:inline">{t('overview')}</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{t('museumOverview')}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              {getMuseumOverview().length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  {t('noOresInMuseum')}
+                </p>
+              ) : (
+                <div className="grid gap-3">
+                  {getMuseumOverview().map((item, index) => (
+                    <Card key={index} className="p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Ore</Label>
+                          <div className={`font-medium ${getRarityClass(item.rarity)}`}>
+                            {item.ore}
+                          </div>
+                          <Badge className={getRarityClass(item.rarity)} variant="outline" size="sm">
+                            {item.rarity}
+                          </Badge>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-xs text-muted-foreground">Museum Effect</Label>
+                          <div className="font-medium">
+                            {item.effect}: +{item.maxMultiplier}x
+                          </div>
+                          {item.specialEffects && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {Object.entries(item.specialEffects).map(([stat, value]) => (
+                                <div key={stat}>
+                                  {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}: +{value}x
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div>
+                          {item.modifier && (
+                            <>
+                              <Label className="text-xs text-muted-foreground">Modifier</Label>
+                              <div className="font-medium text-accent">
+                                {item.modifier}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {item.modifierEffect}: +{item.modifierBonus}x
+                              </div>
+                            </>
+                          )}
+                          {item.weight && (
+                            <div className="mt-2">
+                              <Label className="text-xs text-muted-foreground">Weight</Label>
+                              <div className="text-sm">{item.weight} kg</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">

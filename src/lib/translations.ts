@@ -68,6 +68,9 @@ export const translations = {
     totalBonus: "Total Bonus",
     rarity: "Rarity",
     effect: "Effect",
+    overview: "Overview",
+    museumOverview: "Museum Overview",
+    noOresInMuseum: "No ores placed in museum yet",
     
     // Equipment
     rings: "Rings",
@@ -207,6 +210,9 @@ export const translations = {
     totalBonus: "Łączny Bonus",
     rarity: "Rzadkość",
     effect: "Efekt",
+    overview: "Przegląd",
+    museumOverview: "Przegląd Muzeum",
+    noOresInMuseum: "Nie umieszczono jeszcze rud w muzeum",
     
     // Equipment
     rings: "Pierścienie",
