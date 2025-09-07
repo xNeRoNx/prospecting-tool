@@ -7,17 +7,30 @@ import { EquipmentSimulation } from '@/components/EquipmentSimulation';
 import { CustomCollectibles } from '@/components/CustomCollectibles';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
-import { Hammer, Bank, Calculator, Archive } from '@phosphor-icons/react';
+import { useAppData } from '@/hooks/useAppData';
+import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/react';
 import { useEffect } from 'react';
 
 function App() {
   const { t } = useLanguage();
   const { currentTheme, setTheme } = useTheme();
+  const { isLoading } = useAppData();
 
   // Apply theme on mount
   useEffect(() => {
     setTheme(currentTheme);
   }, [currentTheme, setTheme]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Spinner size={32} className="animate-spin" />
+          <p className="text-muted-foreground">Loading data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
