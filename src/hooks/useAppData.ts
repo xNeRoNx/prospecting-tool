@@ -104,15 +104,31 @@ export function useAppData() {
     }
   }, [equipment, setEquipment, isLoading]);
 
+  // Helper: zwraca zawsze zsanityzowany snapshot aplikacji (bez null), opcjonalnie pozwala nadpisać część pól.
+  const buildSnapshot = (overrides?: Partial<{
+    craftingItems: CraftingItem[];
+    museumSlots: MuseumSlot[];
+    equipment: EquipmentSlot;
+    collectibles: CollectibleOre[];
+    ownedMaterials: { [key: string]: number };
+  }>) => {
+    const sanitizedEquipment = (equipment ?? DEFAULT_EQUIPMENT);
+    return {
+      craftingItems: (craftingItems ?? []),
+      museumSlots: (museumSlots ?? []),
+      equipment: sanitizedEquipment.activeEvents ? sanitizedEquipment : { ...sanitizedEquipment, activeEvents: [] },
+      collectibles: (collectibles ?? []),
+      ownedMaterials: (ownedMaterials ?? {}),
+      ...overrides
+    };
+  };
+
   const exportData = () => {
+    const base = buildSnapshot();
     const data = {
-      craftingItems,
-      museumSlots,
-      equipment,
-      collectibles,
-      ownedMaterials,
+      ...base,
       exportDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -130,10 +146,13 @@ export function useAppData() {
   };
 
   const exportDataSelective = (selectedData: any) => {
+    const base = buildSnapshot();
     const data = {
-      ...selectedData,
+      ...Object.fromEntries(
+        Object.entries(selectedData).map(([k, v]) => [k, v ?? (base as any)[k]])
+      ),
       exportDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -151,14 +170,11 @@ export function useAppData() {
   };
 
   const exportToUrl = () => {
+    const base = buildSnapshot();
     const data = {
-      craftingItems,
-      museumSlots,
-      equipment,
-      collectibles,
-      ownedMaterials,
+      ...base,
       exportDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     
     try {
@@ -173,10 +189,13 @@ export function useAppData() {
   };
 
   const exportToUrlSelective = (selectedData: any) => {
+    const base = buildSnapshot();
     const data = {
-      ...selectedData,
+      ...Object.fromEntries(
+        Object.entries(selectedData).map(([k, v]) => [k, v ?? (base as any)[k]])
+      ),
       exportDate: new Date().toISOString(),
-      version: '1.0'
+      version: '1.1'
     };
     
     try {
@@ -190,39 +209,26 @@ export function useAppData() {
   };
 
   const importData = (data: any) => {
-    if (data.craftingItems) {
-      setCraftingItems(data.craftingItems);
+    // Wsteczna kompatybilność: dopisz activeEvents jeśli brak.
+    if (data.equipment && !data.equipment.activeEvents) {
+      data.equipment.activeEvents = [];
     }
-    if (data.museumSlots) {
-      setMuseumSlots(data.museumSlots);
-    }
-    if (data.equipment) {
-      setEquipment(data.equipment);
-    }
-    if (data.collectibles) {
-      setCollectibles(data.collectibles);
-    }
-    if (data.ownedMaterials) {
-      setOwnedMaterials(data.ownedMaterials);
-    }
+    if ('craftingItems' in data) setCraftingItems(data.craftingItems ?? []);
+    if ('museumSlots' in data) setMuseumSlots(data.museumSlots ?? []);
+    if ('equipment' in data) setEquipment(data.equipment ?? DEFAULT_EQUIPMENT);
+    if ('collectibles' in data) setCollectibles(data.collectibles ?? []);
+    if ('ownedMaterials' in data) setOwnedMaterials(data.ownedMaterials ?? {});
   };
 
   const importDataSelective = (data: any, selection: any) => {
-    if (selection.craftingItems && data.craftingItems) {
-      setCraftingItems(data.craftingItems);
+    if (selection.craftingItems && 'craftingItems' in data) setCraftingItems(data.craftingItems ?? []);
+    if (selection.museumSlots && 'museumSlots' in data) setMuseumSlots(data.museumSlots ?? []);
+    if (selection.equipment && 'equipment' in data) {
+      if (data.equipment && !data.equipment.activeEvents) data.equipment.activeEvents = [];
+      setEquipment(data.equipment ?? DEFAULT_EQUIPMENT);
     }
-    if (selection.museumSlots && data.museumSlots) {
-      setMuseumSlots(data.museumSlots);
-    }
-    if (selection.equipment && data.equipment) {
-      setEquipment(data.equipment);
-    }
-    if (selection.collectibles && data.collectibles) {
-      setCollectibles(data.collectibles);
-    }
-    if (selection.ownedMaterials && data.ownedMaterials) {
-      setOwnedMaterials(data.ownedMaterials);
-    }
+    if (selection.collectibles && 'collectibles' in data) setCollectibles(data.collectibles ?? []);
+    if (selection.ownedMaterials && 'ownedMaterials' in data) setOwnedMaterials(data.ownedMaterials ?? {});
   };
 
   const importFromUrl = (url: string) => {
