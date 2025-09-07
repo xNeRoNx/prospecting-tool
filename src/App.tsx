@@ -12,7 +12,7 @@ import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/reac
 import { useEffect } from 'react';
 
 function App() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, t } = useLanguage();
   const { currentTheme, setTheme } = useTheme();
   const { isLoading } = useAppData();
 
@@ -26,7 +26,6 @@ function App() {
   useEffect(() => {
     if (language) {
       document.documentElement.lang = language;
-      setLanguage(language);
     }
   }, [language]);
 
