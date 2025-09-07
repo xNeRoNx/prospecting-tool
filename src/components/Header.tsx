@@ -86,10 +86,8 @@ export function Header() {
 
   // Load saves on mount and when dialog opens
   useEffect(() => {
-    if (dataDialogOpen) {
       setSaves(getSaves());
-    }
-  }, [dataDialogOpen, getSaves, dataRevision]);
+  }, []);
 
   // Gdy dane w store się zmienią a dialog exportu jest otwarty, upewnij się że preview/checkboxy mają aktualne liczby.
   useEffect(() => {
