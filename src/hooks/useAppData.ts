@@ -61,13 +61,29 @@ const DEFAULT_EQUIPMENT: EquipmentSlot = {
 
 export function useAppData() {
   const [isLoading, setIsLoading] = useState(true);
+  // Rewizja danych - inkrementowana przy każdej zmianie jakiejkolwiek części stanu aby komponenty
+  // (np. Header) mogły łatwo zareagować nawet jeśli ktoś przez przypadek zmodyfikuje strukturę in-place
+  // i wywoła setter z tą samą referencją (albo biblioteka nie wykryje zmiany referencji).
+  const [dataRevision, setDataRevision] = useState(0);
 
   // Wszystkie wartości startują jako null (sentinel). Po hydracji useKV nadpisze je danymi z magazynu.
-  const [craftingItems, setCraftingItems] = useKV<CraftingItem[] | null>('crafting-items', null);
-  const [museumSlots, setMuseumSlots] = useKV<MuseumSlot[] | null>('museum-slots', null);
-  const [equipment, setEquipment] = useKV<EquipmentSlot | null>('equipment', null);
-  const [collectibles, setCollectibles] = useKV<CollectibleOre[] | null>('collectibles', null);
-  const [ownedMaterials, setOwnedMaterials] = useKV<{[key: string]: number} | null>('owned-materials', null);
+  const [craftingItems, setCraftingItemsRaw] = useKV<CraftingItem[] | null>('crafting-items', null);
+  const [museumSlots, setMuseumSlotsRaw] = useKV<MuseumSlot[] | null>('museum-slots', null);
+  const [equipment, setEquipmentRaw] = useKV<EquipmentSlot | null>('equipment', null);
+  const [collectibles, setCollectiblesRaw] = useKV<CollectibleOre[] | null>('collectibles', null);
+  const [ownedMaterials, setOwnedMaterialsRaw] = useKV<{[key: string]: number} | null>('owned-materials', null);
+
+  // Wrappery które inkrementują rewizję niezależnie od tego czy referencja się zmieniła.
+  const wrapSetter = <T,>(original: any) => (value: React.SetStateAction<T>) => {
+    original(value as any);
+    setDataRevision(r => r + 1);
+  };
+
+  const setCraftingItems = wrapSetter<CraftingItem[] | null>(setCraftingItemsRaw);
+  const setMuseumSlots = wrapSetter<MuseumSlot[] | null>(setMuseumSlotsRaw);
+  const setEquipment = wrapSetter<EquipmentSlot | null>(setEquipmentRaw);
+  const setCollectibles = wrapSetter<CollectibleOre[] | null>(setCollectiblesRaw);
+  const setOwnedMaterials = wrapSetter<{[key: string]: number} | null>(setOwnedMaterialsRaw);
 
   // Flaga do zabezpieczenia że nie ustawimy domyślnych wartości zanim wszystkie hooki dostaną szansę na hydrację.
   const postHydrationDefaultsApplied = useRef(false);
@@ -88,11 +104,11 @@ export function useAppData() {
   // Po zakończeniu ładowania uzupełniamy brakujące (null) wartości domyślne i robimy to raz.
   useEffect(() => {
     if (!isLoading && !postHydrationDefaultsApplied.current) {
-      if (craftingItems === null) setCraftingItems([]);
-      if (museumSlots === null) setMuseumSlots([]);
-      if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
-      if (collectibles === null) setCollectibles([]);
-      if (ownedMaterials === null) setOwnedMaterials({});
+    if (craftingItems === null) setCraftingItems([] as any);
+    if (museumSlots === null) setMuseumSlots([] as any);
+    if (equipment === null) setEquipment(DEFAULT_EQUIPMENT as any);
+    if (collectibles === null) setCollectibles([] as any);
+    if (ownedMaterials === null) setOwnedMaterials({} as any);
       postHydrationDefaultsApplied.current = true;
     }
   }, [isLoading, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, setCraftingItems, setMuseumSlots, setEquipment, setCollectibles, setOwnedMaterials]);
@@ -249,6 +265,7 @@ export function useAppData() {
 
   return {
     isLoading,
+  dataRevision,
     // Ekspozycja zawsze jako nie-null dla wygody komponentów konsumujących hook.
     craftingItems: (craftingItems ?? []),
     setCraftingItems,

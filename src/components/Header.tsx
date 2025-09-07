@@ -48,7 +48,7 @@ interface ImportPreview {
 
 export function Header() {
   const { language, setLanguage, t } = useLanguage();
-  const { isLoading, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, exportDataSelective, importDataSelective, exportToUrlSelective, importFromUrl } = useAppData();
+  const { isLoading, dataRevision, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, exportDataSelective, importDataSelective, exportToUrlSelective, importFromUrl } = useAppData();
   const { currentTheme, setTheme, themes } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
@@ -74,10 +74,18 @@ export function Header() {
     name: 'Prospecting Save',
     description: '',
     createdAt: new Date().toISOString(),
-    version: '1.0'
+    version: '1.1'
   });
   const [importPreview, setImportPreview] = useState<ImportPreview | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+
+  // Gdy dane w store się zmienią a dialog exportu jest otwarty, upewnij się że preview/checkboxy mają aktualne liczby.
+  useEffect(() => {
+    if (!dataDialogOpen) return;
+    // Jeśli jesteśmy w trybie import preview - nie ruszamy ręcznego preview (pochodzi z pliku/URL).
+    // Ale aktualizujemy liczby exportu aby UI pokazywało aktualny stan.
+    // Wystarczy wymusić re-render; dane są już w dependency chain poprzez hook useAppData.
+  }, [dataRevision, dataDialogOpen]);
 
   // Reset preview when dialog closes
   useEffect(() => {
