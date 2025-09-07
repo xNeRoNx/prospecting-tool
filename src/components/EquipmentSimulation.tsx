@@ -245,11 +245,80 @@ export function EquipmentSimulation() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('equipment')} (Not work in 100%)</h2>
+        <h2 className="text-2xl font-bold">{t('equipment')} (beta)</h2>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 space-y-6">
+          {/* Tools */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('shovel')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select
+                  value={equipment.shovel || ''}
+                  onValueChange={(value) => updateEquipment({ shovel: value || null })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select shovel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {shovels.map(shovel => (
+                      <SelectItem key={shovel.name} value={shovel.name}>
+                        {shovel.name} - ${shovel.price.toLocaleString()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>{t('pan')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <Select
+                    value={equipment.pan || ''}
+                    onValueChange={(value) => updateEquipment({ pan: value || null })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select pan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pans.map(pan => (
+                        <SelectItem key={pan.name} value={pan.name}>
+                          {pan.name} - ${pan.price.toLocaleString()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  {equipment.pan && (
+                    <Select
+                      value={equipment.enchant || ''}
+                      onValueChange={(value) => updateEquipment({ enchant: value || null })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select enchant" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {enchants.map(enchant => (
+                          <SelectItem key={enchant.name} value={enchant.name}>
+                            {enchant.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Rings */}
           <Card>
             <CardHeader>
@@ -475,75 +544,6 @@ export function EquipmentSimulation() {
               )}
             </CardContent>
           </Card>
-
-          {/* Tools */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('shovel')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Select
-                  value={equipment.shovel || ''}
-                  onValueChange={(value) => updateEquipment({ shovel: value || null })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select shovel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {shovels.map(shovel => (
-                      <SelectItem key={shovel.name} value={shovel.name}>
-                        {shovel.name} - ${shovel.price.toLocaleString()}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>{t('pan')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Select
-                    value={equipment.pan || ''}
-                    onValueChange={(value) => updateEquipment({ pan: value || null })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select pan" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pans.map(pan => (
-                        <SelectItem key={pan.name} value={pan.name}>
-                          {pan.name} - ${pan.price.toLocaleString()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  {equipment.pan && (
-                    <Select
-                      value={equipment.enchant || ''}
-                      onValueChange={(value) => updateEquipment({ enchant: value || null })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select enchant" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {enchants.map(enchant => (
-                          <SelectItem key={enchant.name} value={enchant.name}>
-                            {enchant.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
           {/* Custom Stats */}
           <Card>
