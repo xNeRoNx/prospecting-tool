@@ -18,7 +18,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, language); } catch { /* ignore */ }
+    try { 
+      localStorage.setItem(STORAGE_KEY, language); 
+    } catch { 
+      /* ignore */ 
+    }
   }, [language]);
 
   const setLanguage = useCallback((lang: Language) => {
