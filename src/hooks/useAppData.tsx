@@ -1,5 +1,5 @@
-import { useKV } from '@github/spark/hooks';
 import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
+import { useLocalStorageState } from './useLocalStorage';
 import type { CraftableItem } from '../lib/gameData';
 
 export interface CraftingItem { 
@@ -71,11 +71,11 @@ const AppDataContext = createContext<AppDataContextValue | null>(null);
 
 function useProvideAppData(): AppDataContextValue {
 	const [isLoading, setIsLoading] = useState(true);
-	const [craftingItems, setCraftingItems] = useKV<CraftingItem[] | null>('crafting-items', null);
-	const [museumSlots, setMuseumSlots] = useKV<MuseumSlot[] | null>('museum-slots', null);
-	const [equipment, setEquipment] = useKV<EquipmentSlot | null>('equipment', null);
-	const [collectibles, setCollectibles] = useKV<CollectibleOre[] | null>('collectibles', null);
-	const [ownedMaterials, setOwnedMaterials] = useKV<{ [key: string]: number } | null>('owned-materials', null);
+	const [craftingItems, setCraftingItems] = useLocalStorageState<CraftingItem[] | null>('crafting-items', null);
+	const [museumSlots, setMuseumSlots] = useLocalStorageState<MuseumSlot[] | null>('museum-slots', null);
+	const [equipment, setEquipment] = useLocalStorageState<EquipmentSlot | null>('equipment', null);
+	const [collectibles, setCollectibles] = useLocalStorageState<CollectibleOre[] | null>('collectibles', null);
+	const [ownedMaterials, setOwnedMaterials] = useLocalStorageState<{ [key: string]: number } | null>('owned-materials', null);
 	const postHydrationDefaultsApplied = useRef(false);
 
 	useEffect(() => {

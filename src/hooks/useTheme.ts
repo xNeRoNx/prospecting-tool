@@ -1,4 +1,4 @@
-import { useKV } from '@github/spark/hooks';
+import { useLocalStorageState } from './useLocalStorage';
 
 export type Theme = 'default' | 'medium' | 'dark' | 'slate' | 'forest' | 'ocean' | 'sunset';
 
@@ -199,7 +199,7 @@ export const themes: Record<Theme, ThemeConfig> = {
 };
 
 export function useTheme() {
-  const [currentTheme, setCurrentTheme] = useKV<Theme>('app-theme', 'default');
+  const [currentTheme, setCurrentTheme] = useLocalStorageState<Theme>('app-theme', 'default');
 
   const applyTheme = (theme: Theme) => {
     const themeConfig = themes[theme];
