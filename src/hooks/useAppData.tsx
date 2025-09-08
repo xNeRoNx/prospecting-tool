@@ -1,5 +1,4 @@
-import { useKV } from '@github/spark/hooks';
-import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, useRef, useCallback, createContext, useContext, ReactNode } from 'react';
 import type { CraftableItem } from '../lib/gameData';
 
 export interface CraftingItem { 
@@ -71,11 +70,66 @@ const AppDataContext = createContext<AppDataContextValue | null>(null);
 
 function useProvideAppData(): AppDataContextValue {
 	const [isLoading, setIsLoading] = useState(true);
-	const [craftingItems, setCraftingItems] = useKV<CraftingItem[] | null>('crafting-items', null);
-	const [museumSlots, setMuseumSlots] = useKV<MuseumSlot[] | null>('museum-slots', null);
-	const [equipment, setEquipment] = useKV<EquipmentSlot | null>('equipment', null);
-	const [collectibles, setCollectibles] = useKV<CollectibleOre[] | null>('collectibles', null);
-	const [ownedMaterials, setOwnedMaterials] = useKV<{ [key: string]: number } | null>('owned-materials', null);
+	// Lokalny hook oparty o localStorage jako zamiennik dla useKV
+	function useLocalStorageState<T>(key: string, initial: T | null): [T | null, React.Dispatch<React.SetStateAction<T | null>>] {
+		const [value, setValue] = useState<T | null>(null); // null dopóki nie zhydratowane
+		const hydratedRef = useRef(false);
+
+		useEffect(() => {
+			if (!hydratedRef.current) {
+				try {
+					const raw = localStorage.getItem(key);
+					if (raw !== null) {
+						setValue(JSON.parse(raw));
+					} else {
+						setValue(initial);
+					}
+				} catch (e) {
+					console.error('Błąd odczytu localStorage dla klucza', key, e);
+					setValue(initial);
+				}
+				hydratedRef.current = true;
+			}
+		}, [key, initial]);
+
+		const setAndStore = useCallback((updater: React.SetStateAction<T | null>) => {
+			setValue(prev => {
+				const next = typeof updater === 'function' ? (updater as (p: T | null) => T | null)(prev) : updater;
+				try {
+					if (next === null || next === undefined) {
+						localStorage.removeItem(key);
+					} else {
+						localStorage.setItem(key, JSON.stringify(next));
+					}
+				} catch (e) {
+					console.error('Błąd zapisu localStorage dla klucza', key, e);
+				}
+				return next;
+			});
+		}, [key]);
+
+		// Obsługa synchronizacji między zakładkami
+		useEffect(() => {
+			const handler = (e: StorageEvent) => {
+				if (e.key === key) {
+					try {
+						const parsed = e.newValue ? JSON.parse(e.newValue) : null;
+						setValue(parsed);
+					} catch {/* ignoruj */}
+				}
+			};
+			window.addEventListener('storage', handler);
+			return () => window.removeEventListener('storage', handler);
+		}, [key]);
+
+		return [value, setAndStore];
+	}
+
+	const [craftingItems, setCraftingItems] = useLocalStorageState<CraftingItem[] | null>('crafting-items', null);
+	const [museumSlots, setMuseumSlots] = useLocalStorageState<MuseumSlot[] | null>('museum-slots', null);
+	const [equipment, setEquipment] = useLocalStorageState<EquipmentSlot | null>('equipment', null);
+	const [collectibles, setCollectibles] = useLocalStorageState<CollectibleOre[] | null>('collectibles', null);
+	const [ownedMaterials, setOwnedMaterials] = useLocalStorageState<{ [key: string]: number } | null>('owned-materials', null);
 	const postHydrationDefaultsApplied = useRef(false);
 
 	useEffect(() => {
