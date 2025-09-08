@@ -24,7 +24,7 @@ export function Header() {
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0">
-              <Select value={currentTheme} onValueChange={setTheme} disabled={isLoading}>
+              <Select value={currentTheme ?? undefined} onValueChange={(val) => setTheme(val as any)} disabled={isLoading}>
                 <SelectTrigger className="w-16 sm:w-34">
                   <SelectValue>
                     <div className="flex items-center justify-center w-full">
