@@ -183,6 +183,21 @@ export const translations = {
     currentSave: "Current save",
     items: "items",
     slots: "slots",
+
+    // SEO
+    seoDescDefault: "Companion tools for Roblox Prospecting!",
+    seoDescCrafting: "Crafting calculator and material optimization for Roblox Prospecting!",
+    seoDescMuseum: "Track museum contribution values and optimize deposits in Prospecting!",
+    seoDescEquipment: "Simulate equipment setups and efficiency for Prospecting!",
+    seoDescCollectibles: "Manage and plan custom collectibles in Prospecting!",
+
+    // Misc
+    loadingData: "Loading data...",
+    exportError: "Export failed",
+    saveAndLoadHint: "Save and load your data to/from slots",
+    url: "URL",
+    placeholderSaveName: "My Prospecting Save",
+    placeholderSaveDescription: "Description of this save...",
   },
   
   pl: {
@@ -369,6 +384,21 @@ export const translations = {
     currentSave: "Aktualny zapis",
     items: "elementów",
     slots: "slotów",
+
+    // SEO
+    seoDescDefault: "Narzędzia towarzyszące do Roblox Prospecting!",
+    seoDescCrafting: "Kalkulator tworzenia i optymalizacja materiałów do Roblox Prospecting!",
+    seoDescMuseum: "Śledź wartości wkładu do muzeum i optymalizuj depozyty w Prospecting!",
+    seoDescEquipment: "Symuluj zestawy ekwipunku i ich efektywność w Prospecting!",
+    seoDescCollectibles: "Zarządzaj i planuj niestandardowe kolekcje w Prospecting!",
+
+    // Misc
+    loadingData: "Ładowanie danych...",
+    exportError: "Błąd eksportu",
+    saveAndLoadHint: "Zapisuj i wczytuj dane do/z slotów",
+    url: "URL",
+    placeholderSaveName: "Mój zapis Prospecting",
+    placeholderSaveDescription: "Opis tego zapisu...",
   }
 } as const;
 

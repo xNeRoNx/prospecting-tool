@@ -11,12 +11,13 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const { language, t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { currentTheme, setTheme } = useTheme();
   const { isLoading } = useAppData();
+  const [activeTab, setActiveTab] = useState<string>('crafting');
 
   // Apply theme on mount
   useEffect(() => {
@@ -31,12 +32,76 @@ function App() {
     }
   }, [language]);
 
+  // Ustaw język na podstawie ścieżki (/pl) przy starcie
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.pathname.startsWith('/pl') && language !== 'pl') {
+      setLanguage('pl');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Synchronizuj ścieżkę z językiem (dodaj/usuń prefix /pl), zachowując hash
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const { pathname, hash } = window.location;
+    if (language === 'pl') {
+      if (!pathname.startsWith('/pl')) {
+        const next = '/pl' + (pathname === '/' ? '' : pathname) + hash;
+        window.history.replaceState(null, '', next);
+      }
+    } else {
+      if (pathname.startsWith('/pl')) {
+        const nextPath = pathname.replace(/^\/pl/, '') || '/';
+        window.history.replaceState(null, '', nextPath + hash);
+      }
+    }
+  }, [language]);
+
+  // Dynamic document title per zakładka (SEO + UX)
+  useEffect(() => {
+    const titleMap: Record<string, string> = {
+      crafting: t('crafting'),
+      museum: t('museum'),
+      equipment: t('equipment'),
+      collectibles: t('collectibles')
+    };
+    const descMap: Record<string, string> = {
+      crafting: t('seoDescCrafting'),
+      museum: t('seoDescMuseum'),
+      equipment: t('seoDescEquipment'),
+      collectibles: t('seoDescCollectibles')
+    };
+    const section = titleMap[activeTab];
+    document.title = section ? `${section} | Prospecting! Tools` : 'Prospecting! Tools';
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', descMap[activeTab] || t('seoDescDefault'));
+    }
+  }, [activeTab, t]);
+
+  // Inicjalizacja zakładki z hasha oraz nasłuch zmiany hasha (#crafting, #museum, ...)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const validTabs = ['crafting', 'museum', 'equipment', 'collectibles'];
+    const init = () => {
+      const fromHash = window.location.hash.replace('#', '');
+      if (validTabs.includes(fromHash)) {
+        setActiveTab(fromHash);
+      }
+    };
+    init();
+    const onHash = () => init();
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Spinner size={32} className="animate-spin" />
-          <p className="text-muted-foreground">Loading data...</p>
+          <p className="text-muted-foreground">{t('loadingData')}</p>
         </div>
       </div>
     );
@@ -48,7 +113,21 @@ function App() {
       <SpeedInsights />
       <Analytics />
       <main className="container mx-auto px-4 py-6">
-        <Tabs defaultValue="crafting" className="space-y-6">
+        <Tabs
+          value={activeTab}
+          defaultValue="crafting"
+          onValueChange={(val) => {
+            setActiveTab(val);
+            // aktualizuj hash i przewiń do sekcji
+            const nextUrl = `${window.location.pathname}#${val}`;
+            window.history.replaceState(null, '', nextUrl);
+            const el = document.getElementById(val);
+            if (el) {
+              try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { /* ignore */ }
+            }
+          }}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
             <TabsTrigger value="crafting" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Hammer size={16} />
@@ -68,19 +147,19 @@ function App() {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="crafting">
+          <TabsContent value="crafting" id="crafting">
             <Crafting />
           </TabsContent>
           
-          <TabsContent value="museum">
+          <TabsContent value="museum" id="museum">
             <Museum />
           </TabsContent>
           
-          <TabsContent value="equipment">
+          <TabsContent value="equipment" id="equipment">
             <EquipmentSimulation />
           </TabsContent>
           
-          <TabsContent value="collectibles">
+          <TabsContent value="collectibles" id="collectibles">
             <CustomCollectibles />
           </TabsContent>
         </Tabs>

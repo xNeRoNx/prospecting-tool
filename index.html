@@ -1,19 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Prospecting Game Tools</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&family=Lora&family=Source+Code+Pro&display=swap">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="/src/main.css" rel="stylesheet" />
-</head>
+    <title>Prospecting! Tools – Crafting, Museum, Equipment & Collectibles</title>
+    <!-- Primary Meta -->
+    <meta name="description" content="Crafting calculator, museum tracker, equipment simulator & custom collectibles manager for the Roblox game Prospecting! Optimize gameplay and manage your in‑game economy." />
+    <meta name="keywords" content="Roblox, Prospecting, Prospecting game, crafting calculator, museum values, equipment simulator, Roblox tools" />
+    <meta name="author" content="Prospecting Tools Community" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 
+    <!-- Canonical & i18n -->
+    <link rel="canonical" href="https://prospecting-companio.vercel.app/" />
+    <link rel="alternate" hreflang="en" href="https://prospecting-companio.vercel.app/" />
+    <link rel="alternate" hreflang="pl" href="https://prospecting-companio.vercel.app/pl" />
+    <link rel="alternate" hreflang="x-default" href="https://prospecting-companio.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Prospecting! Tools – Crafting, Museum, Equipment & Collectibles" />
+    <meta property="og:description" content="All-in-one companion for the Roblox game Prospecting!: crafting, museum, equipment simulation & collectibles." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://prospecting-companio.vercel.app/" />
+    <meta property="og:site_name" content="Prospecting! Tools" />
+    <meta property="og:image" content="https://prospecting-companio.vercel.app/og-image.png" />
+    <meta property="og:image:alt" content="Prospecting! Tools interface preview" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="pl_PL" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&family=Lora&family=Source+Code+Pro&display=swap" />
+
+    <!-- Styles -->
+    <link rel="preload" as="style" href="/src/main.css" />
+    <link href="/src/main.css" rel="stylesheet" />
+
+    <!-- PWA / Icons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Prospecting! Companion Tools",
+        "url": "https://prospecting-companio.vercel.app/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "description": "Crafting calculator, museum tracker, equipment simulator and collectibles manager for the Roblox game Prospecting!",
+        "keywords": "Roblox, Prospecting, crafting calculator, museum values, equipment simulator, collectibles",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://prospecting-companio.vercel.app/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+</head>
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 </body>
-
 </html>

@@ -156,11 +156,11 @@ export function DataManagement() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success(t('exportSuccess'));
+  toast.success(t('exportSuccess'));
       setDataDialogOpen(false);
     } catch (e) {
       console.error(e);
-      toast.error('Export failed');
+  toast.error(t('exportError'));
     }
   };
 
@@ -291,7 +291,7 @@ export function DataManagement() {
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
             <CardTitle className="text-base flex items-center gap-2"><Eye size={16} />{t('importPreview')}</CardTitle>
-            <Badge variant="secondary" className="shrink-0">{importPreview.source === 'file' ? 'File' : 'URL'}</Badge>
+            <Badge variant="secondary" className="shrink-0">{importPreview.source === 'file' ? t('file') : t('url')}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -309,7 +309,7 @@ export function DataManagement() {
                   <Calendar size={14} className="shrink-0" />
                   <div className="min-w-0">
                     <div className="text-xs text-muted-foreground">{t('created')}</div>
-                    <div className="text-sm truncate">{metadata.createdAt ? new Date(metadata.createdAt).toLocaleDateString() : 'Unknown'}</div>
+                    <div className="text-sm truncate">{metadata.createdAt ? new Date(metadata.createdAt).toLocaleDateString() : t('unknownDate')}</div>
                   </div>
                 </div>
               </div>
@@ -355,8 +355,8 @@ export function DataManagement() {
   const renderSaveSlots = () => (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{t('saveSlots')}</CardTitle>
-        <CardDescription>Save and load your data to/from slots</CardDescription>
+  <CardTitle className="text-base">{t('saveSlots')}</CardTitle>
+  <CardDescription>{t('saveAndLoadHint')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 gap-3">
@@ -420,11 +420,11 @@ export function DataManagement() {
             )}
             <div className="space-y-2">
               <label htmlFor="save-name-dialog" className="text-sm font-medium">{t('saveName')}</label>
-              <Input id="save-name-dialog" value={saveMetadata.name} onChange={e => setSaveMetadata(p => ({ ...p, name: e.target.value }))} placeholder="My Prospecting Save" disabled={isLoading} />
+              <Input id="save-name-dialog" value={saveMetadata.name} onChange={e => setSaveMetadata(p => ({ ...p, name: e.target.value }))} placeholder={t('placeholderSaveName')} disabled={isLoading} />
             </div>
             <div className="space-y-2">
               <label htmlFor="save-description-dialog" className="text-sm font-medium">{t('descriptionOptional')}</label>
-              <Textarea id="save-description-dialog" value={saveMetadata.description} onChange={e => setSaveMetadata(p => ({ ...p, description: e.target.value }))} placeholder="Description of this save..." rows={2} disabled={isLoading} />
+              <Textarea id="save-description-dialog" value={saveMetadata.description} onChange={e => setSaveMetadata(p => ({ ...p, description: e.target.value }))} placeholder={t('placeholderSaveDescription')} rows={2} disabled={isLoading} />
             </div>
           </div>
           <div className="flex gap-2 pt-4">
@@ -487,11 +487,11 @@ export function DataManagement() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="save-name" className="text-sm font-medium">{t('saveName')}</label>
-                    <Input id="save-name" value={saveMetadata.name} onChange={e => setSaveMetadata(p => ({ ...p, name: e.target.value }))} placeholder="My Prospecting Save" disabled={isLoading} />
+                    <Input id="save-name" value={saveMetadata.name} onChange={e => setSaveMetadata(p => ({ ...p, name: e.target.value }))} placeholder={t('placeholderSaveName')} disabled={isLoading} />
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="save-description" className="text-sm font-medium">{t('descriptionOptional')}</label>
-                    <Textarea id="save-description" value={saveMetadata.description} onChange={e => setSaveMetadata(p => ({ ...p, description: e.target.value }))} placeholder="Description of this save..." rows={2} disabled={isLoading} />
+                    <Textarea id="save-description" value={saveMetadata.description} onChange={e => setSaveMetadata(p => ({ ...p, description: e.target.value }))} placeholder={t('placeholderSaveDescription')} rows={2} disabled={isLoading} />
                   </div>
                 </CardContent>
               </Card>
