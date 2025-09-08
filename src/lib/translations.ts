@@ -42,6 +42,11 @@ export const translations = {
     
     // Header
     supportCreator: "Support Creator",
+    supportTitle: "Support the Creator",
+    supportDescription: "Thanks to your support, this tool can remain ad-free and accessible to everyone. Every contribution helps maintain and improve the application.",
+    supportThanks: "Thank you for considering supporting this project!",
+    supportButton: "Support with ❤️",
+    supportLater: "Maybe Later",
     exportData: "Export Data", 
     importData: "Import Data",
     
@@ -223,6 +228,11 @@ export const translations = {
     
     // Header
     supportCreator: "Wspomóż Twórcę",
+    supportTitle: "Wspomóż Twórcę",
+    supportDescription: "Dzięki Twojemu wsparciu ta strona może działać bez reklam i być dostępna dla każdego. Każdy wkład pomaga w utrzymaniu i rozwoju aplikacji.",
+    supportThanks: "Dziękujemy za rozważenie wsparcia tego projektu!",
+    supportButton: "Wspomóż z ❤️",
+    supportLater: "Może Później",
     exportData: "Eksportuj Dane",
     importData: "Importuj Dane",
     
