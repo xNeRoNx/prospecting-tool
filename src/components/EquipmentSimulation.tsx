@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useAppData } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
 import { craftableItems, shovels, pans, enchants, events, ores, modifiers, getModifierBonus, type CraftableItem } from '@/lib/gameData';
 
 export function EquipmentSimulation() {

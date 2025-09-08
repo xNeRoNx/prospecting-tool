@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { X, List } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useAppData } from '@/hooks/useAppData';
-import type { MuseumSlot } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
+import type { MuseumSlot } from '@/hooks/useAppData.tsx';
 import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
 
 export function Museum() {

@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Plus, Minus, Check, X, Hammer, Wrench } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useAppData } from '@/hooks/useAppData';
-import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
+import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData.tsx';
 import { craftableItems, ores, type CraftableItem } from '@/lib/gameData';
 
 export function Crafting() {

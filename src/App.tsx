@@ -7,7 +7,7 @@ import { EquipmentSimulation } from '@/components/EquipmentSimulation';
 import { CustomCollectibles } from '@/components/CustomCollectibles';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
-import { useAppData } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
 import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/react';
 import { useEffect } from 'react';
 

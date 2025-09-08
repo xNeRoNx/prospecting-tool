@@ -4,7 +4,7 @@ import { Heart, Palette } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { DataManagement } from '@/components/DataManagement';
-import { useAppData } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
 
 export function Header() {
   const { language, setLanguage, t } = useLanguage();

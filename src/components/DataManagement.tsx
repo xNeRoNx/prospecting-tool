@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Download, Upload, Link, FileArrowDown, FileArrowUp, Database, Eye, Check, Calendar, FileText, Tag } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useAppData } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
 import { toast } from 'sonner';
 
 interface DataSelection {

@@ -9,8 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Minus, X, Check } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useAppData } from '@/hooks/useAppData';
-import type { CollectibleOre } from '@/hooks/useAppData';
+import { useAppData } from '@/hooks/useAppData.tsx';
+import type { CollectibleOre } from '@/hooks/useAppData.tsx';
 import { ores, modifiers } from '@/lib/gameData';
 
 export function CustomCollectibles() {

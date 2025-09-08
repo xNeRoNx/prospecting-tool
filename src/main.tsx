@@ -4,7 +4,7 @@ import "@github/spark/spark"
 
 import App from './App.tsx'
 import { LanguageProvider } from './hooks/useLanguage.tsx'
-import { AppDataProvider } from './hooks/useAppData'
+import { AppDataProvider } from './hooks/useAppData.tsx'
 import { ErrorFallback } from './ErrorFallback.tsx'
 
 import "./main.css"
