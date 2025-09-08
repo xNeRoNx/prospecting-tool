@@ -32,32 +32,6 @@ function App() {
     }
   }, [language]);
 
-  // Ustaw język na podstawie ścieżki (/pl) przy starcie
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.location.pathname.startsWith('/pl') && language !== 'pl') {
-      setLanguage('pl');
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Synchronizuj ścieżkę z językiem (dodaj/usuń prefix /pl), zachowując hash
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const { pathname, hash } = window.location;
-    if (language === 'pl') {
-      if (!pathname.startsWith('/pl')) {
-        const next = '/pl' + (pathname === '/' ? '' : pathname) + hash;
-        window.history.replaceState(null, '', next);
-      }
-    } else {
-      if (pathname.startsWith('/pl')) {
-        const nextPath = pathname.replace(/^\/pl/, '') || '/';
-        window.history.replaceState(null, '', nextPath + hash);
-      }
-    }
-  }, [language]);
-
   // Dynamic document title per zakładka (SEO + UX)
   useEffect(() => {
     const titleMap: Record<string, string> = {
