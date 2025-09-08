@@ -15,6 +15,23 @@ export interface MaterialSummary {
 		weight?: number; 
 	}; 
 }
+
+export interface MuseumSlot { 
+	ore?: string; 
+	modifier?: string; 
+	weight?: number; 
+	id: string; 
+}
+export interface EquipmentSlot {
+	rings: (CraftableItem | null)[]; 
+	necklace: CraftableItem | null; 
+	charm: CraftableItem | null; 
+	shovel: string | null; 
+	pan: string | null; 
+	enchant: string | null; 
+	customStats: { [key: string]: number }; 
+	activeEvents: string[];
+}
 export interface CollectibleOre { 
 	ore: string; 
 	quantity: number; 
