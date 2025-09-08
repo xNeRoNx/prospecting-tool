@@ -5,7 +5,6 @@ Lekka aplikacja SPA zbudowana na Vite + React 19 + TypeScript. Zestaw narzędzi 
 ### Funkcje
 - Zakładki: Crafting, Museum, Equipment, Collectibles (ikony Phosphor)
 - SEO/UX: dynamiczny tytuł strony i meta description per zakładka
-- I18n: automatyczny prefiks ścieżki `/pl` dla polskiego, ustawienie `lang` w `<html>`
 - Deep-linking: aktywna zakładka w hashu URL (`#crafting`, `#museum`, ...)
 - Motywy: wsparcie dla trybu jasny/ciemny (Tailwind + hook `useTheme`)
 - Dane: lokalny stan i cache (hooki `useAppData`, `useLocalStorage`)

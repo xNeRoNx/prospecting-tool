@@ -6,8 +6,8 @@
     <title>Prospecting! Tools – Crafting, Museum, Equipment & Collectibles</title>
     <!-- Primary Meta -->
     <meta name="description" content="Crafting calculator, museum tracker, equipment simulator & custom collectibles manager for the Roblox game Prospecting! Optimize gameplay and manage your in‑game economy." />
-    <meta name="keywords" content="Roblox, Prospecting, Prospecting game, crafting calculator, museum values, equipment simulator, Roblox tools" />
-    <meta name="author" content="Prospecting Tools Community" />
+    <meta name="keywords" content="Roblox, Prospecting, prospecting!, Prospecting game, crafting calculator, museum values, equipment simulator, Roblox tools" />
+    <meta name="author" content="xNeRoNx" />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
@@ -34,9 +34,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter&family=Lora&family=Source+Code+Pro&display=swap" />
 
-    <!-- Styles -->
-    <link rel="preload" as="style" href="/src/main.css" />
-    <link href="/src/main.css" rel="stylesheet" />
+    <!-- Styles (preload with onload) -->
+    <link rel="preload" href="/src/main.css" as="style" onload="this.rel='stylesheet'">
+    <noscript><link href="/src/main.css" rel="stylesheet"></noscript>
 
     <!-- PWA / Icons -->
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -67,6 +67,6 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/dist/main.js"></script>
 </body>
 </html>
