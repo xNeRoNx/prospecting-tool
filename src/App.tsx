@@ -1,4 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/Header';
 import { Crafting } from '@/components/Crafting';
@@ -43,7 +44,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+      <SpeedInsights />
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="crafting" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
