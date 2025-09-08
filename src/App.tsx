@@ -8,23 +8,14 @@ import { Museum } from '@/components/Museum';
 import { EquipmentSimulation } from '@/components/EquipmentSimulation';
 import { CustomCollectibles } from '@/components/CustomCollectibles';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useTheme } from '@/hooks/useTheme';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 
 function App() {
-  const { language, setLanguage, t } = useLanguage();
-  const { currentTheme, setTheme } = useTheme();
+  const { language, t } = useLanguage();
   const { isLoading } = useAppData();
   const [activeTab, setActiveTab] = useState<string>('crafting');
-
-  // Apply theme on mount
-  useEffect(() => {
-    if (currentTheme) {
-      setTheme(currentTheme);
-    }
-  }, [currentTheme, setTheme]);
 
   useEffect(() => {
     if (language) {

@@ -1,3 +1,4 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useLocalStorageState } from './useLocalStorage';
 
 export type Theme = 'default' | 'medium' | 'dark' | 'slate' | 'forest' | 'ocean' | 'sunset';
@@ -198,25 +199,72 @@ export const themes: Record<Theme, ThemeConfig> = {
   }
 };
 
-export function useTheme() {
-  const [currentTheme, setCurrentTheme] = useLocalStorageState<Theme>('app-theme', 'default');
+type ThemeContextValue = {
+  currentTheme: Theme;
+  setTheme: (theme: Theme) => void;
+  themes: typeof themes;
+};
 
-  const applyTheme = (theme: Theme) => {
-    const themeConfig = themes[theme];
-    const root = document.documentElement;
+const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-    // Apply each color variable to the CSS custom properties
-    Object.entries(themeConfig.colors).forEach(([key, value]) => {
-      const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-      root.style.setProperty(cssVar, value);
-    });
+function applyCssVariables(theme: Theme) {
+  const themeConfig = themes[theme];
+  const root = document.documentElement;
+  Object.entries(themeConfig.colors).forEach(([key, value]) => {
+    const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+    root.style.setProperty(cssVar, value);
+  });
+}
 
-    setCurrentTheme(theme);
-  };
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [storedTheme, setStoredTheme] = useLocalStorageState<Theme>('app-theme', 'default');
+  const initialized = useRef(false);
 
-  return {
-    currentTheme,
-    setTheme: applyTheme,
+  // Apply theme from storage on first mount
+  useEffect(() => {
+    if (initialized.current) return;
+    const themeToApply = storedTheme ?? 'default';
+    applyCssVariables(themeToApply);
+    initialized.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Apply when storedTheme changes
+  useEffect(() => {
+    if (!storedTheme) return;
+    applyCssVariables(storedTheme);
+  }, [storedTheme]);
+
+  // Sync across tabs via storage event
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'app-theme' && e.newValue) {
+        try {
+          const next = JSON.parse(e.newValue) as Theme;
+          applyCssVariables(next);
+        } catch {/* ignore */}
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const setTheme = useCallback((theme: Theme) => {
+    applyCssVariables(theme);
+    setStoredTheme(theme);
+  }, [setStoredTheme]);
+
+  const value = useMemo<ThemeContextValue>(() => ({
+    currentTheme: storedTheme ?? 'default',
+    setTheme,
     themes,
-  };
+  }), [storedTheme, setTheme]);
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error('useTheme must be used within <ThemeProvider>');
+  return ctx;
 }
