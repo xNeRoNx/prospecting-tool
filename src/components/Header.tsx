@@ -12,7 +12,7 @@ export function Header() {
   const { isLoading } = useAppData();
 
   const handleSupportCreator = () => {
-    window.open('https://github.com/sponsors/xNeRoNx', '_blank');
+    window.open('https://buymeacoffee.com/xneronx', '_blank');
   };
 
   return (
