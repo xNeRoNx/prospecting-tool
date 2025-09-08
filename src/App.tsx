@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from '@/components/ui/sonner';
 import { Header } from '@/components/Header';
 import { Crafting } from '@/components/Crafting';
