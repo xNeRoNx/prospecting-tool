@@ -1,23 +1,73 @@
-# ✨ Welcome to Your Spark Template!
-You've just launched your brand-new Spark Template Codespace — everything’s fired up and ready for you to explore, build, and create with Spark!
+## Prospecting! Tools
 
-This template is your blank canvas. It comes with a minimal setup to help you get started quickly with Spark development.
+Lekka aplikacja SPA zbudowana na Vite + React 19 + TypeScript. Zestaw narzędzi do planowania i symulacji (crafting, muzeum, wyposażenie, kolekcje) z lokalnym zapisem stanu, motywami i prostym i18n.
 
-🚀 What's Inside?
-- A clean, minimal Spark environment
-- Pre-configured for local development
-- Ready to scale with your ideas
-  
-🧠 What Can You Do?
+### Funkcje
+- Zakładki: Crafting, Museum, Equipment, Collectibles (ikony Phosphor)
+- SEO/UX: dynamiczny tytuł strony i meta description per zakładka
+- I18n: automatyczny prefiks ścieżki `/pl` dla polskiego, ustawienie `lang` w `<html>`
+- Deep-linking: aktywna zakładka w hashu URL (`#crafting`, `#museum`, ...)
+- Motywy: wsparcie dla trybu jasny/ciemny (Tailwind + hook `useTheme`)
+- Dane: lokalny stan i cache (hooki `useAppData`, `useLocalStorage`)
+- UI: komponenty oparte o Radix i Tailwind (shadcn/ui w `src/components/ui`)
+- Powiadomienia: `sonner`
+- Analityka i wydajność: `@vercel/analytics/react`, `@vercel/speed-insights/react`
 
-Right now, this is just a starting point — the perfect place to begin building and testing your Spark applications.
+### Stos technologiczny
+- React 19, TypeScript, Vite 6
+- Tailwind CSS 4, Radix UI, shadcn/ui
+- TanStack Query, Zod, React Hook Form
+- Recharts, D3, Framer Motion, Embla Carousel
+- Phosphor Icons, Lucide Icons
 
-🧹 Just Exploring?
-No problem! If you were just checking things out and don’t need to keep this code:
+### Wymagania wstępne
+- Node.js >= 18.18 (zalecane LTS) i npm
 
-- Simply delete your Spark.
-- Everything will be cleaned up — no traces left behind.
+### Szybki start
+```powershell
+npm install
+npm run dev
+```
+Aplikacja uruchomi się na lokalnym serwerze Vite i wyświetli adres w terminalu.
 
-📄 License For Spark Template Resources 
+### Budowanie i podgląd produkcyjny
+```powershell
+npm run build
+npm run preview
+```
 
-The Spark Template files and resources from GitHub are licensed under the terms of the MIT license, Copyright GitHub, Inc.
+### Dodatkowe skrypty
+```powershell
+npm run lint
+npm run optimize
+```
+
+### Struktura katalogów (skrót)
+```
+public/            # ikony, manifest PWA, favicony
+src/
+	components/      # ekrany i UI (shadcn/ui)
+	hooks/           # useLanguage, useTheme, useAppData, useLocalStorage
+	lib/             # gameData, translations, utils
+	styles/          # style motywu
+	App.tsx          # layout zakładek, SEO, routing po hashu
+```
+
+### I18n i routing
+- Język PL dodaje prefiks ścieżki `/pl` i ustawia `document.documentElement.lang = 'pl'`.
+- Aktywna zakładka jest trzymana w hashu (`#crafting`, `#museum`, `#equipment`, `#collectibles`).
+
+### Motyw i stylowanie
+- Tailwind 4 + CSS zmienne motywu (`styles/theme.css`).
+- Hook `useTheme` stosuje motyw na starcie aplikacji.
+
+### Analityka
+- Używany jest wariant React: `@vercel/analytics/react` oraz `@vercel/speed-insights/react` (bez Next.js).
+
+### Wskazówki dotyczące rozmiaru bundla
+Jeśli zobaczysz ostrzeżenie o dużych chunkach (>500 kB), rozważ:
+- dynamiczne importy dla ciężkich bibliotek (`recharts`, `d3`, `three`),
+- konfigurację `manualChunks` w `vite.config.ts`.
+
+### Licencja
+Zobacz plik `LICENSE` w repozytorium.
