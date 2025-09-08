@@ -163,7 +163,21 @@ export const translations = {
     deleteSuccessful: "Save deleted successfully",
     saveError: "Error saving data",
     loadError: "Error loading data",
-    deleteError: "Error deleting save"
+    deleteError: "Error deleting save",
+    saveSettingsDesc: "Set save name and description",
+    importDataDesc: "Import save data from file or URL",
+    descriptionOptional: "Description (Optional)",
+    availableData: "Available Data",
+    created: "Created",
+    file: "File",
+    importSelectedData: "Import Selected Data",
+    deleteSaveConfirmQuestion: "Are you sure you want to delete this save?",
+    unnamedSave: "Unnamed Save",
+    unknownDate: "Unknown date",
+    backupSlotDescription: "Automatic backup before import",
+    currentSave: "Current save",
+    items: "items",
+    slots: "slots",
   },
   
   pl: {
@@ -330,7 +344,21 @@ export const translations = {
     deleteSuccessful: "Zapis usunięty pomyślnie",
     saveError: "Błąd zapisu danych",
     loadError: "Błąd ładowania danych",
-    deleteError: "Błąd usuwania zapisu"
+    deleteError: "Błąd usuwania zapisu",
+    saveSettingsDesc: "Ustaw nazwę i opis zapisu",
+    importDataDesc: "Importuj dane zapisu z pliku lub URL",
+    descriptionOptional: "Opis (opcjonalnie)",
+    availableData: "Dostępne Dane",
+    created: "Utworzono",
+    file: "Plik",
+    importSelectedData: "Importuj zaznaczone dane",
+    deleteSaveConfirmQuestion: "Czy na pewno chcesz usunąć ten zapis?",
+    unnamedSave: "Zapis bez nazwy",
+    unknownDate: "Nieznana data",
+    backupSlotDescription: "Automatyczna kopia przed importem",
+    currentSave: "Aktualny zapis",
+    items: "elementów",
+    slots: "slotów",
   }
 } as const;
 
