@@ -76,24 +76,21 @@ function useProvideAppData(): AppDataContextValue {
 	const [equipment, setEquipment] = useLocalStorageState<EquipmentSlot | null>('equipment', null);
 	const [collectibles, setCollectibles] = useLocalStorageState<CollectibleOre[] | null>('collectibles', null);
 	const [ownedMaterials, setOwnedMaterials] = useLocalStorageState<{ [key: string]: number } | null>('owned-materials', null);
-	const postHydrationDefaultsApplied = useRef(false);
 
+	// Inicjalizacja wartości domyślnych i ustawienie isLoading=false gdy wszystko gotowe.
 	useEffect(() => {
-		if (craftingItems !== null && museumSlots !== null && equipment !== null && collectibles !== null && ownedMaterials !== null) {
+		// Ustaw domyślne struktury tylko jeśli jeszcze brak (null w localStorage)
+		if (craftingItems === null) setCraftingItems([]);
+		if (museumSlots === null) setMuseumSlots([]);
+		if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
+		if (collectibles === null) setCollectibles([]);
+		if (ownedMaterials === null) setOwnedMaterials({});
+
+		const allReady = craftingItems !== null && museumSlots !== null && equipment !== null && collectibles !== null && ownedMaterials !== null;
+		if (isLoading && allReady) {
 			setIsLoading(false);
 		}
-	}, [craftingItems, museumSlots, equipment, collectibles, ownedMaterials]);
-
-	useEffect(() => {
-		if (!isLoading && !postHydrationDefaultsApplied.current) {
-			if (craftingItems === null) setCraftingItems([]);
-			if (museumSlots === null) setMuseumSlots([]);
-			if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
-			if (collectibles === null) setCollectibles([]);
-			if (ownedMaterials === null) setOwnedMaterials({});
-			postHydrationDefaultsApplied.current = true;
-		}
-	}, [isLoading, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, setCraftingItems, setMuseumSlots, setEquipment, setCollectibles, setOwnedMaterials]);
+	}, [craftingItems, museumSlots, equipment, collectibles, ownedMaterials, isLoading, setCraftingItems, setMuseumSlots, setEquipment, setCollectibles, setOwnedMaterials]);
 
 	useEffect(() => {
 		if (equipment && !equipment.activeEvents && !isLoading) {
