@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -99,22 +100,63 @@ export function DataManagement() {
   // Import poprzez URL w hash-u
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash.includes('#data=')) {
+    if (!hash.includes('#data=')) return;
+
+    const tryParseData = (raw: string): ImportData | null => {
+      try {
+        // 1) Próba dekompresji (nowy, krótki format linku)
+        const maybeDecompressed = decompressFromEncodedURIComponent(raw);
+        if (maybeDecompressed) {
+          return JSON.parse(maybeDecompressed) as ImportData;
+        }
+      } catch {}
+      try {
+        // 2) Wsteczna kompatybilność: base64 -> JSON
+        const legacyStr = atob(raw);
+        return JSON.parse(legacyStr) as ImportData;
+      } catch {}
+      return null;
+    };
+
+    try {
+      const hashData = hash.split('#data=')[1];
+      if (!hashData) return;
+      const parsed = tryParseData(hashData);
+      if (!parsed) throw new Error('Invalid data payload');
+
+      // Automatyczny import wszystkich danych po wejściu przez link
+      const { metadata, ...dataToImport } = parsed;
+      const allSelection: DataSelection = {
+        craftingItems: true,
+        museumSlots: true,
+        equipment: true,
+        collectibles: true,
+        ownedMaterials: true
+      };
+      importDataSelective(dataToImport, allSelection);
+      toast.success(t('importSuccess'));
+
+      // Wyczyść hash, aby uniknąć ponownego importu po odświeżeniu / nawigacji wstecz
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (e) {
+      console.error(e);
+      toast.error(t('importError'));
+      // Fallback: pokaż podgląd, by użytkownik mógł ręcznie zdecydować
       try {
         const hashData = hash.split('#data=')[1];
         if (!hashData) return;
-        const decompressed = atob(hashData);
-        const data = JSON.parse(decompressed);
+        const maybeDecompressed = decompressFromEncodedURIComponent(hashData);
+        const jsonStr = maybeDecompressed ?? atob(hashData);
+        const data = JSON.parse(jsonStr);
         setImportPreview({ data, source: 'url' });
         setShowPreview(true);
         setDataDialogOpen(true);
         window.history.replaceState({}, document.title, window.location.pathname);
-      } catch (e) {
-        console.error(e);
-        toast.error(t('importError'));
-      }
+      } catch {}
     }
-  }, [t]);
+    // Chcemy uruchomić tylko raz przy wejściu na stronę
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Pomocnicze
   const getSelectedData = (selection: DataSelection) => {
@@ -168,8 +210,9 @@ export function DataManagement() {
     try {
       const selectedData = getSelectedData(exportSelection);
       const dataWithMetadata = { metadata: { ...saveMetadata, createdAt: new Date().toISOString() }, ...selectedData };
-      const compressed = btoa(JSON.stringify(dataWithMetadata));
-      const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
+  // Kompresja do krótszego i URL-safe formatu
+  const compressed = compressToEncodedURIComponent(JSON.stringify(dataWithMetadata));
+  const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
       navigator.clipboard.writeText(url);
       toast.success(t('urlCopied'));
       setDataDialogOpen(false);
@@ -202,10 +245,12 @@ export function DataManagement() {
   const handleImportFromUrl = () => {
     if (!urlInput.trim()) return toast.error(t('importError'));
     try {
-      const hashData = urlInput.includes('#data=') ? urlInput.split('#data=')[1] : urlInput;
-      if (!hashData) return toast.error(t('importError'));
-      const decompressed = atob(hashData);
-      const data = JSON.parse(decompressed);
+  const hashData = urlInput.includes('#data=') ? urlInput.split('#data=')[1] : urlInput;
+  if (!hashData) return toast.error(t('importError'));
+  // Najpierw próbuj z nowym, skompresowanym formatem; w razie niepowodzenia użyj base64
+  const maybeDecompressed = decompressFromEncodedURIComponent(hashData);
+  const jsonStr = maybeDecompressed ?? atob(hashData);
+  const data = JSON.parse(jsonStr);
       setImportPreview({ data, source: 'url' });
       setShowPreview(true);
     } catch (e) {
