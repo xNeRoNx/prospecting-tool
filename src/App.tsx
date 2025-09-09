@@ -23,6 +23,37 @@ function App() {
     }
   }, [language]);
 
+  // Update canonical and hreflang alternates based on /en /pl
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const base = 'https://prospecting-tool.vercel.app';
+    const path = window.location.pathname.replace(/^\/(en|pl)/, '').replace(/\/+/g, '/');
+    const canonicalUrl = `${base}/${language}${path}${window.location.search}${window.location.hash}`.replace(/(?<!:)\/\/+/, '/');
+
+    const ensureLink = (rel: string, hreflang?: string) => {
+      let el = document.querySelector(`link[rel="${rel}"]${hreflang ? `[hreflang="${hreflang}"]` : ':not([hreflang])'}`) as HTMLLinkElement | null;
+      if (!el) {
+        el = document.createElement('link');
+        el.setAttribute('rel', rel);
+        if (hreflang) el.setAttribute('hreflang', hreflang);
+        document.head.appendChild(el);
+      }
+      return el;
+    };
+
+    // canonical
+    const canonical = ensureLink('canonical');
+    canonical.setAttribute('href', canonicalUrl);
+
+    // hreflang alternates
+    const altEn = ensureLink('alternate', 'en');
+    altEn.setAttribute('href', `${base}/en${path}`);
+    const altPl = ensureLink('alternate', 'pl');
+    altPl.setAttribute('href', `${base}/pl${path}`);
+    const altDef = ensureLink('alternate', 'x-default');
+    altDef.setAttribute('href', `${base}/en${path}`);
+  }, [language]);
+
   // Dynamic document title per zakładka (SEO + UX)
   useEffect(() => {
     const titleMap: Record<string, string> = {

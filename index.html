@@ -13,8 +13,11 @@
     <!-- DODANE: bardziej szczegółowe wytyczne dla Googlebota -->
     <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
 
-    <!-- Canonical -->
-    <link rel="canonical" href="https://prospecting-tool.vercel.app/" />
+    <!-- Canonical is set dynamically by App.tsx to include /en or /pl -->
+    <link rel="canonical" href="https://prospecting-tool.vercel.app/en" />
+    <link rel="alternate" hreflang="en" href="https://prospecting-tool.vercel.app/en" />
+    <link rel="alternate" hreflang="pl" href="https://prospecting-tool.vercel.app/pl" />
+    <link rel="alternate" hreflang="x-default" href="https://prospecting-tool.vercel.app/en" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="Prospecting! Tools – Crafting, Museum, Equipment & Collectibles" />

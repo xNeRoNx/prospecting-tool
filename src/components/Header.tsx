@@ -49,7 +49,27 @@ export function Header() {
                 </SelectContent>
               </Select>
 
-              <Select value={language} onValueChange={(value) => setLanguage(value as 'en' | 'pl')} disabled={isLoading}>
+              <Select
+                value={language}
+                onValueChange={(value) => {
+                  const lang = value as 'en' | 'pl';
+                  setLanguage(lang);
+                  // Update URL immediately to new language
+                  if (typeof window !== 'undefined') {
+                    const { pathname, search, hash } = window.location;
+                    const parts = pathname.split('/').filter(Boolean);
+                    const hasLang = parts[0] === 'en' || parts[0] === 'pl';
+                    if (hasLang) {
+                      parts[0] = lang;
+                    } else {
+                      parts.unshift(lang);
+                    }
+                    const nextPath = '/' + parts.join('/');
+                    window.history.replaceState(null, '', `${nextPath}${search || ''}${hash || ''}`);
+                  }
+                }}
+                disabled={isLoading}
+              >
                 <SelectTrigger className="w-16 sm:w-32">
                   <SelectValue>
                     <div className="flex items-center justify-center w-full">
