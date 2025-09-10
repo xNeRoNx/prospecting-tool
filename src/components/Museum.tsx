@@ -261,7 +261,7 @@ export function Museum() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t('museum')}</h2>
+        <h2 className="text-2xl font-bold">{t('museum')} (beta)</h2>
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline" className="flex items-center gap-2">

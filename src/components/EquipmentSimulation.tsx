@@ -296,6 +296,9 @@ export function EquipmentSimulation() {
               museumBonuses.luck += modifierValue;
               museumBonuses.capacity += modifierValue;
               break;
+            case 'Size Boost':
+              museumBonuses.sizeBoost += modifierValue;
+              break;
           }
         }
       }

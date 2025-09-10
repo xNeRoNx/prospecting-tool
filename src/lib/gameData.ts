@@ -578,8 +578,8 @@ export const pans: Pan[] = [
   { name: "Worldshaker Pan", stats: { luck: 70, capacity: 150, shakeStrength: 5, shakeSpeed: 100 }, passive: "Size boost of (+25%)", price: 125000000 },
   { name: "Dragonflame Pan", stats: { luck: 150, capacity: 180, shakeStrength: 10, shakeSpeed: 110 }, passive: "Size boost of (-10%)", price: 400000000 },
   { name: "Fossilized Pan", stats: { luck: 200, capacity: 225, shakeStrength: 8, shakeSpeed: 100 }, passive: "Modifier boost of (+50%)", price: 1000000000 },
-  { name: "Galactic Pan", stats: { luck: 100, capacity: 500, shakeStrength: 25, shakeSpeed: 100 }, passive: "???", price: 2000000000 },
-  { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "???", price: 10000000000 }
+  { name: "Galactic Pan", stats: { luck: 100, capacity: 500, shakeStrength: 25, shakeSpeed: 100 }, passive: "Size Boost of (+25%) and has a chance to give Voidtorn items", price: 2000000000 },
+  { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "Size Boost of (+25%)", price: 10000000000 }
 ];
 
 export const enchants: Enchant[] = [
