@@ -457,7 +457,7 @@ export const ores: Ore[] = [
   { name: "Silver Clamshell", rarity: "Rare", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.13 } },
   { name: "Peridot", rarity: "Rare", museumEffect: { stat: "Luck", maxMultiplier: 0.13 } },
   { name: "Onyx", rarity: "Rare", museumEffect: { stat: "Size Boost", maxMultiplier: 0.13 } },
-  { name: "Meteoric Iron", rarity: "Rare", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.13 } },
+  { name: "Meteoric Iron", rarity: "Rare", museumEffect: { stat: "Size Boost", maxMultiplier: 0.13 } },
   { name: "Glacial Quartz", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.13 } },
   { name: "Azuralite", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.13 } },
   { name: "Pyrelith", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.13 } },
