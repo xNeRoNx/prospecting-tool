@@ -89,7 +89,7 @@ export const craftableItems: CraftableItem[] = [
     rarity: "Common", 
     position: "Necklace",
     recipe: [{ material: "Platinum", amount: 8 }, { material: "Amethyst", amount: 2 }],
-    stats: { sellBoost: [0, 15] },
+    stats: { sellBoost: [0, 15], luck: [0.5, 0.2] },
     cost: 10000
   },
   {
@@ -396,7 +396,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Volcanic Core", amount: 1 },
       { material: "Dragon Bone", amount: 5 }
     ],
-    stats: { luck: [50, 200], capacity: [50, 200], shakeSpeed: [10, 30], sizeBoost: [0, 50], sellBoost: [0, 100] },
+    stats: { luck: [50, 250], capacity: [50, 200], shakeSpeed: [10, 30], sizeBoost: [0, 50], sellBoost: [0, 100] },
     cost: 100000000
   },
   {
@@ -456,8 +456,8 @@ export const ores: Ore[] = [
   { name: "Jade", rarity: "Rare", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.13 } },
   { name: "Silver Clamshell", rarity: "Rare", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.13 } },
   { name: "Peridot", rarity: "Rare", museumEffect: { stat: "Luck", maxMultiplier: 0.13 } },
-  { name: "Onyx", rarity: "Rare", museumEffect: { stat: "Size Boost", maxMultiplier: 0.13 } },
-  { name: "Meteoric Iron", rarity: "Rare", museumEffect: { stat: "Size Boost", maxMultiplier: 0.13 } },
+  { name: "Onyx", rarity: "Rare", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.13 } },
+  { name: "Meteoric Iron", rarity: "Rare", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.13 } },
   { name: "Glacial Quartz", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.13 } },
   { name: "Azuralite", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.13 } },
   { name: "Pyrelith", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.13 } },
@@ -487,7 +487,8 @@ export const ores: Ore[] = [
   { name: "Fire Opal", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.3 } },
   { name: "Dragon Bone", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.3 } },
   { name: "Catseye", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 } },
-  { name: "Starshine", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.3 } },
+  { name: "Starshine", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, 
+    specialEffects: { digSpeed: 0.3, shakeSpeed: 0.3 } },
   { name: "Tourmaline", rarity: "Legendary", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.3 } },
   { name: "Aquamarine", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 } },
   { name: "Aetherite", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 } },
@@ -523,7 +524,8 @@ export const modifiers = [
   { name: "Iridescent", effect: "Luck" },
   { name: "Irradiated", effect: "Modifier Boost" },
   { name: "Electrified", effect: "Dig and Shake Speed" },
-  { name: "Voidtorn", effect: "Luck and Capacity" }
+  { name: "Voidtorn", effect: "Luck and Capacity" },
+  { name: "Crystalline", effect: "Size Boost" }
 ];
 
 export const getModifierBonus = (rarity: string): number => {
