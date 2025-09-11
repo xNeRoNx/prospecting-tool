@@ -14,8 +14,8 @@ export interface MuseumBonuses {
 }
 
 /**
- * Oblicza bonusy z muzeum (maksymalne – na podstawie wpisanych wag i wybranych modifierów).
- * Zachowuje identyczną logikę jak wcześniej zduplikowane funkcje w Museum.tsx oraz EquipmentSimulation.tsx
+ * Calculates museum bonuses (maximum - based on entered weights and selected modifiers).
+ * Preserves identical logic as previously duplicated functions in Museum.tsx and EquipmentSimulation.tsx.
  */
 export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses {
   const bonuses: MuseumBonuses = {
@@ -35,16 +35,20 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
     const ore = ores.find(o => o.name === slot.ore);
     if (!ore) return;
 
-    // Specjalne multi-stat efekty
+    // Special multi-stat effects
     if (ore.specialEffects) {
+      const museumBonusKeys: (keyof MuseumBonuses)[] = [
+        'luck', 'digStrength', 'digSpeed', 'shakeStrength', 'shakeSpeed',
+        'capacity', 'sellBoost', 'sizeBoost', 'modifierBoost'
+      ];
       Object.entries(ore.specialEffects).forEach(([stat, value]) => {
-        if ((bonuses as any)[stat] !== undefined) {
+        if (museumBonusKeys.includes(stat as keyof MuseumBonuses)) {
           let effectValue = value;
-          // Dodatkowy bonus za modifier (zgodnie z wcześniejszą logiką – dodawany tu ORAZ niżej w switchu)
+          // Additional bonus for modifier (according to previous logic - added here AND below in switch)
           if (slot.modifier) {
             effectValue += getModifierBonus(ore.rarity);
           }
-          (bonuses as any)[stat] += effectValue;
+          bonuses[stat as keyof MuseumBonuses] += effectValue;
         }
       });
     } else {
@@ -61,7 +65,7 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
       if (effectStat.includes('modifier boost')) bonuses.modifierBoost += baseMultiplier;
     }
 
-    // Efekt modifiera (osobno – potencjalnie dodaje drugi raz do jednej ze statystyk jeśli ore ma specialEffects)
+    // Modifier effect (separately – may potentially add a second time to one of the stats if the ore has specialEffects)
     if (slot.modifier) {
       const modifier = modifiers.find(m => m.name === slot.modifier);
       if (modifier) {

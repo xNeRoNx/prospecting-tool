@@ -32,7 +32,7 @@ export interface Ore {
     stat: string;
     maxMultiplier: number;
   };
-  // Maksymalna waga (kg) przy której osiągany jest maksymalny modyfikator.
+  // Maximum weight (kg) at which maximum modifier is achieved.
   maxWeight: number;
   specialEffects?: {
     luck?: number;

@@ -68,7 +68,7 @@ export function Museum() {
   setMuseumSlots(current => (current || []).map(slot => slot.id === id ? { ...slot, ore: undefined, modifier: undefined, weight: undefined } : slot));
   };
 
-  // Użycie wspólnej funkcji zamiast lokalnej kopii
+  // Using shared function instead of local copy
   const calculateMuseumStats = () => calculateMuseumBonuses(museumSlots);
 
   const getRarityClass = (rarity: string) => {
@@ -306,7 +306,7 @@ export function Museum() {
                               </SelectContent>
                             </Select>
 
-                            {/* Informacja o wymaganej wadze dla wybranego ore */}
+                            {/* Information about required weight for selected ore */}
                             <div className="text-xs text-muted-foreground mt-1">
                               {slot.ore ? 
                                 (() => {
