@@ -37,14 +37,18 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
 
     // Special multi-stat effects
     if (ore.specialEffects) {
+      const museumBonusKeys: (keyof MuseumBonuses)[] = [
+        'luck', 'digStrength', 'digSpeed', 'shakeStrength', 'shakeSpeed',
+        'capacity', 'sellBoost', 'sizeBoost', 'modifierBoost'
+      ];
       Object.entries(ore.specialEffects).forEach(([stat, value]) => {
-        if ((bonuses as any)[stat] !== undefined) {
+        if (museumBonusKeys.includes(stat as keyof MuseumBonuses)) {
           let effectValue = value;
           // Additional bonus for modifier (according to previous logic - added here AND below in switch)
           if (slot.modifier) {
             effectValue += getModifierBonus(ore.rarity);
           }
-          (bonuses as any)[stat] += effectValue;
+          bonuses[stat as keyof MuseumBonuses] += effectValue;
         }
       });
     } else {
