@@ -61,7 +61,7 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
       if (effectStat.includes('modifier boost')) bonuses.modifierBoost += baseMultiplier;
     }
 
-    // Efekt modifiera (osobno – potencjalnie dodaje drugi raz do jednej ze statystyk jeśli ore ma specialEffects)
+    // Modifier effect (separately – may potentially add a second time to one of the stats if the ore has specialEffects)
     if (slot.modifier) {
       const modifier = modifiers.find(m => m.name === slot.modifier);
       if (modifier) {
