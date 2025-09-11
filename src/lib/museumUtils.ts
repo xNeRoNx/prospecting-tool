@@ -35,7 +35,7 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
     const ore = ores.find(o => o.name === slot.ore);
     if (!ore) return;
 
-    // Specjalne multi-stat efekty
+    // Special multi-stat effects
     if (ore.specialEffects) {
       Object.entries(ore.specialEffects).forEach(([stat, value]) => {
         if ((bonuses as any)[stat] !== undefined) {
