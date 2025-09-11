@@ -463,6 +463,7 @@ export const ores: Ore[] = [
   { name: "Glacial Quartz", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.125 }, maxWeight: 21 },
   { name: "Azuralite", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.125 }, maxWeight: 15 },
   { name: "Pyrelith", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.125 }, maxWeight: 16 },
+
   
   // Epic
   { name: "Iridium", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 20 },

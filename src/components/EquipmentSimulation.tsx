@@ -195,8 +195,10 @@ export function EquipmentSimulation() {
     return stats;
   };
 
+
   // Użycie wspólnej funkcji
   const calculateMuseumBonuses = () => sharedCalculateMuseumBonuses(museumSlots);
+
 
   const calculateFinalStats = () => {
     const baseStats = calculateBaseStats();
