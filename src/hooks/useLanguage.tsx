@@ -16,9 +16,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // Initial language resolution: URL (/en or /pl) takes precedence over storage
     if (typeof window !== 'undefined') {
       const seg = window.location.pathname.split('/').filter(Boolean)[0] as Language | undefined;
-    if (seg === 'en' || seg === 'pl' || seg === 'id') return seg;
+    if (seg === 'en' || seg === 'pl' || seg === 'id' || seg === 'pt') return seg;
       const stored = localStorage.getItem(STORAGE_KEY) as Language | null;
-    if (stored && (stored === 'en' || stored === 'pl' || stored === 'id')) return stored;
+    if (stored && (stored === 'en' || stored === 'pl' || stored === 'id' || stored === 'pt')) return stored;
     }
     return 'en';
   });
@@ -59,7 +59,7 @@ export function LanguageUrlSync() {
     if (typeof window === 'undefined') return;
     const { pathname, search, hash } = window.location;
     const parts = pathname.split('/').filter(Boolean);
-    const hasLang = parts[0] === 'en' || parts[0] === 'pl' || parts[0] === 'id';
+    const hasLang = parts[0] === 'en' || parts[0] === 'pl' || parts[0] === 'id' || parts[0] === 'pt';
     const nextParts = [...parts];
     if (hasLang) {
       if (parts[0] !== language) {
@@ -79,7 +79,7 @@ export function LanguageUrlSync() {
     if (typeof window === 'undefined') return;
     const onPop = () => {
       const seg = window.location.pathname.split('/').filter(Boolean)[0];
-      if (seg === 'en' || seg === 'pl' || seg === 'id') {
+      if (seg === 'en' || seg === 'pl' || seg === 'id' || seg === 'pt') {
         setLanguage(seg);
       }
     };

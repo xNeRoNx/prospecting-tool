@@ -27,7 +27,7 @@ function App() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const base = 'https://prospecting-tool.vercel.app';
-    const path = window.location.pathname.replace(/^\/(en|pl)/, '').replace(/\/+/g, '/');
+    const path = window.location.pathname.replace(/^\/(en|pl|id|pt)/, '').replace(/\/+/g, '/');
     const canonicalUrl = `${base}/${language}${path}${window.location.search}`.replace(/(?<!:)\/\/+/, '/');
 
     const ensureLink = (rel: string, hreflang?: string) => {
@@ -46,14 +46,16 @@ function App() {
     canonical.setAttribute('href', canonicalUrl);
 
     // hreflang alternates
-  const altEn = ensureLink('alternate', 'en');
-  altEn.setAttribute('href', `${base}/en${path}`);
-  const altPl = ensureLink('alternate', 'pl');
-  altPl.setAttribute('href', `${base}/pl${path}`);
-  const altId = ensureLink('alternate', 'id');
-  altId.setAttribute('href', `${base}/id${path}`);
-  const altDef = ensureLink('alternate', 'x-default');
-  altDef.setAttribute('href', `${base}/en${path}`);
+    const altEn = ensureLink('alternate', 'en');
+    altEn.setAttribute('href', `${base}/en${path}`);
+    const altPl = ensureLink('alternate', 'pl');
+    altPl.setAttribute('href', `${base}/pl${path}`);
+    const altId = ensureLink('alternate', 'id');
+    altId.setAttribute('href', `${base}/id${path}`);
+    const altPt = ensureLink('alternate', 'pt');
+    altPt.setAttribute('href', `${base}/pt${path}`);
+    const altDef = ensureLink('alternate', 'x-default');
+    altDef.setAttribute('href', `${base}/en${path}`);
   }, [language]);
 
   // Dynamic document title per zakładka (SEO + UX)
