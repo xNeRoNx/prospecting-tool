@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,6 +10,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import type { MuseumSlot } from '@/hooks/useAppData.tsx';
 import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
+import { calculateMuseumBonuses } from '@/lib/museumUtils';
 
 export function Museum() {
   const { t } = useLanguage();
@@ -67,115 +68,8 @@ export function Museum() {
   setMuseumSlots(current => (current || []).map(slot => slot.id === id ? { ...slot, ore: undefined, modifier: undefined, weight: undefined } : slot));
   };
 
-  const calculateMuseumStats = () => {
-    const stats: { [key: string]: number } = {
-      luck: 0,
-      digStrength: 0,
-      digSpeed: 0,
-      shakeStrength: 0,
-      shakeSpeed: 0,
-      capacity: 0,
-      sellBoost: 0,
-      sizeBoost: 0,
-      modifierBoost: 0
-    };
-
-    museumSlots.forEach(slot => {
-      if (!slot.ore) return;
-      
-      const ore = ores.find(o => o.name === slot.ore);
-      if (!ore) return;
-
-      // Handle special multi-stat effects first
-      if (ore.specialEffects) {
-        Object.entries(ore.specialEffects).forEach(([stat, value]) => {
-          if (stats[stat] !== undefined) {
-            let effectValue = value;
-            
-            // Add modifier bonus if present
-            if (slot.modifier) {
-              effectValue += getModifierBonus(ore.rarity);
-            }
-            
-            stats[stat] += effectValue;
-          }
-        });
-      } else {
-        // Handle normal single-stat effects
-        let baseMultiplier = ore.museumEffect.maxMultiplier;
-        
-        // Apply the effect based on the ore's museum effect
-        const effectStat = ore.museumEffect.stat.toLowerCase();
-        
-        if (effectStat.includes('luck')) {
-          stats.luck += baseMultiplier;
-        }
-        if (effectStat.includes('dig strength')) {
-          stats.digStrength += baseMultiplier;
-        }
-        if (effectStat.includes('dig speed')) {
-          stats.digSpeed += baseMultiplier;
-        }
-        if (effectStat.includes('shake strength')) {
-          stats.shakeStrength += baseMultiplier;
-        }
-        if (effectStat.includes('shake speed')) {
-          stats.shakeSpeed += baseMultiplier;
-        }
-        if (effectStat.includes('capacity')) {
-          stats.capacity += baseMultiplier;
-        }
-        if (effectStat.includes('sell boost')) {
-          stats.sellBoost += baseMultiplier;
-        }
-        if (effectStat.includes('size boost')) {
-          stats.sizeBoost += baseMultiplier;
-        }
-        if (effectStat.includes('modifier boost')) {
-          stats.modifierBoost += baseMultiplier;
-        }
-      }
-
-      // Apply modifier effects separately
-      if (slot.modifier) {
-        const modifier = modifiers.find(m => m.name === slot.modifier);
-        if (modifier) {
-          const modifierValue = getModifierBonus(ore.rarity);
-          
-          switch (modifier.effect) {
-            case 'Dig Speed':
-              stats.digSpeed += modifierValue;
-              break;
-            case 'Shake Strength':
-              stats.shakeStrength += modifierValue;
-              break;
-            case 'Shake Speed':
-              stats.shakeSpeed += modifierValue;
-              break;
-            case 'Dig Strength':
-              stats.digStrength += modifierValue;
-              break;
-            case 'Luck':
-              stats.luck += modifierValue;
-              break;
-            case 'Modifier Boost':
-              stats.modifierBoost += modifierValue;
-              break;
-            case 'Dig and Shake Speed':
-              stats.digSpeed += modifierValue;
-              stats.shakeSpeed += modifierValue;
-              break;
-            case 'Luck and Capacity':
-              stats.luck += modifierValue;
-              stats.capacity += modifierValue;
-              break;
-          }
-        }
-      }
-    });
-
-    return stats;
-  };
+  // Użycie wspólnej funkcji zamiast lokalnej kopii
+  const calculateMuseumStats = () => calculateMuseumBonuses(museumSlots);
 
   const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
@@ -241,7 +135,8 @@ export function Museum() {
           modifierEffect: modifier?.effect,
           modifierBonus,
           weight: slot.weight,
-          specialEffects: ore.specialEffects
+          specialEffects: ore.specialEffects,
+          maxWeight: ore.maxWeight
         };
       })
       .filter(Boolean);
@@ -271,7 +166,7 @@ export function Museum() {
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{t('museumOverview')}</DialogTitle>
+              <DialogTitle>{t('museumOverview')} (max)</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               {Object.keys(getMuseumOverview()).length === 0 ? (
@@ -300,15 +195,15 @@ export function Museum() {
                                 )}
                                 {item?.weight && (
                                   <span className="text-muted-foreground text-xs flex-shrink-0">
-                                    {item.weight}kg
+                                    {item.weight}kg | @ {item.maxWeight}kg
                                   </span>
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground text-left sm:text-right sm:ml-2 flex-shrink-0">
-                                {item?.effect}: +{item?.maxMultiplier}x
+                                {item?.effect}: 0.0x | +{item?.maxMultiplier}x
                                 {item?.modifier && (
                                   <div>
-                                    {item.modifierEffect}: +{item.modifierBonus}x
+                                    {item.modifierEffect}: 0.0x | +{item.modifierBonus}x
                                   </div>
                                 )}
                               </div>
@@ -357,56 +252,71 @@ export function Museum() {
                             )}
                           </div>
 
-                          <Select
-                            value={slot.ore || ''}
-                            onValueChange={(value) => updateSlot(slot.id, { ore: value || undefined })}
-                            disabled={isLoading}
-                          >
-                            <SelectTrigger className="text-xs">
-                              <SelectValue placeholder="Select ore">
-                                {slot.ore}
-                              </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="max-w-xs sm:max-w-sm">
-                              {ores
-                                .filter(ore => ore.rarity === rarity)
-                                .map(ore => {
-                                  let statInfo = `${ore.museumEffect.stat}: +${ore.museumEffect.maxMultiplier}x`;
-                                  
-                                  // If ore has special effects, show them instead
-                                  if (ore.specialEffects) {
-                                    const effects = Object.entries(ore.specialEffects)
-                                      .map(([stat, value]) => {
-                                        const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
-                                        return `${displayStat}: ${value > 0 ? '+' : ''}${value}x`;
-                                      })
-                                      .join(', ');
-                                    statInfo = effects;
-                                  }
-                                  
-                                  return (
-                                    <SelectItem 
-                                      key={ore.name} 
-                                      value={ore.name}
-                                      disabled={usedOres.has(ore.name) && slot.ore !== ore.name}
-                                      className="flex-col items-start"
-                                    >
-                                      <div className="w-full">
-                                        <div className="flex items-center justify-between w-full mb-1">
-                                          <span className="font-medium">{ore.name}</span>
-                                          {usedOres.has(ore.name) && slot.ore !== ore.name && (
-                                            <span className="text-xs text-muted-foreground ml-1">(Used)</span>
-                                          )}
+                          <div className="flex justify-between items-center">
+                            <Select
+                              value={slot.ore || ''}
+                              onValueChange={(value) => updateSlot(slot.id, { ore: value || undefined })}
+                              disabled={isLoading}
+                            >
+                              <SelectTrigger className="text-xs">
+                                <SelectValue placeholder="Select ore">
+                                  {slot.ore}
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent className="max-w-xs sm:max-w-sm">
+                                {ores
+                                  .filter(ore => ore.rarity === rarity)
+                                  .map(ore => {
+                                    let statInfo = `${ore.museumEffect.stat}: +${ore.museumEffect.maxMultiplier}x`;
+                                    
+                                    // If ore has special effects, show them instead
+                                    if (ore.specialEffects) {
+                                      const effects = Object.entries(ore.specialEffects)
+                                        .map(([stat, value]) => {
+                                          const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
+                                          return `${displayStat}: ${value > 0 ? '+' : ''}${value}x`;
+                                        })
+                                        .join(', ');
+                                      statInfo = effects;
+                                    }
+                                    
+                                    statInfo += ` | @ ${ore.maxWeight}kg`;
+                                    
+                                    return (
+                                      <SelectItem 
+                                        key={ore.name} 
+                                        value={ore.name}
+                                        disabled={usedOres.has(ore.name) && slot.ore !== ore.name}
+                                        className="flex-col items-start"
+                                      >
+                                        <div className="w-full">
+                                          <div className="flex items-center justify-between w-full mb-1">
+                                            <span className="font-medium">{ore.name}</span>
+                                            {usedOres.has(ore.name) && slot.ore !== ore.name && (
+                                              <span className="text-xs text-muted-foreground ml-1">(Used)</span>
+                                            )}
+                                          </div>
+                                          <div className="text-muted-foreground text-xs break-words whitespace-normal">
+                                            {statInfo}
+                                          </div>
                                         </div>
-                                        <div className="text-muted-foreground text-xs break-words whitespace-normal">
-                                          {statInfo}
-                                        </div>
-                                      </div>
-                                    </SelectItem>
-                                  );
-                                })}
-                            </SelectContent>
-                          </Select>
+                                      </SelectItem>
+                                    );
+                                  })}
+                              </SelectContent>
+                            </Select>
+
+                            {/* Informacja o wymaganej wadze dla wybranego ore */}
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {slot.ore ? 
+                                (() => {
+                                  const ore = ores.find(o => o.name === slot.ore);
+                                  if (!ore) return null;
+                                  return `@ ${ore.maxWeight}kg`;
+                                })() : null
+                              }
+                            </div>
+                          </div>
 
                           {slot.ore && (
                             <>
@@ -474,7 +384,7 @@ export function Museum() {
                                       const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
                                       return (
                                         <div key={stat}>
-                                          {displayStat}: {value > 0 ? '+' : ''}{value}x
+                                          {displayStat}: 0.0x | {value > 0 ? '+' : ''}{value}x
                                         </div>
                                       );
                                     });
@@ -482,7 +392,7 @@ export function Museum() {
                                     // Show normal museum effect
                                     return (
                                       <>
-                                        {ore.museumEffect.stat}: +{ore.museumEffect.maxMultiplier}x
+                                        {ore.museumEffect.stat}: 0.0x | +{ore.museumEffect.maxMultiplier}x
                                       </>
                                     );
                                   }
@@ -508,7 +418,7 @@ export function Museum() {
         <div className="space-y-4">
           <Card className="sticky top-4">
             <CardHeader>
-              <CardTitle>{t('museumStats')}</CardTitle>
+              <CardTitle>{t('museumStats')} (max)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {Object.entries(museumStats).map(([stat, value]) => (
