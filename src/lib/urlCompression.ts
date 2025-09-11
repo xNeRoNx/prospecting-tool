@@ -1,6 +1,6 @@
-// Zaawansowana kompresja danych do URL
-// Funkcje: aliasowanie kluczy, usuwanie pustych sekcji, deflate (pako), base64url (bez paddingu)
-// Brak kompatybilności ze starym formatem lz-string (całkowicie wycofany)
+// Advanced data compression for URLs
+// Features: key aliasing, removal of empty sections, deflate (pako), base64url (without padding)
+// Not compatible with the old lz-string format (completely deprecated)
 
 import { deflate, inflate } from 'pako';
 
