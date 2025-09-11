@@ -6,16 +6,16 @@ import { Header } from '@/components/Header';
 import { Crafting } from '@/components/Crafting';
 import { Museum } from '@/components/Museum';
 import { EquipmentSimulation } from '@/components/EquipmentSimulation';
-import { CustomCollectibles } from '@/components/CustomCollectibles';
+import { Info } from '@/components/Info';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
-import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/react';
+import { Hammer, Bank, Calculator, Info as InfoIcon, Spinner } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 
 function App() {
   const { language, t } = useLanguage();
   const { isLoading } = useAppData();
-  const [activeTab, setActiveTab] = useState<string>('crafting');
+  const [activeTab, setActiveTab] = useState<string>('info');
 
   useEffect(() => {
     if (language) {
@@ -60,13 +60,13 @@ function App() {
       crafting: t('crafting'),
       museum: t('museum'),
       equipment: t('equipment'),
-      collectibles: t('collectibles')
+      info: t('infoTab')
     };
     const descMap: Record<string, string> = {
       crafting: t('seoDescCrafting'),
       museum: t('seoDescMuseum'),
       equipment: t('seoDescEquipment'),
-      collectibles: t('seoDescCollectibles')
+      info: t('seoDescInfo')
     };
     const section = titleMap[activeTab];
     document.title = section ? `${section} | Prospecting! Tools` : 'Prospecting! Tools';
@@ -79,7 +79,7 @@ function App() {
   // Inicjalizacja zakładki z hasha oraz nasłuch zmiany hasha (#crafting, #museum, ...)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const validTabs = ['crafting', 'museum', 'equipment', 'collectibles'];
+  const validTabs = ['info', 'crafting', 'museum', 'equipment'];
     const init = () => {
       const fromHash = window.location.hash.replace('#', '');
       if (validTabs.includes(fromHash)) {
@@ -137,9 +137,9 @@ function App() {
               <Calculator size={16} />
               <span className="text-xs sm:text-sm">{t('equipment')}</span>
             </TabsTrigger>
-            <TabsTrigger value="collectibles" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
-              <Archive size={16} />
-              <span className="text-xs sm:text-sm break-words">{t('collectibles')}</span>
+            <TabsTrigger value="info" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+              <InfoIcon size={16} />
+              <span className="text-xs sm:text-sm">{t('infoTab')}</span>
             </TabsTrigger>
           </TabsList>
           
@@ -155,8 +155,8 @@ function App() {
             <EquipmentSimulation />
           </TabsContent>
           
-          <TabsContent value="collectibles" id="collectibles">
-            <CustomCollectibles />
+          <TabsContent value="info" id="info">
+            <Info />
           </TabsContent>
         </Tabs>
       </main>

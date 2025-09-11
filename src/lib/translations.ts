@@ -4,7 +4,15 @@ export const translations = {
     crafting: "Crafting",
     museum: "Museum", 
     equipment: "Equipment Simulation",
-    collectibles: "Custom Collectibles",
+  collectibles: "Custom Collectibles",
+  infoTab: "Info",
+  infoTitle: "Prospecting! Tools – Information",
+  infoIntro: "This section provides an overview of the available tools and a full list of craftable items with their stats. Use it as a quick in-game reference.",
+  infoCraftingHeader: "Crafting Tool",
+  infoCraftingDesc: "Plan crafting, view material requirements, and aggregate totals for multiple items. Marks crafted items and sends them to equipment simulation.",
+  infoItemsHeader: "All Craftable Items",
+  infoItemsDesc: "Below is a complete list of items defined in the data with their recipes, stat ranges, rarity and cost.",
+  position: "Position",
     
     // Common UI
     add: "Add",
@@ -189,7 +197,8 @@ export const translations = {
     seoDescCrafting: "Crafting calculator and material optimization for Roblox Prospecting!",
     seoDescMuseum: "Track museum contribution values and optimize deposits in Prospecting!",
     seoDescEquipment: "Simulate equipment setups and efficiency for Prospecting!",
-    seoDescCollectibles: "Manage and plan custom collectibles in Prospecting!",
+  seoDescCollectibles: "Manage and plan custom collectibles in Prospecting!",
+  seoDescInfo: "Overview of Prospecting tools and full item reference list.",
 
     // Misc
     loadingData: "Loading data...",
@@ -205,7 +214,15 @@ export const translations = {
     crafting: "Tworzenie",
     museum: "Muzeum",
     equipment: "Symulacja Ekwipunku", 
-    collectibles: "Niestandardowe Kolekcje",
+  collectibles: "Niestandardowe Kolekcje",
+  infoTab: "Informator",
+  infoTitle: "Prospecting! Tools – Informator",
+  infoIntro: "Ta sekcja zawiera opis dostępnych narzędzi oraz pełną listę przedmiotów z ich statystykami. Używaj jako szybkiej referencji.",
+  infoCraftingHeader: "Narzędzie Tworzenia",
+  infoCraftingDesc: "Planuj tworzenie, przeglądaj wymagane materiały i sumy dla wielu przedmiotów. Oznaczaj stworzone i wysyłaj do symulacji ekwipunku.",
+  infoItemsHeader: "Wszystkie Przedmioty",
+  infoItemsDesc: "Poniżej pełna lista przedmiotów w danych wraz z przepisami, przedziałami statystyk, rzadkością i kosztem.",
+  position: "Pozycja",
     
     // Common UI
     add: "Dodaj",
@@ -390,7 +407,8 @@ export const translations = {
     seoDescCrafting: "Kalkulator tworzenia i optymalizacja materiałów do Roblox Prospecting!",
     seoDescMuseum: "Śledź wartości wkładu do muzeum i optymalizuj depozyty w Prospecting!",
     seoDescEquipment: "Symuluj zestawy ekwipunku i ich efektywność w Prospecting!",
-    seoDescCollectibles: "Zarządzaj i planuj niestandardowe kolekcje w Prospecting!",
+  seoDescCollectibles: "Zarządzaj i planuj niestandardowe kolekcje w Prospecting!",
+  seoDescInfo: "Przegląd narzędzi i pełna lista przedmiotów do Prospecting!",
 
     // Misc
     loadingData: "Ładowanie danych...",
