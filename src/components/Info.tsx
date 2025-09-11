@@ -11,45 +11,51 @@ export function Info() {
     <div className="space-y-8">
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">{t('infoTitle')}</h2>
-        <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+        <p className="text-muted-foreground leading-relaxed whitespace-pre-line border-l-2 border-primary/40 pl-4">
           {t('infoIntro')}
         </p>
       </section>
 
       {/* Author Note */}
-      <section className="space-y-4 border-l-2 border-primary/40 pl-4">
+      <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoAuthorNoteTitle')}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoAuthorNoteDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoAuthorNoteDesc')}</p>
+      </section>
+
+      {/* PWA Install */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold">{t('pwaInstallTitle')}</h3>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('pwaInstallDesc')}</p>
       </section>
 
       {/* Header */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoHeaderTitle')}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoHeaderDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoHeaderDesc')}</p>
       </section>
 
       {/* Data Management */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoDataManagementTitle')}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoDataManagementDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoDataManagementDesc')}</p>
       </section>
 
       {/* Crafting */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoCraftingHeader')}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoCraftingDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoCraftingDesc')}</p>
       </section>
 
       {/* Museum */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoMuseumTitle')}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoMuseumDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoMuseumDesc')}</p>
       </section>
 
       {/* Equipment Simulation */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoEquipmentTitle')}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoEquipmentDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoEquipmentDesc')}</p>
       </section>
 
       <section className="space-y-4">

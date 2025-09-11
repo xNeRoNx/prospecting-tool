@@ -225,6 +225,10 @@ export const translations = {
     url: "URL",
     placeholderSaveName: "My Prospecting Save",
     placeholderSaveDescription: "Description of this save...",
+
+    // PWA Install
+    pwaInstallTitle: "Install as App (PWA)",
+    pwaInstallDesc: "You can install this tool as a standalone app for faster access and a distraction‑free window.\n\nDesktop (Chrome / Edge): Click the install icon in the address bar (or browser menu > Install). After installation it opens in its own window.\n\nAndroid: A prompt may appear automatically after a short usage period. If not: browser menu > Add to Home Screen / Install App.\n\niOS (Safari): Share button > Add to Home Screen (no automatic prompt on iOS).\n\nLanguage on Install: The app installs using the manifest for the language active when you opened the page. Switching language later doesn’t require reinstall—shortcuts adapt via internal routing.\n\nOffline: Core UI + manifests + icons are cached. Dynamic data (future weight scaling formulas etc.) may still need a connection.",
   },
   
   pl: {
@@ -453,6 +457,10 @@ export const translations = {
     url: "URL",
     placeholderSaveName: "Mój zapis Prospecting",
     placeholderSaveDescription: "Opis tego zapisu...",
+
+    // PWA Install
+    pwaInstallTitle: "Instalacja jako Aplikacja (PWA)",
+    pwaInstallDesc: "Możesz zainstalować to narzędzie jako samodzielną aplikację dla szybszego dostępu i okna bez rozpraszania.\n\nDesktop (Chrome / Edge): Kliknij ikonę instalacji w pasku adresu (lub menu przeglądarki > Zainstaluj). Po instalacji uruchamia się w osobnym oknie.\n\nAndroid: Powinien pojawić się prompt po krótkim użyciu. Jeśli nie: menu przeglądarki > Dodaj do ekranu głównego / Zainstaluj aplikację.\n\niOS (Safari): Przycisk Udostępniania > Dodaj do ekranu początkowego (iOS nie pokazuje automatycznego komunikatu).\n\nJęzyk przy instalacji: Instalacja użyje manifestu języka aktywnego w chwili wejścia na stronę. Późniejsza zmiana języka nie wymaga reinstalacji—skrót działa dalej.\n\nOffline: Rdzeń UI + manifesty + ikony są w cache. Dynamiczne dane mogą wymagać połączenia.",
   }
   ,
   id: {
@@ -680,6 +688,10 @@ export const translations = {
     url: "URL",
     placeholderSaveName: "Simpanan Prospecting Saya",
     placeholderSaveDescription: "Deskripsi simpanan ini...",
+
+    // PWA Install
+    pwaInstallTitle: "Instal sebagai Aplikasi (PWA)",
+    pwaInstallDesc: "Anda bisa menginstal alat ini sebagai aplikasi mandiri untuk akses cepat dan jendela tanpa gangguan.\n\nDesktop (Chrome / Edge): Klik ikon instal di bilah alamat (atau menu browser > Install). Setelah terpasang akan terbuka di jendela terpisah.\n\nAndroid: Prompt bisa muncul otomatis setelah beberapa saat penggunaan. Jika tidak: menu browser > Tambahkan ke Layar Utama / Install App.\n\niOS (Safari): Tombol Share > Add to Home Screen (tidak ada prompt otomatis di iOS).\n\nBahasa saat instal: Aplikasi memakai manifest bahasa aktif saat pertama kali halaman dibuka. Mengganti bahasa nanti tidak perlu instal ulang—routing internal menyesuaikan.\n\nOffline: UI inti + manifest + ikon berada di cache. Data dinamis tertentu mungkin tetap butuh koneksi.",
   },
   pt: {
     // Navegação
@@ -907,6 +919,10 @@ export const translations = {
     url: "URL",
     placeholderSaveName: "Meu Salvamento Prospecting",
     placeholderSaveDescription: "Descrição deste salvamento...",
+
+    // PWA Install
+    pwaInstallTitle: "Instalar como Aplicativo (PWA)",
+    pwaInstallDesc: "Você pode instalar esta ferramenta como um app independente para acesso mais rápido e janela sem distrações.\n\nDesktop (Chrome / Edge): Clique no ícone de instalação na barra de endereço (ou menu do navegador > Instalar). Após instalar abre em janela própria.\n\nAndroid: Um prompt pode aparecer após curto uso. Caso não: menu do navegador > Adicionar à Tela Inicial / Instalar Aplicativo.\n\niOS (Safari): Botão Compartilhar > Adicionar à Tela de Início (iOS não mostra prompt automático).\n\nIdioma na instalação: O app usa o manifest do idioma ativo quando você abre a página. Trocar idioma depois não exige reinstalar — os atalhos continuam válidos.\n\nOffline: Núcleo do UI + manifests + ícones ficam em cache. Alguns dados dinâmicos ainda podem requerer conexão.",
   }
 } as const;
 

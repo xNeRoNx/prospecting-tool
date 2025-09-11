@@ -23,3 +23,10 @@ createRoot(document.getElementById('root')!).render(
     </LanguageProvider>
   </ErrorBoundary>
 )
+
+// Register a lightweight service worker to cache locale manifests & core assets
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => { /* silent */ });
+  });
+}

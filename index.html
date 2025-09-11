@@ -54,6 +54,10 @@
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Prefetch locale-specific manifests to make dynamic switching instant -->
+    <link rel="prefetch" href="/manifest-pl.webmanifest" as="fetch" crossorigin="anonymous" />
+    <link rel="prefetch" href="/manifest-id.webmanifest" as="fetch" crossorigin="anonymous" />
+    <link rel="prefetch" href="/manifest-pt.webmanifest" as="fetch" crossorigin="anonymous" />
 </head>
 <body>
     <div id="root"></div>
