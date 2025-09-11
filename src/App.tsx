@@ -17,18 +17,13 @@ function App() {
   const { isLoading } = useAppData();
   const [activeTab, setActiveTab] = useState<string>('info');
 
-  useEffect(() => {
-    if (language) {
-      document.documentElement.lang = language;
-    }
-  }, [language]);
-
-  // Update canonical and hreflang alternates based on /en /pl
+  // Update canonical and hreflang alternates based on language
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const base = 'https://prospecting-tool.vercel.app';
     const path = window.location.pathname.replace(/^\/(en|pl|id|pt)/, '').replace(/\/+/g, '/');
     const canonicalUrl = `${base}/${language}${path}${window.location.search}`.replace(/(?<!:)\/\/+/, '/');
+    document.documentElement.lang = language;
 
     const ensureLink = (rel: string, hreflang?: string) => {
       let el = document.querySelector(`link[rel="${rel}"]${hreflang ? `[hreflang="${hreflang}"]` : ':not([hreflang])'}`) as HTMLLinkElement | null;
@@ -56,6 +51,22 @@ function App() {
     altPt.setAttribute('href', `${base}/pt${path}`);
     const altDef = ensureLink('alternate', 'x-default');
     altDef.setAttribute('href', `${base}/en${path}`);
+
+    // Dynamic manifest swapping per locale (fallback to base English manifest)
+    const manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement | null;
+    if (manifestLink) {
+      const manifestMap: Record<string, string> = {
+        en: '/manifest.webmanifest', // base English file
+        pl: '/manifest-pl.webmanifest',
+        id: '/manifest-id.webmanifest',
+        pt: '/manifest-pt.webmanifest'
+      };
+      const desired = manifestMap[language] || manifestMap.en;
+      // Only update if actually different to avoid refetch spam
+      if (!manifestLink.getAttribute('href') || manifestLink.getAttribute('href') !== desired) {
+        manifestLink.setAttribute('href', desired);
+      }
+    }
   }, [language]);
 
   // Dynamic document title per zakładka (SEO + UX)

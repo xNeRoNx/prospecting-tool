@@ -1,15 +1,48 @@
 {
-  "name": "Prospecting! Tools",
-  "short_name": "Prospecting Tools",
-  "description": "Companion app for Roblox Prospecting! Crafting calculator, museum tracker & equipment simulator.",
-  "start_url": "/",
+  "id": "/?app=pwa",
+  "name": "Prospecting! Tools – Crafting, Museum & Equipment",
+  "short_name": "Prospecting",
+  "description": "All‑in‑one companion for Roblox Prospecting!: crafting calculator, museum tracker & equipment simulator.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/en",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "lang": "en",
+  "categories": ["productivity", "utilities", "entertainment"],
   "icons": [
-    { "src": "/icons/icon-32.png", "sizes": "32x32", "type": "image/png" },
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
+    { "src": "/favicon-96x96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/web-app-manifest-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/web-app-manifest-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open Crafting",
+      "short_name": "Crafting",
+      "url": "/en#crafting",
+      "description": "Jump directly to the crafting planner"
+    },
+    {
+      "name": "Open Museum",
+      "short_name": "Museum",
+      "url": "/en#museum",
+      "description": "View and optimize your museum setup"
+    },
+    {
+      "name": "Open Equipment",
+      "short_name": "Equipment",
+      "url": "/en#equipment",
+      "description": "Simulate equipment builds"
+    },
+    {
+      "name": "Open Info",
+      "short_name": "Info",
+      "url": "/en#info",
+      "description": "View information about the tools"
+    }
+  ],
+  "prefer_related_applications": false,
+  "description_localization_note": "To localize, generate locale‑specific manifest files (e.g. /manifest-pl.webmanifest) and swap link rel=manifest dynamically based on detected language."
 }

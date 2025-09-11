@@ -1,0 +1,27 @@
+{
+  "id": "/?app=pwa&lang=pl",
+  "name": "Prospecting! Tools – Tworzenie, Muzeum i Ekwipunek",
+  "short_name": "Prospecting",
+  "description": "Wielofunkcyjne narzędzie do Roblox Prospecting!: kalkulator tworzenia, tracker muzeum i symulator ekwipunku.",
+  "lang": "pl",
+  "dir": "ltr",
+  "start_url": "/pl",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": ["productivity", "utilities", "entertainment"],
+  "icons": [
+    { "src": "/favicon-96x96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/web-app-manifest-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/web-app-manifest-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Tworzenie", "short_name": "Tworzenie", "url": "/pl#crafting", "description": "Przejdź do planera tworzenia" },
+    { "name": "Muzeum", "short_name": "Muzeum", "url": "/pl#museum", "description": "Optymalizuj układ muzeum" },
+    { "name": "Ekwipunek", "short_name": "Ekwipunek", "url": "/pl#equipment", "description": "Symuluj zestawy ekwipunku" },
+    { "name": "Informator", "short_name": "Info", "url": "/pl#info", "description": "Opis narzędzi i odniesienia" }
+  ],
+  "prefer_related_applications": false
+}
