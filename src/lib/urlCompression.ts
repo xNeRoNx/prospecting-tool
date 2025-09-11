@@ -64,15 +64,15 @@ function packData(data: any) {
   return packed;
 }
 
-// Deprecated legacy keys we intentionally drop when decoding.
+// Deprecated legacy collectibles alias we intentionally drop when decoding.
 // Note: 'cl' was a legacy alias for collectibles, which is no longer present in KEY_MAP.
 // We keep it here to skip old data sections for backward compatibility.
-const DEPRECATED_ALIASES = new Set(['cl']);
+const DEPRECATED_COLLECTIBLES_ALIAS = new Set(['cl']);
 
 function unpackData(data: any) {
   const unpacked: any = {};
   Object.entries(data || {}).forEach(([k, v]) => {
-    if (DEPRECATED_ALIASES.has(k)) return; // skip removed sections
+    if (DEPRECATED_COLLECTIBLES_ALIAS.has(k)) return; // skip removed sections
     const orig = KEY_MAP_INV[k] || k;
     if (orig === 'metadata') unpacked[orig] = unpackMetadata(v);
     else unpacked[orig] = v;
