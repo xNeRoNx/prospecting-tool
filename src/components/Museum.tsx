@@ -306,7 +306,7 @@ export function Museum() {
                               </SelectContent>
                             </Select>
 
-                            {/* Informacja o wymaganej wadze dla wybranego ore */}
+                            {/* Information about required weight for selected ore */}
                             <div className="text-xs text-muted-foreground mt-1">
                               {slot.ore ? 
                                 (() => {
