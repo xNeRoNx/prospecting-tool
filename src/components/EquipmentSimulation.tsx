@@ -181,7 +181,6 @@ export function EquipmentSimulation() {
     return stats; // Museum & Events applied later
   };
 
-
   // Toggle dla trybu muzeum (max vs weight placeholder)
   const [showMaxMuseum, setShowMaxMuseum] = useState(true);
 
@@ -749,7 +748,7 @@ export function EquipmentSimulation() {
               <Separator />
 
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')}</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')} (max)</h4>
                 {Object.entries(calculateMuseumBonuses()).map(([stat, bonus]) => {
                   if (bonus === 0) return null;
                   const shownBonus = showMaxMuseum ? bonus : 0; // placeholder for weight mode

@@ -168,7 +168,7 @@ export function Museum() {
           </DialogTrigger>
           <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{t('museumOverview')}</DialogTitle>
+              <DialogTitle>{t('museumOverview')} (max)</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               {Object.keys(getMuseumOverview()).length === 0 ? (
@@ -230,7 +230,7 @@ export function Museum() {
                                 })()}
                                 {item?.modifier && (
                                   <div>
-                                    {item.modifierEffect}: +{item.modifierBonus}x
+                                    {item.modifierEffect}: 0.0x | +{item.modifierBonus}x
                                   </div>
                                 )}
                               </div>
