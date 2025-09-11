@@ -1,6 +1,7 @@
 /* Lightweight service worker for Prospecting! Tools
  * - Caches core shell & localized manifests for offline install
- * - Avoids aggressive runtime caching of dynamic data to prevent stale content
+ * - Uses network-first runtime caching for HTML shell pages (cached for offline fallback)
+ * - Avoids runtime caching of dynamic API/data responses to prevent stale content
  */
 
 // Bump version when changing CORE_ASSETS to ensure clients fetch fresh cache
