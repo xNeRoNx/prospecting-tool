@@ -40,7 +40,7 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
       Object.entries(ore.specialEffects).forEach(([stat, value]) => {
         if ((bonuses as any)[stat] !== undefined) {
           let effectValue = value;
-          // Dodatkowy bonus za modifier (zgodnie z wcześniejszą logiką – dodawany tu ORAZ niżej w switchu)
+          // Additional bonus for modifier (according to previous logic – added here AND below in the switch)
           if (slot.modifier) {
             effectValue += getModifierBonus(ore.rarity);
           }
