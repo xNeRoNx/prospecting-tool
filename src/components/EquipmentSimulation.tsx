@@ -12,10 +12,11 @@ import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import { craftableItems, shovels, pans, enchants, events, ores, modifiers, getModifierBonus, type CraftableItem } from '@/lib/gameData';
+import { calculateMuseumBonuses as sharedCalculateMuseumBonuses } from '@/lib/museumUtils';
 
 export function EquipmentSimulation() {
   const { t } = useLanguage();
-  const { isLoading, equipment, setEquipment, museumSlots, craftingItems } = useAppData();
+  const { isLoading, equipment, setEquipment, museumSlots } = useAppData();
   const [customStatName, setCustomStatName] = useState('');
   const [customStatValue, setCustomStatValue] = useState(0);
 
@@ -194,118 +195,10 @@ export function EquipmentSimulation() {
     return stats;
   };
 
-  const calculateMuseumBonuses = () => {
-    const museumBonuses: { [key: string]: number } = {
-      luck: 0,
-      digStrength: 0,
-      digSpeed: 0,
-      shakeStrength: 0,
-      shakeSpeed: 0,
-      capacity: 0,
-      sellBoost: 0,
-      sizeBoost: 0,
-      modifierBoost: 0
-    };
 
-    museumSlots.forEach(slot => {
-      if (!slot.ore) return;
-      
-      const ore = ores.find(o => o.name === slot.ore);
-      if (!ore) return;
+  // Using shared function
+  const calculateMuseumBonuses = () => sharedCalculateMuseumBonuses(museumSlots);
 
-      // Handle special multi-stat effects first
-      if (ore.specialEffects) {
-        Object.entries(ore.specialEffects).forEach(([stat, value]) => {
-          if (museumBonuses[stat] !== undefined) {
-            let effectValue = value;
-            
-            // Add modifier bonus if present
-            if (slot.modifier) {
-              effectValue += getModifierBonus(ore.rarity);
-            }
-            
-            museumBonuses[stat] += effectValue;
-          }
-        });
-      } else {
-        // Handle normal single-stat effects
-        let baseMultiplier = ore.museumEffect.maxMultiplier;
-        
-        // Apply the effect based on the ore's museum effect
-        const effectStat = ore.museumEffect.stat.toLowerCase();
-        
-        if (effectStat.includes('luck')) {
-          museumBonuses.luck += baseMultiplier;
-        }
-        if (effectStat.includes('dig strength')) {
-          museumBonuses.digStrength += baseMultiplier;
-        }
-        if (effectStat.includes('dig speed')) {
-          museumBonuses.digSpeed += baseMultiplier;
-        }
-        if (effectStat.includes('shake strength')) {
-          museumBonuses.shakeStrength += baseMultiplier;
-        }
-        if (effectStat.includes('shake speed')) {
-          museumBonuses.shakeSpeed += baseMultiplier;
-        }
-        if (effectStat.includes('capacity')) {
-          museumBonuses.capacity += baseMultiplier;
-        }
-        if (effectStat.includes('sell boost')) {
-          museumBonuses.sellBoost += baseMultiplier;
-        }
-        if (effectStat.includes('size boost')) {
-          museumBonuses.sizeBoost += baseMultiplier;
-        }
-        if (effectStat.includes('modifier boost')) {
-          museumBonuses.modifierBoost += baseMultiplier;
-        }
-      }
-
-      // Apply modifier effects separately
-      if (slot.modifier) {
-        const modifier = modifiers.find(m => m.name === slot.modifier);
-        if (modifier) {
-          const modifierValue = getModifierBonus(ore.rarity);
-          
-          switch (modifier.effect) {
-            case 'Dig Speed':
-              museumBonuses.digSpeed += modifierValue;
-              break;
-            case 'Shake Strength':
-              museumBonuses.shakeStrength += modifierValue;
-              break;
-            case 'Shake Speed':
-              museumBonuses.shakeSpeed += modifierValue;
-              break;
-            case 'Dig Strength':
-              museumBonuses.digStrength += modifierValue;
-              break;
-            case 'Luck':
-              museumBonuses.luck += modifierValue;
-              break;
-            case 'Modifier Boost':
-              museumBonuses.modifierBoost += modifierValue;
-              break;
-            case 'Dig and Shake Speed':
-              museumBonuses.digSpeed += modifierValue;
-              museumBonuses.shakeSpeed += modifierValue;
-              break;
-            case 'Luck and Capacity':
-              museumBonuses.luck += modifierValue;
-              museumBonuses.capacity += modifierValue;
-              break;
-            case 'Size Boost':
-              museumBonuses.sizeBoost += modifierValue;
-              break;
-          }
-        }
-      }
-    });
-
-    return museumBonuses;
-  };
 
   const calculateFinalStats = () => {
     const baseStats = calculateBaseStats();
@@ -323,7 +216,7 @@ export function EquipmentSimulation() {
     return { baseStats, finalStats, eventStats };
   };
 
-  const availableItems = [...craftableItems, ...craftingItems.map(ci => ci.item)];
+  const availableItems = [...craftableItems];
   const { baseStats, finalStats, eventStats } = calculateFinalStats();
 
   const getRarityClass = (rarity: string) => {
@@ -333,6 +226,84 @@ export function EquipmentSimulation() {
   const formatStatValue = (key: string, value: number) => {
     const suffix = key.includes('Speed') || key.includes('Boost') ? '%' : '';
     return `${value.toFixed(1)}${suffix}`;
+  };
+
+  const renderItemStats = (item: CraftableItem) => {
+    if (!item?.stats) return null;
+    return (
+      <div className="mt-1 space-y-0.5">
+        {Object.entries(item.stats).map(([statKey, range]) => {
+          if (!Array.isArray(range)) return null;
+            const [min, max] = range as [number, number];
+            const isPercent = /Speed|Boost/i.test(statKey);
+            const label = t(statKey as any) || statKey;
+            const fmt = (v: number) => `${v > 0 ? '+' : ''}${v}${isPercent ? '%' : ''}`;
+            return (
+              <div key={statKey} className="text-[10px] leading-tight text-muted-foreground flex justify-between">
+                <span className="truncate pr-1 capitalize">{label}</span>
+                <span className="font-mono">{fmt(min)}–{fmt(max)}</span>
+              </div>
+            );
+        })}
+      </div>
+    );
+  };
+
+  const renderShovelStats = () => {
+    if (!equipment.shovel) return null;
+    const shovel = shovels.find(s => s.name === equipment.shovel);
+    if (!shovel) return null;
+    const entries: [string, number][] = [
+      ['digStrength', shovel.stats.digStrength],
+      ['digSpeed', shovel.stats.digSpeed],
+      ['toughness', shovel.stats.toughness]
+    ];
+    return (
+      <div className="mt-3 space-y-0.5">
+        {entries.map(([k,v]) => (
+          <div key={k} className="flex justify-between text-[11px] text-muted-foreground">
+            <span className="capitalize">{t(k as any) || k}</span>
+            <span className="font-mono">{formatStatValue(k, v)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderPanStats = () => {
+    if (!equipment.pan) return null;
+    const panObj = pans.find(p => p.name === equipment.pan);
+    if (!panObj) return null;
+    const entries: [string, number][] = [
+      ['luck', panObj.stats.luck],
+      ['capacity', panObj.stats.capacity],
+      ['shakeStrength', panObj.stats.shakeStrength],
+      ['shakeSpeed', panObj.stats.shakeSpeed]
+    ];
+    const enchantEffects = equipment.enchant ? enchants.find(e => e.name === equipment.enchant)?.effects : undefined;
+    return (
+      <div className="mt-3 space-y-0.5">
+        {entries.map(([k,v]) => (
+          <div key={k} className="flex justify-between text-[11px] text-muted-foreground">
+            <span className="capitalize">{t(k as any) || k}</span>
+            <span className="font-mono">{formatStatValue(k, v)}</span>
+          </div>
+        ))}
+        {panObj.passive && (
+          <div className="text-[10px] text-accent mt-1 leading-tight">{panObj.passive}</div>
+        )}
+        {enchantEffects && (
+          <div className="pt-1 border-t border-muted mt-1 space-y-0.5">
+            {Object.entries(enchantEffects).map(([k,v]) => (
+              <div key={k} className="flex justify-between text-[10px] text-muted-foreground">
+                <span className="capitalize">{t(k as any) || k}</span>
+                <span className="font-mono">{v > 0 ? '+' : ''}{v}{/Speed|Boost/i.test(k) ? '%' : ''}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -366,6 +337,7 @@ export function EquipmentSimulation() {
                     ))}
                   </SelectContent>
                 </Select>
+                {renderShovelStats()}
               </CardContent>
             </Card>
 
@@ -393,23 +365,39 @@ export function EquipmentSimulation() {
                   </Select>
                   
                   {equipment.pan && (
-                    <Select
-                      value={equipment.enchant || ''}
-                      onValueChange={(value) => updateEquipment({ enchant: value || null })}
-                      disabled={isLoading}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select enchant" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {enchants.map(enchant => (
-                          <SelectItem key={enchant.name} value={enchant.name}>
-                            {enchant.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-start gap-2">
+                      <Select
+                        value={equipment.enchant || ''}
+                        onValueChange={(value) => updateEquipment({ enchant: value || null })}
+                        disabled={isLoading}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select enchant" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {enchants.map(enchant => (
+                            <SelectItem key={enchant.name} value={enchant.name}>
+                              {enchant.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {equipment.enchant && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-9 w-9 p-0"
+                          onClick={() => updateEquipment({ enchant: null })}
+                          disabled={isLoading}
+                          title="Clear enchant"
+                          aria-label="Clear enchant"
+                        >
+                          <X size={14} />
+                        </Button>
+                      )}
+                    </div>
                   )}
+                  {renderPanStats()}
                 </div>
               </CardContent>
             </Card>
@@ -442,6 +430,7 @@ export function EquipmentSimulation() {
                             </Button>
                           </div>
                           <p className="text-sm font-medium">{ring.name}</p>
+                          {renderItemStats(ring)}
                         </div>
                       ) : (
                         <Dialog>
@@ -468,7 +457,7 @@ export function EquipmentSimulation() {
                                     <Badge className={getRarityClass(item.rarity)} variant="outline">
                                       {item.rarity}
                                     </Badge>
-                                    <span className="ml-2">{item.name}</span>
+                                    <span className="ml-2 font-medium truncate">{item.name}</span>
                                   </Button>
                                 ))}
                             </div>
@@ -505,6 +494,7 @@ export function EquipmentSimulation() {
                       </Button>
                     </div>
                     <p className="font-medium">{equipment.necklace.name}</p>
+                    {renderItemStats(equipment.necklace)}
                   </div>
                 ) : (
                   <Dialog>
@@ -531,7 +521,7 @@ export function EquipmentSimulation() {
                               <Badge className={getRarityClass(item.rarity)} variant="outline">
                                 {item.rarity}
                               </Badge>
-                              <span className="ml-2">{item.name}</span>
+                              <span className="ml-2 font-medium truncate">{item.name}</span>
                             </Button>
                           ))}
                       </div>
@@ -562,6 +552,7 @@ export function EquipmentSimulation() {
                       </Button>
                     </div>
                     <p className="font-medium">{equipment.charm.name}</p>
+                    {renderItemStats(equipment.charm)}
                   </div>
                 ) : (
                   <Dialog>
@@ -588,7 +579,7 @@ export function EquipmentSimulation() {
                               <Badge className={getRarityClass(item.rarity)} variant="outline">
                                 {item.rarity}
                               </Badge>
-                              <span className="ml-2">{item.name}</span>
+                              <span className="ml-2 font-medium truncate">{item.name}</span>
                             </Button>
                           ))}
                       </div>
@@ -734,7 +725,7 @@ export function EquipmentSimulation() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-accent">{t('withMuseum')}</CardTitle>
+              <CardTitle className="text-accent">{t('withMuseum')} (max)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {Object.entries(finalStats).map(([stat, value]) => (
@@ -751,7 +742,7 @@ export function EquipmentSimulation() {
               <Separator />
               
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')}</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')} (max)</h4>
                 {Object.entries(calculateMuseumBonuses()).map(([stat, bonus]) => {
                   if (bonus === 0) return null;
                   return (
@@ -760,7 +751,7 @@ export function EquipmentSimulation() {
                         {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
                       </span>
                       <span className="font-mono text-accent">
-                        +{(bonus * 100).toFixed(1)}%
+                        {bonus > 0 ? '+' : ''}{(bonus * 100).toFixed(1)}%
                       </span>
                     </div>
                   );
