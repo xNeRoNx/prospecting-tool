@@ -22,10 +22,28 @@ export function Info() {
         <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoHeaderDesc')}</p>
       </section>
 
+      {/* Data Management */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold">{t('infoDataManagementTitle')}</h3>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoDataManagementDesc')}</p>
+      </section>
+
       {/* Crafting */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoCraftingHeader')}</h3>
         <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoCraftingDesc')}</p>
+      </section>
+
+      {/* Museum */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold">{t('infoMuseumTitle')}</h3>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoMuseumDesc')}</p>
+      </section>
+
+      {/* Equipment Simulation */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold">{t('infoEquipmentTitle')}</h3>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoEquipmentDesc')}</p>
       </section>
 
       <section className="space-y-4">
