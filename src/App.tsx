@@ -46,12 +46,14 @@ function App() {
     canonical.setAttribute('href', canonicalUrl);
 
     // hreflang alternates
-    const altEn = ensureLink('alternate', 'en');
-    altEn.setAttribute('href', `${base}/en${path}`);
-    const altPl = ensureLink('alternate', 'pl');
-    altPl.setAttribute('href', `${base}/pl${path}`);
-    const altDef = ensureLink('alternate', 'x-default');
-    altDef.setAttribute('href', `${base}/en${path}`);
+  const altEn = ensureLink('alternate', 'en');
+  altEn.setAttribute('href', `${base}/en${path}`);
+  const altPl = ensureLink('alternate', 'pl');
+  altPl.setAttribute('href', `${base}/pl${path}`);
+  const altId = ensureLink('alternate', 'id');
+  altId.setAttribute('href', `${base}/id${path}`);
+  const altDef = ensureLink('alternate', 'x-default');
+  altDef.setAttribute('href', `${base}/en${path}`);
   }, [language]);
 
   // Dynamic document title per zakładka (SEO + UX)

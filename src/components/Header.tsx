@@ -52,13 +52,12 @@ export function Header() {
               <Select
                 value={language}
                 onValueChange={(value) => {
-                  const lang = value as 'en' | 'pl';
+                  const lang = value as 'en' | 'pl' | 'id';
                   setLanguage(lang);
-                  // Update URL immediately to new language
                   if (typeof window !== 'undefined') {
                     const { pathname, search, hash } = window.location;
                     const parts = pathname.split('/').filter(Boolean);
-                    const hasLang = parts[0] === 'en' || parts[0] === 'pl';
+                    const hasLang = parts[0] === 'en' || parts[0] === 'pl' || parts[0] === 'id';
                     if (hasLang) {
                       parts[0] = lang;
                     } else {
@@ -70,14 +69,14 @@ export function Header() {
                 }}
                 disabled={isLoading}
               >
-                <SelectTrigger className="w-16 sm:w-32">
+                <SelectTrigger className="w-20 sm:w-48">
                   <SelectValue>
                     <div className="flex items-center justify-center w-full">
                       <span className="text-sm font-medium">
-                        {language === 'en' ? '🇺🇸' : '🇵🇱'}
+                        {language === 'en' ? '🇺🇸' : language === 'pl' ? '🇵🇱' : '🇮🇩'}
                       </span>
                       <span className="hidden sm:inline ml-2">
-                        {language === 'en' ? t('english') : t('polish')}
+                        {language === 'en' ? t('english') : language === 'pl' ? t('polish') : t('indonesian')}
                       </span>
                     </div>
                   </SelectValue>
@@ -93,6 +92,12 @@ export function Header() {
                     <div className="flex items-center gap-2">
                       <span>🇵🇱</span>
                       <span>{t('polish')}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="id">
+                    <div className="flex items-center gap-2">
+                      <span>🇮🇩</span>
+                      <span>{t('indonesian')}</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
