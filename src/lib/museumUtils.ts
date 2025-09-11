@@ -96,6 +96,9 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
           case 'Size Boost':
             bonuses.sizeBoost += modifierValue;
             break;
+          default:
+            console.warn(`Unknown modifier effect: ${modifier.effect}`);
+            break;
         }
       }
     }
