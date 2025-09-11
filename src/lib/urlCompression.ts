@@ -112,14 +112,14 @@ export function encodeDataForUrl(fullData: any): string {
   }
   // 4. base64url
   return bytesToBase64Url(deflated);
-  const aliasKeys = [...Object.values(KEY_MAP), ...DEPRECATED_ALIASES];
-  const hasAlias = Object.keys(raw).some(k => k in KEY_MAP_INV || k in META_KEY_MAP_INV || aliasKeys.includes(k));
+}
 
 export function decodeDataFromUrl(hashData: string): any {
   const bytes = base64UrlToBytes(hashData);
   const inflated = inflate(bytes, { to: 'string' }) as string;
   const raw = JSON.parse(inflated);
-  const hasAlias = Object.keys(raw).some(k => k in KEY_MAP_INV || k in META_KEY_MAP_INV || ['m','c','ms','e','om','cl'].includes(k));
+  const aliasKeys = [...Object.values(KEY_MAP), ...DEPRECATED_ALIASES];
+  const hasAlias = Object.keys(raw).some(k => k in KEY_MAP_INV || k in META_KEY_MAP_INV || aliasKeys.includes(k));
   const unpacked = hasAlias ? unpackData(raw) : raw;
   // If old data had collectibles, they will be silently dropped; nothing else to do.
   return unpacked;
