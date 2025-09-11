@@ -64,7 +64,9 @@ function packData(data: any) {
   return packed;
 }
 
-// Deprecated legacy keys we intentionally drop when decoding (e.g. removed feature: collectibles 'cl')
+// Deprecated legacy keys we intentionally drop when decoding.
+// Note: 'cl' was a legacy alias for collectibles, which is no longer present in KEY_MAP.
+// We keep it here to skip old data sections for backward compatibility.
 const DEPRECATED_ALIASES = new Set(['cl']);
 
 function unpackData(data: any) {
