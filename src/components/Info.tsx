@@ -11,14 +11,21 @@ export function Info() {
     <div className="space-y-8">
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">{t('infoTitle')}</h2>
-        <p className="text-muted-foreground leading-relaxed max-w-3xl whitespace-pre-line">
+        <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
           {t('infoIntro')}
         </p>
       </section>
 
+      {/* Header */}
+      <section className="space-y-4">
+        <h3 className="text-xl font-semibold">{t('infoHeaderTitle')}</h3>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoHeaderDesc')}</p>
+      </section>
+
+      {/* Crafting */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoCraftingHeader')}</h3>
-        <p className="text-sm text-muted-foreground max-w-3xl whitespace-pre-line">{t('infoCraftingDesc')}</p>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoCraftingDesc')}</p>
       </section>
 
       <section className="space-y-4">
