@@ -765,7 +765,7 @@ export function EquipmentSimulation() {
                   );
                 })}
                 {!showMaxMuseum && (
-                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values ​​are currently set to 0.0%. I'm currently working on adding functionality</p>
+                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values are currently set to 0.0%. I'm currently working on adding functionality</p>
                 )}
               </div>
             </CardContent>

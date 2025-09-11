@@ -103,10 +103,17 @@ export function encodeDataForUrl(fullData: any): string {
   const packed = packData(stripped);
   // 3. JSON -> deflate
   const json = JSON.stringify(packed);
-  const deflated = deflate(new TextEncoder().encode(json));
+  let deflated: Uint8Array;
+  try {
+    deflated = deflate(new TextEncoder().encode(json));
+  } catch (error) {
+    console.error('Compression failed:', error);
+    throw new Error('Data compression failed. Please reduce the size or complexity of your export.');
+  }
   // 4. base64url
   return bytesToBase64Url(deflated);
-}
+  const aliasKeys = [...Object.values(KEY_MAP), ...DEPRECATED_ALIASES];
+  const hasAlias = Object.keys(raw).some(k => k in KEY_MAP_INV || k in META_KEY_MAP_INV || aliasKeys.includes(k));
 
 export function decodeDataFromUrl(hashData: string): any {
   const bytes = base64UrlToBytes(hashData);

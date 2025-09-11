@@ -477,7 +477,7 @@ export function Museum() {
                 );
               })}
               {!showMaxStats && (
-                <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values ​​are currently set to 0.000x. I'm currently working on adding functionality</p>
+                <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values are currently set to 0.000x. I'm currently working on adding functionality</p>
               )}
             </CardContent>
           </Card>
