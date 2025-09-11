@@ -216,7 +216,7 @@ export function EquipmentSimulation() {
     return { baseStats, finalStats, eventStats };
   };
 
-  const availableItems = [...craftableItems ];
+  const availableItems = [...craftableItems];
   const { baseStats, finalStats, eventStats } = calculateFinalStats();
 
   const getRarityClass = (rarity: string) => {
