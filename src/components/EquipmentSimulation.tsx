@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import { craftableItems, shovels, pans, enchants, events, ores, modifiers, getModifierBonus, type CraftableItem } from '@/lib/gameData';
@@ -119,22 +120,7 @@ export function EquipmentSimulation() {
       toughness: 0
     };
 
-    // Equipment stats
-    [...equipment.rings, equipment.necklace, equipment.charm].forEach(item => {
-      if (item) {
-        Object.entries(item.stats).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            // Use max value from range
-            const maxValue = value[1];
-            if (stats[key] !== undefined) {
-              stats[key] += maxValue;
-            }
-          }
-        });
-      }
-    });
-
-    // Shovel stats
+    // 1) Shovel
     if (equipment.shovel) {
       const shovel = shovels.find(s => s.name === equipment.shovel);
       if (shovel) {
@@ -144,7 +130,7 @@ export function EquipmentSimulation() {
       }
     }
 
-    // Pan stats (with enchant if selected)
+    // 2) Pan
     if (equipment.pan) {
       const pan = pans.find(p => p.name === equipment.pan);
       if (pan) {
@@ -152,72 +138,80 @@ export function EquipmentSimulation() {
         stats.capacity += pan.stats.capacity;
         stats.shakeStrength += pan.stats.shakeStrength;
         stats.shakeSpeed += pan.stats.shakeSpeed;
-        
-        // Parse passive effects
+        // Passive parsing (size / modifier boosts)
         if (pan.passive) {
           if (pan.passive.includes('Size boost')) {
             const match = pan.passive.match(/\(([+-]\d+)%\)/);
-            if (match) {
-              stats.sizeBoost += parseInt(match[1]);
-            }
+            if (match) stats.sizeBoost += parseInt(match[1]);
           }
           if (pan.passive.includes('Modifier boost')) {
             const match = pan.passive.match(/\(([+-]\d+)%\)/);
-            if (match) {
-              stats.modifierBoost += parseInt(match[1]);
-            }
-          }
-        }
-        
-        // Apply enchant if selected
-        if (equipment.enchant) {
-          const enchant = enchants.find(e => e.name === equipment.enchant);
-          if (enchant) {
-            Object.entries(enchant.effects).forEach(([key, value]) => {
-              if (stats[key] !== undefined) {
-                stats[key] += value;
-              }
-            });
+            if (match) stats.modifierBoost += parseInt(match[1]);
           }
         }
       }
     }
 
-    // Custom stats
-    Object.entries(equipment.customStats).forEach(([key, value]) => {
-      if (stats[key] !== undefined) {
-        stats[key] += value;
-      } else {
-        stats[key] = value;
+    // 3) Enchant (depends on having selected enchant regardless of pan presence)
+    if (equipment.enchant) {
+      const enchant = enchants.find(e => e.name === equipment.enchant);
+      if (enchant) {
+        Object.entries(enchant.effects).forEach(([key, value]) => {
+          if (stats[key] !== undefined) stats[key] += value;
+        });
       }
+    }
+
+    // 4) Custom Stats
+    Object.entries(equipment.customStats).forEach(([key, value]) => {
+      if (stats[key] !== undefined) stats[key] += value; else stats[key] = value;
     });
 
-    return stats;
-  };
-
-
-  // Using shared function
-  const calculateMuseumBonuses = () => sharedCalculateMuseumBonuses(museumSlots);
-
-
-  const calculateFinalStats = () => {
-    const baseStats = calculateBaseStats();
-    const museumBonuses = calculateMuseumBonuses();
-    const finalStats: { [key: string]: number } = {};
-
-    Object.keys(baseStats).forEach(key => {
-      const base = baseStats[key] || 0;
-      const bonus = museumBonuses[key] || 0;
-      finalStats[key] = base + (base * bonus);
+    // 5) Equipment Items (rings, necklace, charm) using max roll values
+    [...equipment.rings, equipment.necklace, equipment.charm].forEach(item => {
+      if (!item) return;
+      Object.entries(item.stats).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          const maxValue = value[1];
+          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+        }
+      });
     });
 
-    const eventStats = calculateEventBonuses(finalStats);
-
-    return { baseStats, finalStats, eventStats };
+    return stats; // Museum & Events applied later
   };
+
+  // Toggle dla trybu muzeum (max vs weight placeholder)
+  const [showMaxMuseum, setShowMaxMuseum] = useState(true);
+
+  // Maksymalne bonusy muzeum (zależne tylko od slotów muzeum)
+  const museumBonusesMax = sharedCalculateMuseumBonuses(museumSlots);
+
+  // Placeholder bonusy w trybie wagi (0)
+  const museumBonusesWeight = {
+    luck: 0, digStrength: 0, digSpeed: 0, shakeStrength: 0, shakeSpeed: 0,
+    capacity: 0, sellBoost: 0, sizeBoost: 0, modifierBoost: 0
+  };
+
+  const museumBonusesDisplayed = showMaxMuseum ? museumBonusesMax : museumBonusesWeight;
+
+  // Baza
+  const baseStats = calculateBaseStats();
+
+  // Finalne statystyki (zależne od wybranego trybu muzeum)
+  const finalStats: { [key: string]: number } = Object.keys(baseStats).reduce((acc, key) => {
+    const base = baseStats[key] || 0;
+    const bonusMultiplier = museumBonusesDisplayed[key] || 0; // bonus jako mnożnik procentowy (np 0.25)
+    acc[key] = base + (base * bonusMultiplier);
+    return acc;
+  }, {} as { [key: string]: number });
+
+  // Eventy aplikowane na finalStats (już uwzględniające tryb muzeum)
+  const eventStats = calculateEventBonuses(finalStats);
+
+  const calculateMuseumBonuses = () => museumBonusesMax; // zachowujemy istniejące wywołania w renderze
 
   const availableItems = [...craftableItems];
-  const { baseStats, finalStats, eventStats } = calculateFinalStats();
 
   const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
@@ -724,38 +718,54 @@ export function EquipmentSimulation() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle className="text-accent">{t('withMuseum')} (max)</CardTitle>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+              <CardTitle className="text-accent">{t('withMuseum')}</CardTitle>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Weight</span>
+                <Switch
+                  checked={showMaxMuseum}
+                  onCheckedChange={(v) => setShowMaxMuseum(v)}
+                  aria-label="Toggle museum mode"
+                />
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Max</span>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {Object.entries(finalStats).map(([stat, value]) => (
-                <div key={stat} className="flex items-center justify-between">
-                  <span className="text-sm capitalize">
-                    {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                  </span>
-                  <span className="font-mono text-accent">
-                    {formatStatValue(stat, value)}
-                  </span>
-                </div>
-              ))}
-              
+              {Object.entries(finalStats).map(([stat, value]) => {
+                const displayed = showMaxMuseum ? value : baseStats[stat]; // weight mode = base only (placeholder)
+                return (
+                  <div key={stat} className="flex items-center justify-between">
+                    <span className="text-sm capitalize">
+                      {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                    </span>
+                    <span className="font-mono text-accent">
+                      {formatStatValue(stat, displayed)}
+                    </span>
+                  </div>
+                );
+              })}
+
               <Separator />
-              
+
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')} (max)</h4>
                 {Object.entries(calculateMuseumBonuses()).map(([stat, bonus]) => {
                   if (bonus === 0) return null;
+                  const shownBonus = showMaxMuseum ? bonus : 0; // placeholder for weight mode
                   return (
                     <div key={stat} className="flex items-center justify-between text-xs">
                       <span className="capitalize text-muted-foreground">
                         {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
                       </span>
                       <span className="font-mono text-accent">
-                        {bonus > 0 ? '+' : ''}{(bonus * 100).toFixed(1)}%
+                        {shownBonus > 0 ? '+' : ''}{(shownBonus * 100).toFixed(1)}%
                       </span>
                     </div>
                   );
                 })}
+                {!showMaxMuseum && (
+                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values are currently set to 0.0%. I'm currently working on adding functionality</p>
+                )}
               </div>
             </CardContent>
           </Card>

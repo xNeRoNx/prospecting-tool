@@ -1,6 +1,6 @@
 # Prospecting! Companion Tools — PRD
 
-A comprehensive companion app for the Prospecting! game providing crafting planning, museum optimization, equipment simulation, and custom collectibles tracking.
+A comprehensive companion app for the Prospecting! game providing crafting planning, museum optimization and equipment simulation.
 
 **Experience Qualities**
 1. Organized — clear categorization and intuitive navigation across game aspects
@@ -46,13 +46,6 @@ A comprehensive companion app for the Prospecting! game providing crafting plann
 - Trigger: Equip items from crafted list or database
 - Progression: Select slot → Choose item → View stats → Apply museum bonuses
 - Success criteria: Totals match in‑game mechanics; easy comparison between saved builds
-
-### Custom Collectibles
-- Functionality: Track owned ore quantities with completion status
-- Purpose: Inventory management and collection progress
-- Trigger: Add ores to the collection list
-- Progression: Select ore → Set quantity → Mark completed → Remove if needed
-- Success criteria: Persistent tracking with quick quantity updates and clear completion indicators
 
 ## Edge Case Handling
 - Empty States: Helpful prompts guiding users to add their first items

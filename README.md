@@ -3,7 +3,7 @@
 Lekka aplikacja SPA zbudowana na Vite + React 19 + TypeScript. Zestaw narzędzi do planowania i symulacji (crafting, muzeum, wyposażenie, kolekcje) z lokalnym zapisem stanu, motywami i prostym i18n.
 
 ### Funkcje
-- Zakładki: Crafting, Museum, Equipment, Collectibles (ikony Phosphor)
+- Zakładki: Crafting, Museum, Equipment (ikony Phosphor)
 - SEO/UX: dynamiczny tytuł strony i meta description per zakładka
 - Deep-linking: aktywna zakładka w hashu URL (`#crafting`, `#museum`, ...)
 - Motywy: wsparcie dla trybu jasny/ciemny (Tailwind + hook `useTheme`)
@@ -54,7 +54,7 @@ src/
 
 ### I18n i routing
 - Język PL dodaje prefiks ścieżki `/pl` i ustawia `document.documentElement.lang = 'pl'`.
-- Aktywna zakładka jest trzymana w hashu (`#crafting`, `#museum`, `#equipment`, `#collectibles`).
+- Aktywna zakładka jest trzymana w hashu (`#crafting`, `#museum`, `#equipment`).
 
 ### Motyw i stylowanie
 - Tailwind 4 + CSS zmienne motywu (`styles/theme.css`).

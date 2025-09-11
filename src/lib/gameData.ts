@@ -429,6 +429,9 @@ export const craftableItems: CraftableItem[] = [
   }
 ];
 
+// Note: The maxWeight values for each ore are determined by specific game mechanics.
+// They represent the maximum weight (in kg) at which the museum effect's maximum modifier is achieved.
+// Adjust these values carefully if game balance changes, and refer to game design documentation for details.
 export const ores: Ore[] = [
   // Common
   { name: "Pyrite", rarity: "Common", museumEffect: { stat: "Capacity", maxMultiplier: 0.05 }, maxWeight: 25 },

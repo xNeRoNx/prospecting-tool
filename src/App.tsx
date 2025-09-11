@@ -6,29 +6,24 @@ import { Header } from '@/components/Header';
 import { Crafting } from '@/components/Crafting';
 import { Museum } from '@/components/Museum';
 import { EquipmentSimulation } from '@/components/EquipmentSimulation';
-import { CustomCollectibles } from '@/components/CustomCollectibles';
+import { Info } from '@/components/Info';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
-import { Hammer, Bank, Calculator, Archive, Spinner } from '@phosphor-icons/react';
+import { Hammer, Bank, Calculator, Info as InfoIcon, Spinner } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 
 function App() {
   const { language, t } = useLanguage();
   const { isLoading } = useAppData();
-  const [activeTab, setActiveTab] = useState<string>('crafting');
+  const [activeTab, setActiveTab] = useState<string>('info');
 
-  useEffect(() => {
-    if (language) {
-      document.documentElement.lang = language;
-    }
-  }, [language]);
-
-  // Update canonical and hreflang alternates based on /en /pl
+  // Update canonical and hreflang alternates based on language
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const base = 'https://prospecting-tool.vercel.app';
-    const path = window.location.pathname.replace(/^\/(en|pl)/, '').replace(/\/+/g, '/');
+    const path = window.location.pathname.replace(/^\/(en|pl|id|pt)/, '').replace(/\/+/g, '/');
     const canonicalUrl = `${base}/${language}${path}${window.location.search}`.replace(/(?<!:)\/\/+/, '/');
+    document.documentElement.lang = language;
 
     const ensureLink = (rel: string, hreflang?: string) => {
       let el = document.querySelector(`link[rel="${rel}"]${hreflang ? `[hreflang="${hreflang}"]` : ':not([hreflang])'}`) as HTMLLinkElement | null;
@@ -50,8 +45,28 @@ function App() {
     altEn.setAttribute('href', `${base}/en${path}`);
     const altPl = ensureLink('alternate', 'pl');
     altPl.setAttribute('href', `${base}/pl${path}`);
+    const altId = ensureLink('alternate', 'id');
+    altId.setAttribute('href', `${base}/id${path}`);
+    const altPt = ensureLink('alternate', 'pt');
+    altPt.setAttribute('href', `${base}/pt${path}`);
     const altDef = ensureLink('alternate', 'x-default');
     altDef.setAttribute('href', `${base}/en${path}`);
+
+    // Dynamic manifest swapping per locale (fallback to base English manifest)
+    const manifestLink = document.querySelector('link[rel="manifest"]') as HTMLLinkElement | null;
+    if (manifestLink) {
+      const manifestMap: Record<string, string> = {
+        en: '/manifest.webmanifest', // base English file
+        pl: '/manifest-pl.webmanifest',
+        id: '/manifest-id.webmanifest',
+        pt: '/manifest-pt.webmanifest'
+      };
+      const desired = manifestMap[language] || manifestMap.en;
+      // Only update if actually different to avoid refetch spam
+      if (!manifestLink.getAttribute('href') || manifestLink.getAttribute('href') !== desired) {
+        manifestLink.setAttribute('href', desired);
+      }
+    }
   }, [language]);
 
   // Dynamic document title per zakładka (SEO + UX)
@@ -60,13 +75,13 @@ function App() {
       crafting: t('crafting'),
       museum: t('museum'),
       equipment: t('equipment'),
-      collectibles: t('collectibles')
+      info: t('infoTab')
     };
     const descMap: Record<string, string> = {
       crafting: t('seoDescCrafting'),
       museum: t('seoDescMuseum'),
       equipment: t('seoDescEquipment'),
-      collectibles: t('seoDescCollectibles')
+      info: t('seoDescInfo')
     };
     const section = titleMap[activeTab];
     document.title = section ? `${section} | Prospecting! Tools` : 'Prospecting! Tools';
@@ -79,7 +94,7 @@ function App() {
   // Inicjalizacja zakładki z hasha oraz nasłuch zmiany hasha (#crafting, #museum, ...)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const validTabs = ['crafting', 'museum', 'equipment', 'collectibles'];
+  const validTabs = ['info', 'crafting', 'museum', 'equipment'];
     const init = () => {
       const fromHash = window.location.hash.replace('#', '');
       if (validTabs.includes(fromHash)) {
@@ -137,9 +152,9 @@ function App() {
               <Calculator size={16} />
               <span className="text-xs sm:text-sm">{t('equipment')}</span>
             </TabsTrigger>
-            <TabsTrigger value="collectibles" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
-              <Archive size={16} />
-              <span className="text-xs sm:text-sm break-words">{t('collectibles')}</span>
+            <TabsTrigger value="info" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+              <InfoIcon size={16} />
+              <span className="text-xs sm:text-sm">{t('infoTab')}</span>
             </TabsTrigger>
           </TabsList>
           
@@ -155,8 +170,8 @@ function App() {
             <EquipmentSimulation />
           </TabsContent>
           
-          <TabsContent value="collectibles" id="collectibles">
-            <CustomCollectibles />
+          <TabsContent value="info" id="info">
+            <Info />
           </TabsContent>
         </Tabs>
       </main>

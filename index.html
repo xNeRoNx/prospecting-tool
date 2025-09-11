@@ -17,6 +17,8 @@
     <link rel="canonical" href="https://prospecting-tool.vercel.app/en" />
     <link rel="alternate" hreflang="en" href="https://prospecting-tool.vercel.app/en" />
     <link rel="alternate" hreflang="pl" href="https://prospecting-tool.vercel.app/pl" />
+    <link rel="alternate" hreflang="id" href="https://prospecting-tool.vercel.app/id" />
+    <link rel="alternate" hreflang="pt" href="https://prospecting-tool.vercel.app/pt" />
     <link rel="alternate" hreflang="x-default" href="https://prospecting-tool.vercel.app/en" />
 
     <!-- Open Graph -->
@@ -51,7 +53,11 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Prefetch locale-specific manifests to make dynamic switching instant -->
+    <link rel="prefetch" href="/manifest-pl.webmanifest" as="fetch" crossorigin="anonymous" />
+    <link rel="prefetch" href="/manifest-id.webmanifest" as="fetch" crossorigin="anonymous" />
+    <link rel="prefetch" href="/manifest-pt.webmanifest" as="fetch" crossorigin="anonymous" />
 </head>
 <body>
     <div id="root"></div>

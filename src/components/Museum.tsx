@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { X, List } from '@phosphor-icons/react';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import type { MuseumSlot } from '@/hooks/useAppData.tsx';
@@ -102,6 +103,7 @@ export function Museum() {
   };
 
   const museumStats = calculateMuseumStats();
+  const [showMaxStats, setShowMaxStats] = useState(true); // toggle max vs weight-based (placeholder)
   const groupedSlots = groupSlotsByRarity();
   
   // Get already used ores
@@ -200,7 +202,32 @@ export function Museum() {
                                 )}
                               </div>
                               <div className="text-xs text-muted-foreground text-left sm:text-right sm:ml-2 flex-shrink-0">
-                                {item?.effect}: 0.0x | +{item?.maxMultiplier}x
+                                {(() => {
+                                  if (!item) return null;
+                                  const weight = item.weight;
+                                  const isMax = weight !== undefined && weight > (item.maxWeight || 0);
+                                  // specialEffects
+                                  if (item.specialEffects) {
+                                    return (
+                                      <div className="space-y-0.5 text-left sm:text-right">
+                                        {Object.entries(item.specialEffects).map(([stat, value]) => {
+                                          const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
+                                          return (
+                                            <div key={stat}>
+                                              {displayStat}: {isMax ? '' : '0.0x | '} {value > 0 ? '+' : ''}{value}x
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  }
+                                  // normal effect
+                                  return (
+                                    <>
+                                      {item.effect}: {isMax ? '' : '0.0x | '}+{item.maxMultiplier}x
+                                    </>
+                                  );
+                                })()}
                                 {item?.modifier && (
                                   <div>
                                     {item.modifierEffect}: 0.0x | +{item.modifierBonus}x
@@ -379,20 +406,22 @@ export function Museum() {
                                   if (!ore) return null;
                                   
                                   if (ore.specialEffects) {
-                                    // Show all special effects
-                                    return Object.entries(ore.specialEffects).map(([stat, value], index) => {
+                                    // Show all special effects with weight rule
+                                    const isMax = slot.weight !== undefined && slot.weight > ore.maxWeight;
+                                    return Object.entries(ore.specialEffects).map(([stat, value]) => {
                                       const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
                                       return (
                                         <div key={stat}>
-                                          {displayStat}: 0.0x | {value > 0 ? '+' : ''}{value}x
+                                          {displayStat}: {isMax ? '' : '0.0x | '}{value > 0 ? '+' : ''}{value}x
                                         </div>
                                       );
                                     });
                                   } else {
                                     // Show normal museum effect
+                                    const isMax = slot.weight !== undefined && slot.weight > ore.maxWeight;
                                     return (
                                       <>
-                                        {ore.museumEffect.stat}: 0.0x | +{ore.museumEffect.maxMultiplier}x
+                                        {ore.museumEffect.stat}: {isMax ? '' : '0.0x | '}+{ore.museumEffect.maxMultiplier}x
                                       </>
                                     );
                                   }
@@ -417,20 +446,39 @@ export function Museum() {
 
         <div className="space-y-4">
           <Card className="sticky top-4">
-            <CardHeader>
-              <CardTitle>{t('museumStats')} (max)</CardTitle>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+              <div>
+                <CardTitle>
+                  {t('museumStats')}
+                </CardTitle>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Weight</span>
+                <Switch
+                  checked={showMaxStats}
+                  onCheckedChange={(v) => setShowMaxStats(v)}
+                  aria-label="Toggle museum stats mode"
+                />
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Max</span>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              {Object.entries(museumStats).map(([stat, value]) => (
-                <div key={stat} className="flex items-center justify-between">
-                  <span className="text-sm capitalize">
-                    {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                  </span>
-                  <span className="font-mono text-accent">
-                    {value > 0 ? "+" : ""}{value.toFixed(3)}x
-                  </span>
-                </div>
-              ))}
+              {Object.entries(museumStats).map(([stat, value]) => {
+                const displayValue = showMaxStats ? value : 0; // placeholder weight mode
+                return (
+                  <div key={stat} className="flex items-center justify-between">
+                    <span className="text-sm capitalize">
+                      {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                    </span>
+                    <span className="font-mono text-accent">
+                      {displayValue > 0 ? '+' : ''}{displayValue.toFixed(3)}x
+                    </span>
+                  </div>
+                );
+              })}
+              {!showMaxStats && (
+                <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values are currently set to 0.000x. I'm currently working on adding functionality</p>
+              )}
             </CardContent>
           </Card>
         </div>

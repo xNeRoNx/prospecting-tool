@@ -1,0 +1,27 @@
+{
+  "id": "/?app=pwa&lang=id",
+  "name": "Prospecting! Tools – Perakitan, Museum & Peralatan",
+  "short_name": "Prospecting",
+  "description": "Alat pendamping untuk Roblox Prospecting!: kalkulator crafting, pelacak museum & simulator peralatan.",
+  "lang": "id",
+  "dir": "ltr",
+  "start_url": "/id",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": ["productivity", "utilities", "entertainment"],
+  "icons": [
+    { "src": "/favicon-96x96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/web-app-manifest-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/web-app-manifest-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Perakitan", "short_name": "Craft", "url": "/id#crafting", "description": "Buka perencana perakitan" },
+    { "name": "Museum", "short_name": "Museum", "url": "/id#museum", "description": "Optimalkan tampilan museum" },
+    { "name": "Peralatan", "short_name": "Gear", "url": "/id#equipment", "description": "Simulasikan build peralatan" },
+    { "name": "Info", "short_name": "Info", "url": "/id#info", "description": "Ringkasan alat & referensi" }
+  ],
+  "prefer_related_applications": false
+}

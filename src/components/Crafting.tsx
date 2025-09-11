@@ -238,7 +238,7 @@ export function Crafting() {
               {t('addItem')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-11/12 overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t('addItem')}</DialogTitle>
             </DialogHeader>

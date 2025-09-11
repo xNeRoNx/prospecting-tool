@@ -1,0 +1,27 @@
+{
+  "id": "/?app=pwa&lang=pt",
+  "name": "Prospecting! Tools – Criação, Museu & Equipamento",
+  "short_name": "Prospecting",
+  "description": "Companion para Roblox Prospecting!: calculadora de criação, rastreador de museu & simulador de equipamento.",
+  "lang": "pt",
+  "dir": "ltr",
+  "start_url": "/pt",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": ["productivity", "utilities", "entertainment"],
+  "icons": [
+    { "src": "/favicon-96x96.png", "sizes": "96x96", "type": "image/png" },
+    { "src": "/web-app-manifest-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/web-app-manifest-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Criação", "short_name": "Criação", "url": "/pt#crafting", "description": "Ir para o planejador de criação" },
+    { "name": "Museu", "short_name": "Museu", "url": "/pt#museum", "description": "Otimizar configuração do museu" },
+    { "name": "Equipamento", "short_name": "Equipamento", "url": "/pt#equipment", "description": "Simular builds de equipamento" },
+    { "name": "Info", "short_name": "Info", "url": "/pt#info", "description": "Ver informações e referência" }
+  ],
+  "prefer_related_applications": false
+}
