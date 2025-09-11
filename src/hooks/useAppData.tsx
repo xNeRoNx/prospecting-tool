@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
+import { encodeDataForUrl, decodeDataFromUrl } from '@/lib/urlCompression';
 import { useLocalStorageState } from './useLocalStorage';
 import type { CraftableItem } from '../lib/gameData';
 
@@ -33,15 +33,6 @@ export interface EquipmentSlot {
 	customStats: { [key: string]: number }; 
 	activeEvents: string[];
 }
-export interface CollectibleOre { 
-	ore: string; 
-	quantity: number; 
-	completed: boolean; 
-	modifier?: string; 
-	id: string; 
-	ownedQuantity?: number; 
-	weight?: number; 
-}
 
 const DEFAULT_EQUIPMENT: EquipmentSlot = { 
 	rings: new Array(8).fill(null), 
@@ -59,7 +50,6 @@ interface AppDataContextValue {
 	craftingItems: CraftingItem[]; setCraftingItems: (v: any) => void;
 	museumSlots: MuseumSlot[]; setMuseumSlots: (v: any) => void;
 	equipment: EquipmentSlot; setEquipment: (v: any) => void;
-	collectibles: CollectibleOre[]; setCollectibles: (v: any) => void;
 	ownedMaterials: { [key: string]: number }; setOwnedMaterials: (v: any) => void;
 	exportData: () => void; exportDataSelective: (selectedData: any) => void;
 	exportToUrl: () => { success: boolean; url?: string; error?: any };
@@ -75,7 +65,6 @@ function useProvideAppData(): AppDataContextValue {
 	const [craftingItems, setCraftingItems] = useLocalStorageState<CraftingItem[] | null>('crafting-items', null);
 	const [museumSlots, setMuseumSlots] = useLocalStorageState<MuseumSlot[] | null>('museum-slots', null);
 	const [equipment, setEquipment] = useLocalStorageState<EquipmentSlot | null>('equipment', null);
-	const [collectibles, setCollectibles] = useLocalStorageState<CollectibleOre[] | null>('collectibles', null);
 	const [ownedMaterials, setOwnedMaterials] = useLocalStorageState<{ [key: string]: number } | null>('owned-materials', null);
 
 	// Inicjalizacja wartości domyślnych i ustawienie isLoading=false gdy wszystko gotowe.
@@ -84,14 +73,13 @@ function useProvideAppData(): AppDataContextValue {
 		if (craftingItems === null) setCraftingItems([]);
 		if (museumSlots === null) setMuseumSlots([]);
 		if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
-		if (collectibles === null) setCollectibles([]);
 		if (ownedMaterials === null) setOwnedMaterials({});
 
-		const allReady = craftingItems !== null && museumSlots !== null && equipment !== null && collectibles !== null && ownedMaterials !== null;
+		const allReady = craftingItems !== null && museumSlots !== null && equipment !== null && ownedMaterials !== null;
 		if (isLoading && allReady) {
 			setIsLoading(false);
 		}
-	}, [craftingItems, museumSlots, equipment, collectibles, ownedMaterials, isLoading, setCraftingItems, setMuseumSlots, setEquipment, setCollectibles, setOwnedMaterials]);
+	}, [craftingItems, museumSlots, equipment, ownedMaterials, isLoading, setCraftingItems, setMuseumSlots, setEquipment, setOwnedMaterials]);
 
 	useEffect(() => {
 		if (equipment && !equipment.activeEvents && !isLoading) {
@@ -99,9 +87,9 @@ function useProvideAppData(): AppDataContextValue {
 		}
 	}, [equipment, setEquipment, isLoading]);
 
-	const buildSnapshot = (overrides?: Partial<{ craftingItems: CraftingItem[]; museumSlots: MuseumSlot[]; equipment: EquipmentSlot; collectibles: CollectibleOre[]; ownedMaterials: { [key: string]: number }; }>) => {
+	const buildSnapshot = (overrides?: Partial<{ craftingItems: CraftingItem[]; museumSlots: MuseumSlot[]; equipment: EquipmentSlot; ownedMaterials: { [key: string]: number }; }>) => {
 		const sanitizedEquipment = (equipment ?? DEFAULT_EQUIPMENT);
-		return { craftingItems: (craftingItems ?? []), museumSlots: (museumSlots ?? []), equipment: sanitizedEquipment.activeEvents ? sanitizedEquipment : { ...sanitizedEquipment, activeEvents: [] }, collectibles: (collectibles ?? []), ownedMaterials: (ownedMaterials ?? {}), ...overrides };
+		return { craftingItems: (craftingItems ?? []), museumSlots: (museumSlots ?? []), equipment: sanitizedEquipment.activeEvents ? sanitizedEquipment : { ...sanitizedEquipment, activeEvents: [] }, ownedMaterials: (ownedMaterials ?? {}), ...overrides };
 	};
 
 	const exportData = () => {
@@ -133,7 +121,7 @@ function useProvideAppData(): AppDataContextValue {
 		const base = buildSnapshot(); 
 		const data = { ...base, exportDate: new Date().toISOString(), version: '1.1' }; 
 		try { 
-			const compressed = compressToEncodedURIComponent(JSON.stringify(data)); 
+			const compressed = encodeDataForUrl(data); 
 			const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`; 
 			navigator.clipboard.writeText(url); 
 			return { success: true, url }; 
@@ -146,7 +134,7 @@ function useProvideAppData(): AppDataContextValue {
 		const base = buildSnapshot(); 
 		const data = { ...Object.fromEntries(Object.entries(selectedData).map(([k, v]) => [k, v ?? (base as any)[k]])), exportDate: new Date().toISOString(), version: '1.1' }; 
 		try { 
-			const compressed = compressToEncodedURIComponent(JSON.stringify(data)); 
+			const compressed = encodeDataForUrl(data); 
 			const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`; 
 			return { success: true, url }; 
 		} catch (error) { 
@@ -161,7 +149,6 @@ function useProvideAppData(): AppDataContextValue {
 		if ('craftingItems' in data) setCraftingItems(data.craftingItems ?? []); 
 		if ('museumSlots' in data) setMuseumSlots(data.museumSlots ?? []); 
 		if ('equipment' in data) setEquipment(data.equipment ?? DEFAULT_EQUIPMENT); 
-		if ('collectibles' in data) setCollectibles(data.collectibles ?? []); 
 		if ('ownedMaterials' in data) setOwnedMaterials(data.ownedMaterials ?? {}); 
 	};
 	const importDataSelective = (data: any, selection: any) => { 
@@ -172,7 +159,6 @@ function useProvideAppData(): AppDataContextValue {
 			if (data.equipment && !data.equipment.activeEvents) data.equipment.activeEvents = []; 
 			setEquipment(data.equipment ?? DEFAULT_EQUIPMENT); 
 		} 
-		if (selection.collectibles && 'collectibles' in data) setCollectibles(data.collectibles ?? []); 
 		if (selection.ownedMaterials && 'ownedMaterials' in data) setOwnedMaterials(data.ownedMaterials ?? {}); 
 	};
 	const importFromUrl = (url: string) => { 
@@ -181,9 +167,7 @@ function useProvideAppData(): AppDataContextValue {
 			if (!hashData) { 
 				throw new Error('No data found in URL'); 
 			} 
-			const decompressed = decompressFromEncodedURIComponent(hashData); 
-			if (!decompressed) throw new Error('Invalid compressed payload');
-			const data = JSON.parse(decompressed); 
+			const data = decodeDataFromUrl(hashData); 
 			return { success: true, data }; 
 		} catch (error) { 
 			console.error('Error importing from URL:', error); 
@@ -248,8 +232,6 @@ function useProvideAppData(): AppDataContextValue {
 		setMuseumSlots, 
 		equipment: (equipment ?? DEFAULT_EQUIPMENT), 
 		setEquipment, 
-		collectibles: (collectibles ?? []), 
-		setCollectibles, 
 		ownedMaterials: (ownedMaterials ?? {}), 
 		setOwnedMaterials, 
 		exportData, 

@@ -4,7 +4,6 @@ export const translations = {
     crafting: "Crafting",
     museum: "Museum",
     equipment: "Equipment Simulation",
-    collectibles: "Custom Collectibles",
     infoTab: "Info",
     infoTitle: "Prospecting! Tools – Information",
     infoIntro: "This section provides an overview of the available tools and a full list of craftable items with their stats.",
@@ -134,10 +133,6 @@ export const translations = {
     modifierBoost: "Modifier Boost",
     toughness: "Toughness",
     
-    // Collectibles
-    selectOre: "Select Ore",
-    addOre: "Add Ore",
-    oreList: "Ore List",
     
     // Messages
     noItems: "No items added yet",
@@ -166,7 +161,6 @@ export const translations = {
     craftingTooltip: "Plan your crafting queue and track materials",
     museumTooltip: "Optimize your museum display for maximum bonuses",
     equipmentTooltip: "Simulate equipment builds and calculate stats",
-    collectiblesTooltip: "Track your ore collection progress",
     
     // Data Management Enhanced
     saveSettings: "Save Settings",
@@ -211,7 +205,6 @@ export const translations = {
     seoDescCrafting: "Crafting calculator and material optimization for Roblox Prospecting!",
     seoDescMuseum: "Track museum contribution values and optimize deposits in Prospecting!",
     seoDescEquipment: "Simulate equipment setups and efficiency for Prospecting!",
-  seoDescCollectibles: "Manage and plan custom collectibles in Prospecting!",
   seoDescInfo: "Overview of Prospecting tools and full item reference list.",
 
     // Misc
@@ -228,7 +221,6 @@ export const translations = {
     crafting: "Tworzenie",
     museum: "Muzeum",
     equipment: "Symulacja Ekwipunku", 
-    collectibles: "Niestandardowe Kolekcje",
     infoTab: "Informator",
     infoTitle: "Prospecting! Tools – Informator",
     infoIntro: "Ta sekcja zawiera opis dostępnych narzędzi oraz pełną listę przedmiotów z ich statystykami.",
@@ -358,10 +350,6 @@ export const translations = {
     modifierBoost: "Modifier Boost",
     toughness: "Toughness",
     
-    // Collectibles
-    selectOre: "Wybierz Rudę",
-    addOre: "Dodaj Rudę", 
-    oreList: "Lista Rud",
     
     // Messages
     noItems: "Nie dodano jeszcze przedmiotów",
@@ -390,7 +378,6 @@ export const translations = {
     craftingTooltip: "Zaplanuj kolejkę tworzenia i śledź materiały",
     museumTooltip: "Zoptymalizuj wystawę w muzeum dla maksymalnych bonusów",
     equipmentTooltip: "Symuluj zestawy ekwipunku i obliczaj statystyki",
-    collectiblesTooltip: "Śledź postęp kolekcji rud",
     
     // Data Management Enhanced
     saveSettings: "Ustawienia Zapisu",
@@ -435,7 +422,6 @@ export const translations = {
     seoDescCrafting: "Kalkulator tworzenia i optymalizacja materiałów do Roblox Prospecting!",
     seoDescMuseum: "Śledź wartości wkładu do muzeum i optymalizuj depozyty w Prospecting!",
     seoDescEquipment: "Symuluj zestawy ekwipunku i ich efektywność w Prospecting!",
-    seoDescCollectibles: "Zarządzaj i planuj niestandardowe kolekcje w Prospecting!",
     seoDescInfo: "Przegląd narzędzi i pełna lista przedmiotów do Prospecting!",
 
     // Misc

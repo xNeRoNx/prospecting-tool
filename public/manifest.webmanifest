@@ -1,7 +1,7 @@
 {
   "name": "Prospecting! Tools",
   "short_name": "Prospecting Tools",
-  "description": "Companion app for Roblox Prospecting! Crafting calculator, museum tracker, equipment simulator & collectibles manager.",
+  "description": "Companion app for Roblox Prospecting! Crafting calculator, museum tracker & equipment simulator.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

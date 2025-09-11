@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from 'react';
-import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -12,13 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Upload, Link, FileArrowDown, FileArrowUp, Database, Eye, Check, Calendar, FileText, Tag } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
+import { encodeDataForUrl, decodeDataFromUrl } from '@/lib/urlCompression';
 import { toast } from 'sonner';
 
 interface DataSelection {
   craftingItems: boolean;
   museumSlots: boolean;
   equipment: boolean;
-  collectibles: boolean;
   ownedMaterials: boolean;
 }
 
@@ -34,7 +33,6 @@ interface ImportData {
   craftingItems?: any[];
   museumSlots?: any[];
   equipment?: any;
-  collectibles?: any[];
   ownedMaterials?: any;
 }
 
@@ -47,7 +45,7 @@ interface ImportPreview {
 // Komponent odpowiedzialny wyłącznie za zarządzanie eksportem / importem i slotami zapisu
 export function DataManagement() {
   const { t } = useLanguage();
-  const { isLoading, craftingItems, museumSlots, equipment, collectibles, ownedMaterials, importDataSelective, getSaves, saveToSlot, loadFromSlot, deleteSave } = useAppData();
+  const { isLoading, craftingItems, museumSlots, equipment, ownedMaterials, importDataSelective, getSaves, saveToSlot, loadFromSlot, deleteSave } = useAppData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dataDialogOpen, setDataDialogOpen] = useState(false);
   const [urlInput, setUrlInput] = useState('');
@@ -56,14 +54,12 @@ export function DataManagement() {
     craftingItems: true,
     museumSlots: true,
     equipment: true,
-    collectibles: true,
     ownedMaterials: true
   });
   const [importSelection, setImportSelection] = useState<DataSelection>({
     craftingItems: true,
     museumSlots: true,
     equipment: true,
-    collectibles: true,
     ownedMaterials: true
   });
   const [saveMetadata, setSaveMetadata] = useState<SaveMetadata>({
@@ -103,20 +99,16 @@ export function DataManagement() {
     try {
       const hashData = hash.split('#data=')[1];
       if (!hashData) return;
-      const decompressed = decompressFromEncodedURIComponent(hashData);
-      if (!decompressed) throw new Error('Invalid compressed payload');
-      const data = JSON.parse(decompressed);
+      const data = decodeDataFromUrl(hashData);
       setImportPreview({ data, source: 'url' });
       setShowPreview(true);
       setActiveTab('import');
       setDataDialogOpen(true);
-      // Wyczyść hash, aby nie uruchamiać drugi raz po odświeżeniu
       window.history.replaceState({}, document.title, window.location.pathname);
     } catch (e) {
       console.error(e);
       toast.error(t('importError'));
     }
-    // Chcemy uruchomić tylko raz przy wejściu na stronę
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -126,7 +118,6 @@ export function DataManagement() {
     if (selection.craftingItems) data.craftingItems = craftingItems;
     if (selection.museumSlots) data.museumSlots = museumSlots;
     if (selection.equipment) data.equipment = equipment;
-    if (selection.collectibles) data.collectibles = collectibles;
     if (selection.ownedMaterials) data.ownedMaterials = ownedMaterials;
     return data;
   };
@@ -137,11 +128,11 @@ export function DataManagement() {
   };
 
   const selectAll = (isExport: boolean) => {
-    const all: DataSelection = { craftingItems: true, museumSlots: true, equipment: true, collectibles: true, ownedMaterials: true };
+    const all: DataSelection = { craftingItems: true, museumSlots: true, equipment: true, ownedMaterials: true };
     isExport ? setExportSelection(all) : setImportSelection(all);
   };
   const selectNone = (isExport: boolean) => {
-    const none: DataSelection = { craftingItems: false, museumSlots: false, equipment: false, collectibles: false, ownedMaterials: false };
+    const none: DataSelection = { craftingItems: false, museumSlots: false, equipment: false, ownedMaterials: false };
     isExport ? setExportSelection(none) : setImportSelection(none);
   };
 
@@ -171,10 +162,10 @@ export function DataManagement() {
   const handleExportToUrl = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
-      const dataWithMetadata = { metadata: { ...saveMetadata, createdAt: new Date().toISOString() }, ...selectedData };
-  // Kompresja do krótszego i URL-safe formatu
-  const compressed = compressToEncodedURIComponent(JSON.stringify(dataWithMetadata));
-  const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
+      // Utrzymujemy version w metadata (aliasowane w module kompresji)
+      const dataWithMetadata = { metadata: { ...saveMetadata, createdAt: new Date().toISOString(), version: saveMetadata.version }, ...selectedData };
+      const compressed = encodeDataForUrl(dataWithMetadata);
+      const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
       navigator.clipboard.writeText(url);
       toast.success(t('urlCopied'));
       setDataDialogOpen(false);
@@ -209,9 +200,7 @@ export function DataManagement() {
     try {
       const hashData = urlInput.includes('#data=') ? urlInput.split('#data=')[1] : urlInput;
       if (!hashData) return toast.error(t('importError'));
-      const decompressed = decompressFromEncodedURIComponent(hashData);
-      if (!decompressed) throw new Error('Invalid compressed payload');
-      const data = JSON.parse(decompressed);
+      const data = decodeDataFromUrl(hashData);
       setImportPreview({ data, source: 'url' });
       setShowPreview(true);
       setActiveTab('import');
@@ -276,10 +265,6 @@ export function DataManagement() {
             <Checkbox id={`equipment-${isExport ? 'export' : 'import'}`} checked={current.equipment} onCheckedChange={c => updateSelection('equipment', !!c, isExport)} className="mt-0.5 shrink-0" disabled={isLoading} />
             <label htmlFor={`equipment-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">{t('equipment')}</label>
           </div>
-            <div className="flex items-start space-x-2">
-            <Checkbox id={`collectibles-${isExport ? 'export' : 'import'}`} checked={current.collectibles} onCheckedChange={c => updateSelection('collectibles', !!c, isExport)} className="mt-0.5 shrink-0" disabled={isLoading} />
-            <label htmlFor={`collectibles-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">{t('collectibles')} ({isExport ? collectibles.length : (importPreview?.data.collectibles?.length || 0)} {t('items')})</label>
-          </div>
           <div className="flex items-start space-x-2">
             <Checkbox id={`materials-${isExport ? 'export' : 'import'}`} checked={current.ownedMaterials} onCheckedChange={c => updateSelection('ownedMaterials', !!c, isExport)} className="mt-0.5 shrink-0" disabled={isLoading} />
             <label htmlFor={`materials-${isExport ? 'export' : 'import'}`} className="text-sm font-medium break-words checkbox-label">{t('ownedMaterials')} ({isExport ? Object.keys(ownedMaterials).length : Object.keys(importPreview?.data.ownedMaterials || {}).length} {t('materials')})</label>
@@ -341,7 +326,6 @@ export function DataManagement() {
               {data.craftingItems && (<div className="flex justify-between items-center gap-2"><span className="truncate">{t('crafting')}:</span><Badge variant="outline" className="shrink-0">{data.craftingItems.length}</Badge></div>)}
               {data.museumSlots && (<div className="flex justify-between items-center gap-2"><span className="truncate">{t('museum')}:</span><Badge variant="outline" className="shrink-0">{data.museumSlots.length}</Badge></div>)}
               {data.equipment && (<div className="flex justify-between items-center gap-2"><span className="truncate">{t('equipment')}:</span><Badge variant="outline" className="shrink-0">✓</Badge></div>)}
-              {data.collectibles && (<div className="flex justify-between items-center gap-2"><span className="truncate">{t('collectibles')}:</span><Badge variant="outline" className="shrink-0">{data.collectibles.length}</Badge></div>)}
               {data.ownedMaterials && (<div className="flex justify-between items-center gap-2"><span className="truncate">{t('materials')}:</span><Badge variant="outline" className="shrink-0">{Object.keys(data.ownedMaterials).length}</Badge></div>)}
             </div>
           </div>
