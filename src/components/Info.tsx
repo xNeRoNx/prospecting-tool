@@ -16,6 +16,12 @@ export function Info() {
         </p>
       </section>
 
+      {/* Author Note */}
+      <section className="space-y-4 border-l-2 border-primary/40 pl-4">
+        <h3 className="text-xl font-semibold">{t('infoAuthorNoteTitle')}</h3>
+        <p className="text-sm text-muted-foreground whitespace-pre-line">{t('infoAuthorNoteDesc')}</p>
+      </section>
+
       {/* Header */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoHeaderTitle')}</h3>

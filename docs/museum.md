@@ -40,14 +40,18 @@ The order matters (rarest first) for UI planning priority.
 
 `groupSlotsByRarity()` reconstructs grouped structure each render to drive layout; it ensures stable ordering and fills any missing definitions (defensive).
 
-## Overview Dialog
-Derived with `getMuseumOverview()`:
-1. Filters slots containing an ore.
-2. Maps to enriched objects including: base ore data, modifier data, museum effect, special effects, max weight, current weight, and computed modifier bonus (via `getModifierBonus(ore.rarity)`).
-3. Groups by rarity respecting a fixed rarity order list.
-4. Sorts ores within each rarity alphabetically.
+## Overview (Condensed View)
+Purpose: Provide a compact, scroll‑efficient snapshot of everything placed in the museum without any editing controls. One line per ore under its rarity group.
 
-This dataset feeds the modal list. Missing pieces (like truncated code for special effects rendering) show a pattern: conditional blocks for multi‑stat handling vs single stat effect.
+Data Construction (via `getMuseumOverview()`):
+1. Filter: keep only slots that currently contain an ore.
+2. Enrich: attach base ore metadata, modifier (if present), effect (single or special multi‑stat array), maxWeight, current weight value, and computed modifier bonus (`getModifierBonus(ore.rarity)`).
+3. Group: aggregate by rarity using a fixed rarity ordering (Exotic → Common) for visual hierarchy.
+4. Sort: within each rarity, ores sorted alphabetically for predictable scanning.
+
+Display Intent: Emphasise completeness & effect potential, omitting inputs (selectors / weight fields). Weight is shown as `currentWeight @ maxWeightkg` (future scaling will clarify partial progress). An empty museum renders an informational placeholder instead of a blank modal.
+
+Rendering Pattern: Special (multi‑stat) effects are iterated producing a joined representation; single‑stat effects shown inline. Modifier bonus appended as `+Xx` where X depends on rarity.
 
 ## Bonus Calculation
 `calculateMuseumStats()` delegates to `calculateMuseumBonuses(museumSlots)` (external utility not shown here) expected contract:

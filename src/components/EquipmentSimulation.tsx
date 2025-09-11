@@ -120,22 +120,7 @@ export function EquipmentSimulation() {
       toughness: 0
     };
 
-    // Equipment stats
-    [...equipment.rings, equipment.necklace, equipment.charm].forEach(item => {
-      if (item) {
-        Object.entries(item.stats).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            // Use max value from range
-            const maxValue = value[1];
-            if (stats[key] !== undefined) {
-              stats[key] += maxValue;
-            }
-          }
-        });
-      }
-    });
-
-    // Shovel stats
+    // 1) Shovel
     if (equipment.shovel) {
       const shovel = shovels.find(s => s.name === equipment.shovel);
       if (shovel) {
@@ -145,7 +130,7 @@ export function EquipmentSimulation() {
       }
     }
 
-    // Pan stats (with enchant if selected)
+    // 2) Pan
     if (equipment.pan) {
       const pan = pans.find(p => p.name === equipment.pan);
       if (pan) {
@@ -153,47 +138,47 @@ export function EquipmentSimulation() {
         stats.capacity += pan.stats.capacity;
         stats.shakeStrength += pan.stats.shakeStrength;
         stats.shakeSpeed += pan.stats.shakeSpeed;
-        
-        // Parse passive effects
+        // Passive parsing (size / modifier boosts)
         if (pan.passive) {
           if (pan.passive.includes('Size boost')) {
             const match = pan.passive.match(/\(([+-]\d+)%\)/);
-            if (match) {
-              stats.sizeBoost += parseInt(match[1]);
-            }
+            if (match) stats.sizeBoost += parseInt(match[1]);
           }
           if (pan.passive.includes('Modifier boost')) {
             const match = pan.passive.match(/\(([+-]\d+)%\)/);
-            if (match) {
-              stats.modifierBoost += parseInt(match[1]);
-            }
-          }
-        }
-        
-        // Apply enchant if selected
-        if (equipment.enchant) {
-          const enchant = enchants.find(e => e.name === equipment.enchant);
-          if (enchant) {
-            Object.entries(enchant.effects).forEach(([key, value]) => {
-              if (stats[key] !== undefined) {
-                stats[key] += value;
-              }
-            });
+            if (match) stats.modifierBoost += parseInt(match[1]);
           }
         }
       }
     }
 
-    // Custom stats
-    Object.entries(equipment.customStats).forEach(([key, value]) => {
-      if (stats[key] !== undefined) {
-        stats[key] += value;
-      } else {
-        stats[key] = value;
+    // 3) Enchant (depends on having selected enchant regardless of pan presence)
+    if (equipment.enchant) {
+      const enchant = enchants.find(e => e.name === equipment.enchant);
+      if (enchant) {
+        Object.entries(enchant.effects).forEach(([key, value]) => {
+          if (stats[key] !== undefined) stats[key] += value;
+        });
       }
+    }
+
+    // 4) Custom Stats
+    Object.entries(equipment.customStats).forEach(([key, value]) => {
+      if (stats[key] !== undefined) stats[key] += value; else stats[key] = value;
     });
 
-    return stats;
+    // 5) Equipment Items (rings, necklace, charm) using max roll values
+    [...equipment.rings, equipment.necklace, equipment.charm].forEach(item => {
+      if (!item) return;
+      Object.entries(item.stats).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          const maxValue = value[1];
+          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+        }
+      });
+    });
+
+    return stats; // Museum & Events applied later
   };
 
 

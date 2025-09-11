@@ -16,44 +16,46 @@ Provide a deterministic, inspectable calculation pipeline for final player stats
 - `museumSlots` for integrating museum multipliers via shared `sharedCalculateMuseumBonuses` (aliased here as `sharedCalculateMuseumBonuses`).
 - Static datasets: `craftableItems`, `pans`, `shovels`, `enchants`, `events` (events file assumed external— code references `events.find`).
 
-## Base Stat Assembly
-`calculateBaseStats()` builds an accumulator object with known stat keys:
+## Base Stat Assembly (Updated Order)
+`calculateBaseStats()` constructs an accumulator with canonical stat keys:
 ```
 {
   luck, digStrength, digSpeed, shakeStrength, shakeSpeed,
   capacity, sellBoost, sizeBoost, modifierBoost, toughness
 }
 ```
-Process:
-1. Iterate equipped rings + necklace + charm. For each stat range `[min,max]` pick `max` (optimistic best roll modelling). Add to accumulator.
-2. Shovel: add its flat stats (digStrength, digSpeed, toughness).
-3. Pan: add its base stats; parse passive string for patterns `(±\d+)%` following 'Size boost' / 'Modifier boost'; convert to int and aggregate into corresponding boost stats.
-4. Enchant: add each effect's value to accumulator.
-5. Custom stats: merge; if key unrecognised it is still added (defensive fallback). Consider filtering in future.
+Computation Order (layered):
+1. Shovel – foundational tool layer (digStrength, digSpeed, toughness).
+2. Pan – adds luck, capacity, shakeStrength, shakeSpeed and parsed passive boosts (Size / Modifier) via regex `(±\d+)%`.
+3. Enchant – additive effects applied after both tools so they build on the aggregated tool baseline.
+4. Custom Stats – ad‑hoc flat injections before jewellery so subsequent gear impact remains visible separately.
+5. Equipment Items (Rings / Necklace / Charm) – each stat range contributes its max value (optimistic modelling) added last to complete base layer.
+
+Result: A base stats object (pre‑museum, pre‑events). Museum multipliers and events are applied in subsequent stages outside this function.
 
 ## Museum Application
-`showMaxMuseum` toggles between:
-- Max mode: `museumBonusesMax = sharedCalculateMuseumBonuses(museumSlots)` (assumed returns decimal multipliers per stat, e.g. `{ luck: 0.25 }`).
-- Weight mode: placeholder zeros. Future integration will supply weight-scaled multipliers.
+Toggle `showMaxMuseum` selects source multipliers:
+- Max mode: `sharedCalculateMuseumBonuses(museumSlots)` returns decimal fractions (0.25 = +25%).
+- Weight mode: placeholder zeros (future weight scaling pending).
 
-Computation:
+Formula per stat:
 ```
-finalWithoutEvents[stat] = base[stat] + (base[stat] * museumMultiplier)
+withMuseum = base + (base * museumMultiplier)  // base * (1 + m)
 ```
-Equivalent to `base * (1 + multiplier)`. Stored separately then passed into event stage.
+Executed AFTER the full base assembly (steps 1–5 above) and BEFORE events.
 
 ## Event Multipliers
-`calculateEventBonuses(finalStats)` clones `finalStats` and for each active event multiplies targeted stats:
+`calculateEventBonuses(finalStats)` applies post‑museum multiplicative stacking:
 ```
-stat = stat * eventMultiplier
+stat := stat * eventMultiplier
 ```
-Chaining multiplicatively across events ensures commutativity but not additivity; order does not matter.
+Multiple events multiply sequentially (commutative across the same stat). Events therefore represent the final stage of the pipeline.
 
 ## Final Stat Display
-Three panels conceptually:
-1. Base Stats (pre museum, pre events)
-2. Museum-adjusted Stats (`finalStats` in code) — (naming might be refined)
-3. Event-adjusted Stats (`eventStats`)
+Panels:
+1. Base Stats – Output of updated base pipeline (steps 1–5).
+2. With Museum Bonuses – Base adjusted by museum multipliers (Max or Weight placeholder).
+3. With Event Bonuses – Final numbers after multiplicative event effects.
 
 Percent vs Flat Formatting:
 - Keys containing `Speed` or `Boost` suffixed with `%` for readability.
@@ -68,12 +70,12 @@ Percent vs Flat Formatting:
 Current regex: `/\(([+-]\d+)%\)/` extracts first percentage found. If multiple modifiers appear, logic may need expansion (multi-match). Passive text must include recognizable tokens 'Size boost' or 'Modifier boost'. Suggest converting to structured metadata in source data long-term.
 
 ## Weight Mode (Future)
-Add branch where `museumBonusesDisplayed` is produced by a function:
+Planned function:
 ```
 calcWeightScaled(slots) => { stat: scaledDecimal }
 scaled = clamp(weight / maxWeight, 0, 1) * maxMultiplier
 ```
-Special effects arrays: apply scaling per stat. Ensure floating precision < 1e-6 rounding for UI.
+Special multi‑stat effects scale per component. UI will likely show `current (scaled) / max` for transparency. Floating precision should be normalized (e.g. round to 1e-4 for intermediate, 1 decimal for display).
 
 ## Potential Refactors
 - Extract calculation pipeline into pure utility for unit testing.
@@ -83,18 +85,23 @@ Special effects arrays: apply scaling per stat. Ensure floating precision < 1e-6
 - Localise passive parsing; store passive effects structured in dataset.
 
 ## Edge Cases
-- Empty equipment: returns zeros gracefully.
-- Unknown enchant or pan after data shift: lookups fail silently (no crash).
-- Custom stat with unexpected key: currently accepted (document or clamp). Could filter to known list.
-- Multiple events touching same stat: multiplicative stacking can escalate; ensure design intent.
+- Empty equipment: returns zeros gracefully (all layers become no‑ops).
+- Unknown enchant or pan after data shift: safe lookup failure leaves stats unchanged.
+- Custom stat unexpected key: currently ignored on add (UI validation) but defensive code would still merge; keep whitelist in sync.
+- Multiple events same stat: multiplicative escalation; monitor for balance issues.
+- Museum empty: multipliers all zero → withMuseum panel equals Base panel.
 
 ## Testing Scenarios
-1. Single ring with stat ranges -> verify max side used.
-2. Add enchant -> expected additive change.
-3. Toggle museum mode -> stats identical in base, changed only in panel 2 (future: difference when Weight implemented).
-4. Activate two events on same stat -> confirm multiplication (e.g., base 100 *1.1 *1.2 = 132).
-5. Passive parsing: create pan with both Size & Modifier boosts -> ensure both captured.
-6. Custom stat add/remove idempotency.
+1. Shovel only → verify only its three stats populated.
+2. Add pan → incremental luck/capacity/shake stats + parsed boosts.
+3. Add enchant → additive overlay after pan values (diff = enchant.effects).
+4. Insert custom stat (e.g. luck +10) → appears before jewellery; then add ring with luck range (max appended).
+5. Add jewellery → max roll increments appear; base panel changes accordingly.
+6. Toggle museum Max → museum panel > base when multipliers > 0.
+7. Activate two events on same stat → base 100, events 1.1 and 1.2 → final 132.
+8. Weight mode (placeholder) → museum panel identical to base.
+9. Passive parsing pan with both Size & Modifier → both boosts aggregated.
+10. Remove an event → final panel recalculates correctly.
 
 ## Performance Considerations
 Current dataset small; recalculation unproblematic. If scaling: memoize based on shallow equality of relevant slices (equipment, museumSlots, events, toggle). Avoid parsing passives repeatedly by precomputing structured passive effects.
