@@ -196,7 +196,7 @@ export function EquipmentSimulation() {
   };
 
 
-  // Użycie wspólnej funkcji
+  // Using shared function
   const calculateMuseumBonuses = () => sharedCalculateMuseumBonuses(museumSlots);
 
 
