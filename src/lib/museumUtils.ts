@@ -14,8 +14,8 @@ export interface MuseumBonuses {
 }
 
 /**
- * Oblicza bonusy z muzeum (maksymalne – na podstawie wpisanych wag i wybranych modifierów).
- * Zachowuje identyczną logikę jak wcześniej zduplikowane funkcje w Museum.tsx oraz EquipmentSimulation.tsx
+ * Calculates museum bonuses (maximum - based on entered weights and selected modifiers).
+ * Preserves identical logic as previously duplicated functions in Museum.tsx and EquipmentSimulation.tsx.
  */
 export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses {
   const bonuses: MuseumBonuses = {
