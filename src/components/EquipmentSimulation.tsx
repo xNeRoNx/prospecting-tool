@@ -89,21 +89,31 @@ export function EquipmentSimulation() {
   };
 
   const calculateEventBonuses = (finalStats: { [key: string]: number }) => {
-    const eventStats = { ...finalStats };
+    // Zmiana logiki: wszystkie mnożniki eventów są sumowane addytywnie (mult - 1)
+    // i aplikowane jako pojedynczy łączny mnożnik, zamiast kaskadowego mnożenia.
     const activeEvents = equipment.activeEvents || [];
 
+    // Zbieramy sumę (multiplier - 1) dla każdego statu
+    const additiveTotals: { [key: string]: number } = {};
     activeEvents.forEach(eventName => {
       const event = events.find(e => e.name === eventName);
-      if (event) {
-        Object.entries(event.effects).forEach(([stat, multiplier]) => {
-          if (eventStats[stat] !== undefined) {
-            eventStats[stat] = eventStats[stat] * multiplier;
-          }
-        });
+      if (!event) return;
+      Object.entries(event.effects).forEach(([stat, multiplier]) => {
+        // multiplier np. 1.25 => bonus 0.25
+        const bonusPortion = multiplier - 1;
+        additiveTotals[stat] = (additiveTotals[stat] || 0) + bonusPortion;
+      });
+    });
+
+    // Aplikujemy końcowy mnożnik (1 + suma bonusów) jeśli istnieje
+    const combinedStats = { ...finalStats };
+    Object.entries(additiveTotals).forEach(([stat, totalPortion]) => {
+      if (combinedStats[stat] !== undefined) {
+        combinedStats[stat] = combinedStats[stat] * (1 + totalPortion);
       }
     });
 
-    return eventStats;
+    return combinedStats;
   };
 
   const calculateBaseStats = () => {
