@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/(en|pl)", "destination": "/" },
-    { "source": "/(en|pl)/(.*)", "destination": "/" }
+    { "source": "/(en|pl|id|pt)", "destination": "/" },
+    { "source": "/(en|pl|id|pt)/(.*)", "destination": "/" }
   ]
 }
