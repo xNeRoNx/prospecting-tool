@@ -368,6 +368,25 @@ export const craftableItems: CraftableItem[] = [
     cost: 75000000
   },
   {
+    name: "Ring of Thorns",
+    rarity: "Mythic",
+    position: "Ring",
+    recipe: [
+      { material: "Chrysoberyl", amount: 1 },
+      { material: "Painite", amount: 2 },
+      { material: "Lightshard", amount: 5 },
+      { material: "Glowmoss", amount: 5 },
+      { material: "Firefly Stone", amount: 5 }
+    ],
+    stats: {
+      digStrength: [5, 40],
+      luck: [20, 100],
+      sizeBoost: [10, 30],
+      modifierBoost: [20, 60]
+    },
+    cost: 75000000
+  },
+  {
     name: "Solar Ring",
     rarity: "Mythic",
     position: "Ring",
@@ -386,6 +405,21 @@ export const craftableItems: CraftableItem[] = [
       modifierBoost: [5, 20]
     },
     cost: 90000000
+  },
+  {
+    name: "Amulet of Life",
+    rarity: "Mythic",
+    position: "Necklace",
+    recipe: [
+      { material: "Specterite", amount: 5 },
+      { material: "Chrysoberyl", amount: 1 },
+      { material: "Prismara", amount: 1 }
+    ],
+    stats: {
+      luck: [100, 300],
+      modifierBoost: [50, 150]
+    },
+    cost: 150000000
   },
   // Exotic
   {
@@ -414,6 +448,19 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { luck: [100, 400], digStrength: [100, 200], capacity: [50, 200], digSpeed: [-50, -30], sizeBoost: [30, 100] },
     cost: 200000000
+  },
+  {
+    name: "Antlers of Life",
+    rarity: "Exotic",
+    position: "Charm",
+    recipe: [
+      { material: "Chrysoberyl", amount: 3 },
+      { material: "Vineheart", amount: 1 },
+      { material: "Radiant Gold", amount: 2 },
+      { material: "Firefly Stone", amount: 10 }
+    ],
+    stats: { luck: [100, 580], digSpeed: [10, 40], sizeBoost: [20, 60], modifierBoost: [50, 200] },
+    cost: 300000000
   },
   {
     name: "Vortex Ring",
@@ -448,6 +495,7 @@ export const ores: Ore[] = [
   // Uncommon
   { name: "Titanium", rarity: "Uncommon", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.075 }, maxWeight: 20 },
   { name: "Neodymium", rarity: "Uncommon", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.075 }, maxWeight: 20 },
+  { name: "Glowberry", rarity: "Uncommon", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.075 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Topaz", rarity: "Uncommon", museumEffect: { stat: "Capacity", maxMultiplier: 0.075 }, maxWeight: 10 },
   { name: "Smoky Quartz", rarity: "Uncommon", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.075 }, maxWeight: 10 },
   { name: "Malachite", rarity: "Uncommon", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.075 }, maxWeight: 10 },
@@ -464,12 +512,14 @@ export const ores: Ore[] = [
   { name: "Onyx", rarity: "Rare", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.125 }, maxWeight: 16 },
   { name: "Meteoric Iron", rarity: "Rare", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.125 }, maxWeight: 20 },
   { name: "Glacial Quartz", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.125 }, maxWeight: 21 },
+  { name: "Amber", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.125 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Azuralite", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.125 }, maxWeight: 15 },
   { name: "Pyrelith", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.125 }, maxWeight: 16 },
 
   
   // Epic
   { name: "Iridium", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 20 },
+  { name: "Glowmoss", rarity: "Epic", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.2 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Moonstone", rarity: "Epic", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.2 }, maxWeight: 25 },
   { name: "Ammonite Fossil", rarity: "Epic", museumEffect: { stat: "Capacity", maxMultiplier: 0.2 }, maxWeight: 25 },
   { name: "Ashvein", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.14 }, maxWeight: 10 },
@@ -479,6 +529,7 @@ export const ores: Ore[] = [
   { name: "Cobalt", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 20 },
   { name: "Borealite", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 10 },
   { name: "Osmium", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.2 }, maxWeight: 40 },
+  { name: "Lightshard", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Opal", rarity: "Epic", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.2 }, maxWeight: 10 },
   { name: "Aurorite", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 15 },
   
@@ -490,11 +541,13 @@ export const ores: Ore[] = [
   { name: "Uranium", rarity: "Legendary", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.3 }, maxWeight: 30 },
   { name: "Luminium", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 20 },
   { name: "Volcanic Key", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 10 },
+  { name: "Firefly Stone", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Fire Opal", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 10 },
   { name: "Dragon Bone", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 25 },
   { name: "Catseye", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 10 },
   { name: "Starshine", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.15 }, 
     specialEffects: { digSpeed: 0.15, shakeSpeed: 0.15 }, maxWeight: 10 },
+  { name: "Specterite", rarity: "Legendary", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.3 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Tourmaline", rarity: "Legendary", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.3 }, maxWeight: 12.5 },
   { name: "Aquamarine", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 10 },
   { name: "Aetherite", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 10 },
@@ -505,12 +558,14 @@ export const ores: Ore[] = [
   { name: "Inferlume", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 10 },
   { name: "Vortessence", rarity: "Mythic", museumEffect: { stat: "Capacity", maxMultiplier: 0.5 }, maxWeight: 10 },
   { name: "Mythril", rarity: "Mythic", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.5 }, maxWeight: 30 },
+  { name: "Chrysoberyl", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Prismara", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.25 }, 
     specialEffects: { luck: 0.25, capacity: 0.25, digStrength: 0.25, shakeStrength: 0.25 }, maxWeight: 10 },
   { name: "Flarebloom", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.75 },
     specialEffects: { luck: 0.75, sizeBoost: -0.5 }, maxWeight: 10 },
   { name: "Volcanic Core", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.25 },
     specialEffects: { digStrength: 0.25, sizeBoost: 0.2 }, maxWeight: 10 },
+  { name: "Radiant Gold", rarity: "Mythic", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.5 }, maxWeight: 0 }, //TODO - verify maxWeight
   { name: "Frostshard", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.5 }, maxWeight: 10 },
   
   // Exotic
@@ -519,19 +574,20 @@ export const ores: Ore[] = [
   { name: "Cryogenic Artifact", rarity: "Exotic", museumEffect: { stat: "Dig Strength", maxMultiplier: 1.5 },
     specialEffects: { digStrength: 1.5, shakeStrength: 1.5, digSpeed: -1, shakeSpeed: -1 }, maxWeight: 10 },
   { name: "Voidstone", rarity: "Exotic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 },
-    specialEffects: { luck: 0.5, capacity: 0.5 }, maxWeight: 10 }
+    specialEffects: { luck: 0.5, capacity: 0.5 }, maxWeight: 10 },
+  { name: "Vineheart", rarity: "Exotic", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.0 }, maxWeight: 0 }, //TODO - verify maxWeight and effect
 ];
 
 export const modifiers = [
-  { name: "Pure", effect: "Dig Speed" },
   { name: "Shiny", effect: "Shake Strength" },
+  { name: "Pure", effect: "Dig Speed" },
   { name: "Glowing", effect: "Shake Speed" },
   { name: "Scorching", effect: "Dig Strength" },
-  { name: "Iridescent", effect: "Luck" },
   { name: "Irradiated", effect: "Modifier Boost" },
+  { name: "Crystalline", effect: "Size Boost" },
+  { name: "Iridescent", effect: "Luck" },
   { name: "Electrified", effect: "Dig and Shake Speed" },
   { name: "Voidtorn", effect: "Luck and Capacity" },
-  { name: "Crystalline", effect: "Size Boost" }
 ];
 
 export const getModifierBonus = (rarity: string): number => {
@@ -570,7 +626,8 @@ export const shovels: Shovel[] = [
   { name: "Dragonflame Shovel", stats: { digStrength: 50, digSpeed: 60, toughness: 5 }, price: 400000000 },
   { name: "Fossilized Shovel", stats: { digStrength: 40, digSpeed: 100, toughness: 6 }, price: 1000000000 },
   { name: "Galactic Shovel", stats: { digStrength: 60, digSpeed: 80, toughness: 6 }, price: 2000000000 },
-  { name: "Icebreaker Shovel", stats: { digStrength: 60, digSpeed: 110, toughness: 6 }, price: 10000000000 }
+  { name: "Icebreaker Shovel", stats: { digStrength: 60, digSpeed: 110, toughness: 6 }, price: 10000000000 },
+  { name: "Lifetouched Shovel", stats: { digStrength: 100, digSpeed: 100, toughness: 7 }, price: 80000000000 }
 ];
 
 export const pans: Pan[] = [
@@ -587,7 +644,8 @@ export const pans: Pan[] = [
   { name: "Dragonflame Pan", stats: { luck: 150, capacity: 180, shakeStrength: 10, shakeSpeed: 110 }, passive: "Size boost of (-10%)", price: 400000000 },
   { name: "Fossilized Pan", stats: { luck: 200, capacity: 225, shakeStrength: 8, shakeSpeed: 100 }, passive: "Modifier boost of (+50%)", price: 1000000000 },
   { name: "Galactic Pan", stats: { luck: 100, capacity: 500, shakeStrength: 25, shakeSpeed: 100 }, passive: "Size Boost of (+25%) and has a chance to give Voidtorn items", price: 2000000000 },
-  { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "Size Boost of (+25%)", price: 10000000000 }
+  { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "Size Boost of (+25%)", price: 10000000000 },
+  { name: "Lifetouched Pan", stats: { luck: 400, capacity: 300, shakeStrength: 8, shakeSpeed: 110 }, passive: "Modifier boost of (+50%)", price: 100000000000 }
 ];
 
 export const enchants: Enchant[] = [
