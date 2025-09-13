@@ -12,10 +12,17 @@ import { useAppData } from '@/hooks/useAppData.tsx';
 import { Hammer, Bank, Calculator, Info as InfoIcon, Spinner } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 
+enum TabsEnum {
+  Crafting = 'crafting',
+  Museum = 'museum',
+  Equipment = 'equipment',
+  Info = 'info'
+}
+
 function App() {
   const { language, t } = useLanguage();
   const { isLoading } = useAppData();
-  const [activeTab, setActiveTab] = useState<string>('info');
+  const [activeTab, setActiveTab] = useState<TabsEnum>(TabsEnum.Crafting);
 
   // Update canonical and hreflang alternates based on language
   useEffect(() => {
@@ -94,11 +101,11 @@ function App() {
   // Inicjalizacja zakładki z hasha oraz nasłuch zmiany hasha (#crafting, #museum, ...)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-  const validTabs = ['info', 'crafting', 'museum', 'equipment'];
+    const validTabs = Object.values(TabsEnum) as string[];
     const init = () => {
       const fromHash = window.location.hash.replace('#', '');
       if (validTabs.includes(fromHash)) {
-        setActiveTab(fromHash);
+        setActiveTab(fromHash as TabsEnum);
       }
     };
     init();
@@ -126,51 +133,53 @@ function App() {
       <main className="container mx-auto px-4 py-6">
         <Tabs
           value={activeTab}
-          defaultValue="crafting"
-          onValueChange={(val) => {
-            setActiveTab(val);
-            // aktualizuj hash i przewiń do sekcji
-            const nextUrl = `${window.location.pathname}#${val}`;
-            window.history.replaceState(null, '', nextUrl);
-            const el = document.getElementById(val);
-            if (el) {
-              try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { /* ignore */ }
+          defaultValue={TabsEnum.Crafting}
+          onValueChange={(val: string) => {
+            if (Object.values(TabsEnum).includes(val as TabsEnum)) {
+              setActiveTab(val as TabsEnum);
+              // aktualizuj hash i przewiń do sekcji
+              const nextUrl = `${window.location.pathname}#${val}`;
+              window.history.replaceState(null, '', nextUrl);
+              const el = document.getElementById(val);
+              if (el) {
+                try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { /* ignore */ }
+              }
             }
           }}
           className="space-y-6"
         >
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
-            <TabsTrigger value="crafting" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Crafting} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Hammer size={16} />
               <span className="text-xs sm:text-sm">{t('crafting')}</span>
             </TabsTrigger>
-            <TabsTrigger value="museum" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Museum} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Bank size={16} />
               <span className="text-xs sm:text-sm">{t('museum')}</span>
             </TabsTrigger>
-            <TabsTrigger value="equipment" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Equipment} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Calculator size={16} />
               <span className="text-xs sm:text-sm">{t('equipment')}</span>
             </TabsTrigger>
-            <TabsTrigger value="info" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Info} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <InfoIcon size={16} />
               <span className="text-xs sm:text-sm">{t('infoTab')}</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="crafting" id="crafting">
+          <TabsContent value={TabsEnum.Crafting} id="crafting">
             <Crafting />
           </TabsContent>
           
-          <TabsContent value="museum" id="museum">
+          <TabsContent value={TabsEnum.Museum} id="museum">
             <Museum />
           </TabsContent>
           
-          <TabsContent value="equipment" id="equipment">
+          <TabsContent value={TabsEnum.Equipment} id="equipment">
             <EquipmentSimulation />
           </TabsContent>
           
-          <TabsContent value="info" id="info">
+          <TabsContent value={TabsEnum.Info} id="info">
             <Info />
           </TabsContent>
         </Tabs>

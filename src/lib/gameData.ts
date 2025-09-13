@@ -537,9 +537,11 @@ export const modifiers = [
 export const getModifierBonus = (rarity: string): number => {
   switch (rarity) {
     case 'Common':
+      return 0.005;
     case 'Uncommon':
+      return 0.0075;
     case 'Rare':
-      return 0.01;
+      return 0.0125;
     case 'Epic':
       return 0.02;
     case 'Legendary':
