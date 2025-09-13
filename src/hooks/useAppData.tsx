@@ -8,7 +8,7 @@ export interface CraftingItem {
 	quantity: number; 
 	completed: boolean; 
 	id: string; 
-	craftedCount?: number; 
+	craftedCount: number; 
 }
 export interface MaterialSummary { 
 	[material: string]: { 

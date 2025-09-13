@@ -72,7 +72,7 @@ export function Crafting() {
       const after = updated.find(ci => ci.id === id);
       if (!before || !after) return updated;
 
-      // Przejście na completed -> konsumuj
+      // Transition to completed -> consume materials
       if (!before.completed && after.completed) {
         const remainingToCraft = after.quantity - (before.craftedCount || 0);
         if (remainingToCraft > 0) {
@@ -616,7 +616,7 @@ export function Crafting() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-1 flex-shrink-0 ml-2 mr-8">
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2 mr-6">
                           <Button
                             size="sm"
                             variant="outline"
