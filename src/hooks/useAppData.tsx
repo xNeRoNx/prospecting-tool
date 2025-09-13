@@ -8,6 +8,7 @@ export interface CraftingItem {
 	quantity: number; 
 	completed: boolean; 
 	id: string; 
+	craftedCount: number; 
 }
 export interface MaterialSummary { 
 	[material: string]: { 
@@ -74,6 +75,19 @@ function useProvideAppData(): AppDataContextValue {
 		if (museumSlots === null) setMuseumSlots([]);
 		if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
 		if (ownedMaterials === null) setOwnedMaterials({});
+
+		// Migracja: dodaj craftedCount jeśli brak
+		if (craftingItems !== null) {
+			let needsMigration = false;
+			const migrated = craftingItems.map(ci => {
+				if (ci.craftedCount === undefined) {
+					needsMigration = true;
+					return { ...ci, craftedCount: ci.completed ? ci.quantity : 0 } as CraftingItem;
+				}
+				return ci;
+			});
+			if (needsMigration) setCraftingItems(migrated);
+		}
 
 		const allReady = craftingItems !== null && museumSlots !== null && equipment !== null && ownedMaterials !== null;
 		if (isLoading && allReady) {

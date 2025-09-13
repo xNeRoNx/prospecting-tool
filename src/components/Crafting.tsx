@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Minus, Check, X, Hammer, Wrench } from '@phosphor-icons/react';
+import { Plus, Minus, Check, X, Hammer, Wrench, Broom, Trash, ArrowCounterClockwise } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData.tsx';
@@ -20,13 +20,16 @@ export function Crafting() {
   const [selectedItem, setSelectedItem] = useState<CraftableItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
+  // Mapowanie: craftingItem.id -> { material: consumedAmount }
+  const [consumedMaterials, setConsumedMaterials] = useState<Record<string, Record<string, number>>>({});
   const addToCraftingList = (item: CraftableItem, qty: number) => {
     const id = Date.now().toString();
     const newCraftingItem: CraftingItem = {
       item,
       quantity: qty,
       completed: false,
-      id
+      id,
+      craftedCount: 0
     };
     
     setCraftingItems(current => [...(current ?? []), newCraftingItem]);
@@ -37,48 +40,163 @@ export function Crafting() {
   const removeCraftingItem = (id: string) => {
     const itemToRemove = craftingItems.find(item => item.id === id);
     if (!itemToRemove) return;
-
-    // Remove the item from crafting list
+    // Usuń element z listy craftingu
     setCraftingItems(current => (current ?? []).filter(item => item.id !== id));
-    
-    // Check if any materials are only used by the removed item and reset their quantity
-    const remainingItems = craftingItems.filter(item => item.id !== id);
-    const materialsStillNeeded = new Set<string>();
-    
-    // Collect all materials still needed by remaining items
-    remainingItems.forEach(craftingItem => {
-      if (!craftingItem.completed) {
-        craftingItem.item.recipe.forEach(recipe => {
-          materialsStillNeeded.add(recipe.material);
-        });
-      }
+
+    // Wyczyść zapis zużytych materiałów (jeśli był) – nie przywracamy ich
+    setConsumedMaterials(prev => {
+      if (!(id in prev)) return prev;
+      const copy = { ...prev };
+      delete copy[id];
+      return copy;
     });
-    
-    // Reset materials that are no longer needed
-    const materialsToReset: string[] = [];
-    itemToRemove.item.recipe.forEach(recipe => {
-      if (!materialsStillNeeded.has(recipe.material)) {
-        materialsToReset.push(recipe.material);
-      }
-    });
-    
-    if (materialsToReset.length > 0) {
-      setOwnedMaterials(current => {
-        const updated = { ...current };
-        materialsToReset.forEach(material => {
-          delete updated[material];
-        });
-        return updated;
+
+    // Usuń z ekwipunku tylko te materiały z recepty usuwanego craftingu, które mają ilość 0
+    setOwnedMaterials(current => {
+      const updated: Record<string, number> = { ...current } as any;
+      const recipeMaterials = new Set(itemToRemove.item.recipe.map(r => r.material));
+      recipeMaterials.forEach(m => {
+        if (updated[m] === 0) {
+          delete updated[m];
+        }
       });
-    }
+      return updated;
+    });
   };
 
   const toggleCompleted = (id: string) => {
-    setCraftingItems(current =>
-      (current ?? []).map(item =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      )
-    );
+    setCraftingItems(current => {
+      const list = current ?? [];
+      const before = list.find(ci => ci.id === id);
+      const updated = list.map(ci => ci.id === id ? { ...ci, completed: !ci.completed } : ci);
+      const after = updated.find(ci => ci.id === id);
+      if (!before || !after) return updated;
+
+      // Transition to completed -> consume materials
+      if (!before.completed && after.completed) {
+        const remainingToCraft = after.quantity - (before.craftedCount || 0);
+        if (remainingToCraft > 0) {
+          const additionalConsumed: Record<string, number> = {};
+          setOwnedMaterials(mat => {
+            const copy: Record<string, number> = { ...mat } as any;
+            after.item.recipe.forEach(r => {
+              const need = r.amount * remainingToCraft;
+              additionalConsumed[r.material] = need;
+              if (copy[r.material] !== undefined) {
+                copy[r.material] = Math.max(0, (copy[r.material] || 0) - need);
+              }
+            });
+            return copy;
+          });
+          // Merge with existing consumed (for partial progression)
+          setConsumedMaterials(prev => {
+            const prevForItem = prev[id] || {};
+            const merged: Record<string, number> = { ...prevForItem };
+            Object.entries(additionalConsumed).forEach(([m, amt]) => {
+              merged[m] = (merged[m] || 0) + amt;
+            });
+            return { ...prev, [id]: merged };
+          });
+          // Ustaw craftedCount = quantity
+          setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: ci.quantity } : ci));
+        }
+      }
+      // Przejście z completed -> active (odznaczenie) -> zwrot
+      else if (before.completed && !after.completed) {
+        const consumed = consumedMaterials[id];
+        if (consumed) {
+          setOwnedMaterials(mat => {
+            const copy: Record<string, number> = { ...mat } as any;
+            Object.entries(consumed).forEach(([m, amt]) => {
+              copy[m] = (copy[m] || 0) + amt;
+            });
+            return copy;
+          });
+          setConsumedMaterials(prev => {
+            const c = { ...prev };
+            delete c[id];
+            return c;
+          });
+          // Reset craftedCount do 0
+          setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: 0 } : ci));
+        }
+      }
+      return updated;
+    });
+  };
+
+  // Craft exactly one item (partial progression)
+  const craftOne = (id: string) => {
+    const craftingItem = craftingItems.find(ci => ci.id === id);
+    if (!craftingItem) return;
+    if (craftingItem.completed) return; // już pełne
+    const crafted = craftingItem.craftedCount || 0;
+    if (crafted >= craftingItem.quantity) return;
+    // Sprawdź czy mamy materiały na 1 sztukę
+    for (const r of craftingItem.item.recipe) {
+      if ((ownedMaterials[r.material] || 0) < r.amount) return; // brak materiałów
+    }
+    // Konsumpcja materiałów dla 1 sztuki
+    setOwnedMaterials(mat => {
+      const copy: Record<string, number> = { ...mat } as any;
+      craftingItem.item.recipe.forEach(r => {
+        copy[r.material] = Math.max(0, (copy[r.material] || 0) - r.amount);
+      });
+      return copy;
+    });
+    // Zapisz konsumpcję w consumedMaterials (inkrementalnie)
+    setConsumedMaterials(prev => {
+      const prevForItem = prev[id] || {};
+      const updated: Record<string, number> = { ...prevForItem };
+      craftingItem.item.recipe.forEach(r => {
+        updated[r.material] = (updated[r.material] || 0) + r.amount;
+      });
+      return { ...prev, [id]: updated };
+    });
+    // Inkrementuj craftedCount
+    setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: (ci.craftedCount || 0) + 1 } : ci));
+    // Jeśli osiągnięto pełną ilość – oznacz jako completed
+    setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? ( (ci.craftedCount || 0) >= ci.quantity ? { ...ci, completed: true } : ci) : ci));
+  };
+
+  // Undo craft of exactly one item
+  const undoOne = (id: string) => {
+    const craftingItem = craftingItems.find(ci => ci.id === id);
+    if (!craftingItem) return;
+    const crafted = craftingItem.craftedCount || 0;
+    if (crafted <= 0) return;
+    // Przywróć materiały dla 1 sztuki
+    const recipeMap: Record<string, number> = {};
+    craftingItem.item.recipe.forEach(r => { recipeMap[r.material] = r.amount; });
+    setOwnedMaterials(mat => {
+      const copy: Record<string, number> = { ...mat } as any;
+      Object.entries(recipeMap).forEach(([m, amt]) => {
+        copy[m] = (copy[m] || 0) + amt;
+      });
+      return copy;
+    });
+    // Zmniejsz zapis konsumpcji
+    setConsumedMaterials(prev => {
+      const prevForItem = prev[id] || {};
+      const updated: Record<string, number> = { ...prevForItem };
+      Object.entries(recipeMap).forEach(([m, amt]) => {
+        updated[m] = (updated[m] || 0) - amt;
+        if (updated[m] <= 0) delete updated[m];
+      });
+      if (Object.keys(updated).length === 0) {
+        const clone = { ...prev };
+        delete clone[id];
+        return clone;
+      }
+      return { ...prev, [id]: updated };
+    });
+    // Decrement craftedCount i jeśli było completed to odznacz jeśli cofamy poniżej quantity
+    setCraftingItems(cur => (cur ?? []).map(ci => {
+      if (ci.id !== id) return ci;
+      const newCrafted = Math.max(0, (ci.craftedCount || 0) - 1);
+      const stillCompleted = newCrafted >= ci.quantity; // jeśli mniej niż quantity to nie completed
+      return { ...ci, craftedCount: newCrafted, completed: stillCompleted };
+    }));
   };
 
   const updateQuantity = (id: string, newQuantity: number) => {
@@ -89,7 +207,14 @@ export function Crafting() {
     
     setCraftingItems(current =>
       (current ?? []).map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        item.id === id ? { 
+          ...item, 
+          quantity: newQuantity, 
+          // Jeżeli nowa ilość jest mniejsza niż dotychczas skraftowana – przytnij craftedCount
+          craftedCount: Math.min(item.craftedCount || 0, newQuantity),
+          // Jeśli obniżamy ilość poniżej craftedCount i było completed, może pozostać completed tylko jeśli craftedCount == newQuantity
+          completed: (item.completed ? (Math.min(item.craftedCount || 0, newQuantity) === newQuantity) : item.completed)
+        } : item
       )
     );
   };
@@ -124,15 +249,15 @@ export function Crafting() {
   const calculateMaterialSummary = (): MaterialSummary => {
     const summary: MaterialSummary = {};
     const materialMaxNeeded: { [key: string]: number } = {};
-    
-    // Calculate totals or maximums based on showMinimalMaterials flag
+
     craftingItems.forEach(craftingItem => {
-      if (craftingItem.completed) return;
-      
+      if (craftingItem.completed) return; // nic nie potrzebujemy dla ukończonych
+      const crafted = craftingItem.craftedCount || 0;
+      const remainingQty = Math.max(0, craftingItem.quantity - crafted);
+      if (remainingQty === 0) return; // brak pozostałych sztuk
+
       craftingItem.item.recipe.forEach(recipe => {
         const materialName = recipe.material;
-        const needed = recipe.amount * craftingItem.quantity;
-        
         if (!summary[materialName]) {
           summary[materialName] = {
             needed: 0,
@@ -141,25 +266,23 @@ export function Crafting() {
           };
           materialMaxNeeded[materialName] = 0;
         }
-        
         if (showMinimalMaterials) {
-          // For minimal materials, keep track of the maximum amount needed per item
-          const neededPerItem = recipe.amount;
-          materialMaxNeeded[materialName] = Math.max(materialMaxNeeded[materialName], neededPerItem);
+          // minimal mode – nadal tylko ilość na jedną sztukę danego przedmiotu
+            materialMaxNeeded[materialName] = Math.max(materialMaxNeeded[materialName], recipe.amount);
         } else {
-          // For total materials, sum all needed amounts
-          summary[materialName].needed += needed;
+          // total mode – ale tylko dla pozostałych nie skraftowanych sztuk
+          summary[materialName].needed += recipe.amount * remainingQty;
         }
       });
     });
 
-    // If showing minimal materials, use the maximum needed per item type
     if (showMinimalMaterials) {
       Object.keys(materialMaxNeeded).forEach(material => {
         summary[material].needed = materialMaxNeeded[material];
       });
     }
-
+    // Usuń materiały, których już nie potrzeba
+    Object.keys(summary).forEach(m => { if (summary[m].needed === 0) delete summary[m]; });
     return summary;
   };
 
@@ -225,6 +348,76 @@ export function Crafting() {
     const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic'];
     return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
   });
+
+  // Lista materiałów możliwych do dodania (filtrowanie już posiadanych)
+  const addableMaterials = useMemo(() => {
+    return ores
+      .filter(o => !(o.name in ownedMaterials))
+      .sort((a, b) => {
+        const order = ['Exotic', 'Mythic', 'Legendary', 'Epic', 'Rare', 'Uncommon', 'Common'];
+        return order.indexOf(a.rarity) - order.indexOf(b.rarity);
+      });
+  }, [ownedMaterials]);
+
+  const addMaterialManually = (name: string) => {
+    setOwnedMaterials(current => ({ ...current, [name]: 0 }));
+  };
+
+  const removeMaterialManually = (name: string) => {
+    // Nie usuwaj jeśli materiał jest nadal potrzebny w aktywnych (nie ukończonych) recipe
+    const neededInActive = craftingItems.some(ci => !ci.completed && ci.item.recipe.some(r => r.material === name));
+    if (neededInActive) return; // bezpieczeństwo – można później rozbudować UI o komunikat
+    setOwnedMaterials(current => {
+      const copy = { ...current };
+      delete copy[name];
+      return copy;
+    });
+  };
+
+  const materialIsRemovable = (name: string) => {
+    return !craftingItems.some(ci => !ci.completed && ci.item.recipe.some(r => r.material === name));
+  };
+
+  const clearUnusedMaterials = () => {
+    if (!confirm(t('clearUnusedConfirm') + '\n\n' + t('clearUnusedInfo'))) return;
+    // Zbierz zestaw materiałów używanych przez aktywne (nieukończone) craftingi
+    const needed = new Set<string>();
+    craftingItems.forEach(ci => {
+      if (!ci.completed) {
+        ci.item.recipe.forEach(r => needed.add(r.material));
+      }
+    });
+    setOwnedMaterials(current => {
+      const filtered: { [k: string]: number } = {};
+      Object.entries(current).forEach(([k, v]) => {
+        if (needed.has(k)) filtered[k] = v as number;
+      });
+      return filtered;
+    });
+  };
+
+  const clearZeroMaterials = () => {
+    // Informacja dla użytkownika
+    alert(t('clearZeroInfo'));
+    // Zbuduj zestaw materiałów potrzebnych w aktywnych (nieukończonych) craftingach
+    const needed = new Set<string>();
+    craftingItems.forEach(ci => {
+      if (!ci.completed) {
+        ci.item.recipe.forEach(r => needed.add(r.material));
+      }
+    });
+    setOwnedMaterials(current => {
+      const filtered: { [k: string]: number } = {};
+      Object.entries(current).forEach(([k, v]) => {
+        const amount = v as number;
+        // Zachowaj jeśli > 0 albo jeśli 0 ale jest potrzebny
+        if (amount > 0 || needed.has(k)) {
+          filtered[k] = amount;
+        }
+      });
+      return filtered;
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -346,11 +539,15 @@ export function Crafting() {
                       <Hammer size={14} />
                       <span className="truncate">
                         {item.item.name} x{maxQuantity}
-                        {maxQuantity < item.quantity && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            (of {item.quantity} wanted)
-                          </span>
-                        )}
+                        {(() => {
+                          const crafted = item.craftedCount || 0;
+                          const remaining = Math.max(0, item.quantity - crafted);
+                          return maxQuantity < remaining && remaining > 0 ? (
+                            <span className="text-xs text-muted-foreground ml-1">
+                              (of {remaining} wanted)
+                            </span>
+                          ) : null;
+                        })()}
                       </span>
                     </div>
                   ))}
@@ -390,7 +587,7 @@ export function Crafting() {
                             </div>
                             
                             <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                              <span>{t('quantity')}: {craftingItem.quantity}</span>
+                              <span>{t('quantity')}: {(craftingItem.craftedCount || 0)}/{craftingItem.quantity}</span>
                               <span>
                                 {t('cost')}: $
                                 {showMinimalMaterials 
@@ -419,7 +616,29 @@ export function Crafting() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2 mr-6">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => craftOne(craftingItem.id)}
+                            className="h-8 w-8 p-0"
+                            disabled={isLoading || craftingItem.completed || (craftingItem.craftedCount || 0) >= craftingItem.quantity}
+                            title={t('craftOne')}
+                          >
+                            <Hammer size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => undoOne(craftingItem.id)}
+                            className="h-8 w-8 p-0"
+                            disabled={isLoading || (craftingItem.craftedCount || 0) <= 0}
+                            title={t('undoOne')}
+                          >
+                            <ArrowCounterClockwise size={12} />
+                          </Button>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           <Button
                             size="sm"
                             variant="outline"
@@ -573,6 +792,121 @@ export function Crafting() {
               </CardContent>
             </Card>
           )}
+        </div>
+
+        <div className="space-y-4 col-span-1 xl:col-span-2">
+          {/* Sekcja ekwipunku materiałów */}
+          <Card>
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0 gap-4">
+              <div>
+                <CardTitle className="text-lg">{t('inventory')} – {t('ownedMaterials')}</CardTitle>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed hidden sm:block">{t('materialsInventoryHint')}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={clearUnusedMaterials} disabled={isLoading} title={t('clearUnusedMaterials')} className="h-8 w-8 p-0 flex items-center justify-center">
+                  <Broom size={16} />
+                </Button>
+                <Button size="sm" variant="outline" onClick={clearZeroMaterials} disabled={isLoading} title={t('clearZeroMaterials')} className="h-8 w-8 p-0 flex items-center justify-center">
+                  <Trash size={16} />
+                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="gap-2" disabled={isLoading || addableMaterials.length === 0}>
+                      <Plus size={14} /> {t('addMaterial')}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>{t('addMaterial')}</DialogTitle>
+                    </DialogHeader>
+                    {addableMaterials.length === 0 ? (
+                      <div className="text-sm text-muted-foreground">{t('noMaterials')}</div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {addableMaterials.map(ore => (
+                          <Button
+                            key={ore.name}
+                            variant="outline"
+                            className="justify-start h-auto py-2 px-3 flex flex-col items-start gap-1 text-left"
+                            onClick={() => addMaterialManually(ore.name)}
+                            disabled={isLoading}
+                          >
+                            <span className="text-sm font-medium flex items-center gap-2">
+                              <Badge className={getRarityClass(ore.rarity)} variant="outline">{ore.rarity}</Badge>
+                              {ore.name}
+                            </span>
+                          </Button>
+                        ))}
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-0 space-y-3">
+              {Object.keys(ownedMaterials).length === 0 ? (
+                <div className="text-sm text-muted-foreground py-4">{t('inventoryEmpty')}</div>
+              ) : (
+                Object.entries(ownedMaterials)
+                  .sort(([nameA], [nameB]) => {
+                    const order = ['Exotic', 'Mythic', 'Legendary', 'Epic', 'Rare', 'Uncommon', 'Common'];
+                    const rarityA = getMaterialRarity(nameA);
+                    const rarityB = getMaterialRarity(nameB);
+                    const diff = order.indexOf(rarityA) - order.indexOf(rarityB);
+                    if (diff !== 0) return diff;
+                    return nameA.localeCompare(nameB); // tie-breaker alphabetically
+                  })
+                  .map(([name, value]) => {
+                    const rarity = getMaterialRarity(name);
+                    const removable = materialIsRemovable(name);
+                    return (
+                      <div key={name} className="flex items-center gap-2">
+                        <Badge className={getRarityClass(rarity)} variant="outline">{rarity}</Badge>
+                        <span className="flex-1 min-w-0 truncate" title={name}>{name}</span>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 w-7 p-0"
+                            onClick={() => updateOwnedMaterial(name, value - 1)}
+                            disabled={isLoading || value <= 0}
+                          >
+                            <Minus size={12} />
+                          </Button>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={value}
+                            onChange={(e) => updateOwnedMaterial(name, parseInt(e.target.value) || 0)}
+                            className="w-16 h-7 text-xs text-center"
+                            disabled={isLoading}
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 w-7 p-0"
+                            onClick={() => updateOwnedMaterial(name, value + 1)}
+                            disabled={isLoading}
+                          >
+                            <Plus size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 w-7 p-0 text-destructive"
+                            onClick={() => removeMaterialManually(name)}
+                            disabled={!removable || isLoading}
+                            title={removable ? t('removeMaterial') : t('alreadyAdded')}
+                          >
+                            <X size={12} />
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
