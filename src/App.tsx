@@ -12,10 +12,17 @@ import { useAppData } from '@/hooks/useAppData.tsx';
 import { Hammer, Bank, Calculator, Info as InfoIcon, Spinner } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 
+enum TabsEnum {
+  Crafting = 'crafting',
+  Museum = 'museum',
+  Equipment = 'equipment',
+  Info = 'info'
+}
+
 function App() {
   const { language, t } = useLanguage();
   const { isLoading } = useAppData();
-  const [activeTab, setActiveTab] = useState<string>('info');
+  const [activeTab, setActiveTab] = useState<TabsEnum>(TabsEnum.Crafting);
 
   // Update canonical and hreflang alternates based on language
   useEffect(() => {
@@ -96,7 +103,7 @@ function App() {
     if (typeof window === 'undefined') return;
   const validTabs = ['info', 'crafting', 'museum', 'equipment'];
     const init = () => {
-      const fromHash = window.location.hash.replace('#', '');
+      const fromHash = window.location.hash.replace('#', '') as TabsEnum;
       if (validTabs.includes(fromHash)) {
         setActiveTab(fromHash);
       }
@@ -126,8 +133,8 @@ function App() {
       <main className="container mx-auto px-4 py-6">
         <Tabs
           value={activeTab}
-          defaultValue="crafting"
-          onValueChange={(val) => {
+          defaultValue={TabsEnum.Crafting}
+          onValueChange={(val: TabsEnum) => {
             setActiveTab(val);
             // aktualizuj hash i przewiń do sekcji
             const nextUrl = `${window.location.pathname}#${val}`;
@@ -140,19 +147,19 @@ function App() {
           className="space-y-6"
         >
           <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
-            <TabsTrigger value="crafting" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Crafting} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Hammer size={16} />
               <span className="text-xs sm:text-sm">{t('crafting')}</span>
             </TabsTrigger>
-            <TabsTrigger value="museum" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Museum} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Bank size={16} />
               <span className="text-xs sm:text-sm">{t('museum')}</span>
             </TabsTrigger>
-            <TabsTrigger value="equipment" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Equipment} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <Calculator size={16} />
               <span className="text-xs sm:text-sm">{t('equipment')}</span>
             </TabsTrigger>
-            <TabsTrigger value="info" className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
+            <TabsTrigger value={TabsEnum.Info} className="flex flex-col sm:flex-row gap-1 sm:gap-2 py-2">
               <InfoIcon size={16} />
               <span className="text-xs sm:text-sm">{t('infoTab')}</span>
             </TabsTrigger>
