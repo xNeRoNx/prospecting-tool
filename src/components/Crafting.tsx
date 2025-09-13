@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Plus, Minus, Check, X, Hammer, Wrench, Broom, Trash } from '@phosphor-icons/react';
+import { Plus, Minus, Check, X, Hammer, Wrench, Broom, Trash, ArrowCounterClockwise } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData.tsx';
@@ -28,7 +28,8 @@ export function Crafting() {
       item,
       quantity: qty,
       completed: false,
-      id
+      id,
+      craftedCount: 0
     };
     
     setCraftingItems(current => [...(current ?? []), newCraftingItem]);
@@ -73,19 +74,32 @@ export function Crafting() {
 
       // Przejście na completed -> konsumuj
       if (!before.completed && after.completed) {
-        const consumed: Record<string, number> = {};
-        setOwnedMaterials(mat => {
-          const copy: Record<string, number> = { ...mat } as any;
+        const remainingToCraft = after.quantity - (before.craftedCount || 0);
+        if (remainingToCraft > 0) {
+          const additionalConsumed: Record<string, number> = {};
+          setOwnedMaterials(mat => {
+            const copy: Record<string, number> = { ...mat } as any;
             after.item.recipe.forEach(r => {
-            const totalNeeded = r.amount * after.quantity;
-            consumed[r.material] = totalNeeded;
-            if (copy[r.material] !== undefined) {
-              copy[r.material] = Math.max(0, (copy[r.material] || 0) - totalNeeded);
-            }
+              const need = r.amount * remainingToCraft;
+              additionalConsumed[r.material] = need;
+              if (copy[r.material] !== undefined) {
+                copy[r.material] = Math.max(0, (copy[r.material] || 0) - need);
+              }
+            });
+            return copy;
           });
-          return copy;
-        });
-        setConsumedMaterials(prev => ({ ...prev, [id]: consumed }));
+          // Merge with existing consumed (for partial progression)
+          setConsumedMaterials(prev => {
+            const prevForItem = prev[id] || {};
+            const merged: Record<string, number> = { ...prevForItem };
+            Object.entries(additionalConsumed).forEach(([m, amt]) => {
+              merged[m] = (merged[m] || 0) + amt;
+            });
+            return { ...prev, [id]: merged };
+          });
+          // Ustaw craftedCount = quantity
+          setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: ci.quantity } : ci));
+        }
       }
       // Przejście z completed -> active (odznaczenie) -> zwrot
       else if (before.completed && !after.completed) {
@@ -103,10 +117,86 @@ export function Crafting() {
             delete c[id];
             return c;
           });
+          // Reset craftedCount do 0
+          setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: 0 } : ci));
         }
       }
       return updated;
     });
+  };
+
+  // Craft exactly one item (partial progression)
+  const craftOne = (id: string) => {
+    const craftingItem = craftingItems.find(ci => ci.id === id);
+    if (!craftingItem) return;
+    if (craftingItem.completed) return; // już pełne
+    const crafted = craftingItem.craftedCount || 0;
+    if (crafted >= craftingItem.quantity) return;
+    // Sprawdź czy mamy materiały na 1 sztukę
+    for (const r of craftingItem.item.recipe) {
+      if ((ownedMaterials[r.material] || 0) < r.amount) return; // brak materiałów
+    }
+    // Konsumpcja materiałów dla 1 sztuki
+    setOwnedMaterials(mat => {
+      const copy: Record<string, number> = { ...mat } as any;
+      craftingItem.item.recipe.forEach(r => {
+        copy[r.material] = Math.max(0, (copy[r.material] || 0) - r.amount);
+      });
+      return copy;
+    });
+    // Zapisz konsumpcję w consumedMaterials (inkrementalnie)
+    setConsumedMaterials(prev => {
+      const prevForItem = prev[id] || {};
+      const updated: Record<string, number> = { ...prevForItem };
+      craftingItem.item.recipe.forEach(r => {
+        updated[r.material] = (updated[r.material] || 0) + r.amount;
+      });
+      return { ...prev, [id]: updated };
+    });
+    // Inkrementuj craftedCount
+    setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: (ci.craftedCount || 0) + 1 } : ci));
+    // Jeśli osiągnięto pełną ilość – oznacz jako completed
+    setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? ( (ci.craftedCount || 0) >= ci.quantity ? { ...ci, completed: true } : ci) : ci));
+  };
+
+  // Undo craft of exactly one item
+  const undoOne = (id: string) => {
+    const craftingItem = craftingItems.find(ci => ci.id === id);
+    if (!craftingItem) return;
+    const crafted = craftingItem.craftedCount || 0;
+    if (crafted <= 0) return;
+    // Przywróć materiały dla 1 sztuki
+    const recipeMap: Record<string, number> = {};
+    craftingItem.item.recipe.forEach(r => { recipeMap[r.material] = r.amount; });
+    setOwnedMaterials(mat => {
+      const copy: Record<string, number> = { ...mat } as any;
+      Object.entries(recipeMap).forEach(([m, amt]) => {
+        copy[m] = (copy[m] || 0) + amt;
+      });
+      return copy;
+    });
+    // Zmniejsz zapis konsumpcji
+    setConsumedMaterials(prev => {
+      const prevForItem = prev[id] || {};
+      const updated: Record<string, number> = { ...prevForItem };
+      Object.entries(recipeMap).forEach(([m, amt]) => {
+        updated[m] = (updated[m] || 0) - amt;
+        if (updated[m] <= 0) delete updated[m];
+      });
+      if (Object.keys(updated).length === 0) {
+        const clone = { ...prev };
+        delete clone[id];
+        return clone;
+      }
+      return { ...prev, [id]: updated };
+    });
+    // Decrement craftedCount i jeśli było completed to odznacz jeśli cofamy poniżej quantity
+    setCraftingItems(cur => (cur ?? []).map(ci => {
+      if (ci.id !== id) return ci;
+      const newCrafted = Math.max(0, (ci.craftedCount || 0) - 1);
+      const stillCompleted = newCrafted >= ci.quantity; // jeśli mniej niż quantity to nie completed
+      return { ...ci, craftedCount: newCrafted, completed: stillCompleted };
+    }));
   };
 
   const updateQuantity = (id: string, newQuantity: number) => {
@@ -117,7 +207,14 @@ export function Crafting() {
     
     setCraftingItems(current =>
       (current ?? []).map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
+        item.id === id ? { 
+          ...item, 
+          quantity: newQuantity, 
+          // Jeżeli nowa ilość jest mniejsza niż dotychczas skraftowana – przytnij craftedCount
+          craftedCount: Math.min(item.craftedCount || 0, newQuantity),
+          // Jeśli obniżamy ilość poniżej craftedCount i było completed, może pozostać completed tylko jeśli craftedCount == newQuantity
+          completed: (item.completed ? (Math.min(item.craftedCount || 0, newQuantity) === newQuantity) : item.completed)
+        } : item
       )
     );
   };
@@ -152,15 +249,15 @@ export function Crafting() {
   const calculateMaterialSummary = (): MaterialSummary => {
     const summary: MaterialSummary = {};
     const materialMaxNeeded: { [key: string]: number } = {};
-    
-    // Calculate totals or maximums based on showMinimalMaterials flag
+
     craftingItems.forEach(craftingItem => {
-      if (craftingItem.completed) return;
-      
+      if (craftingItem.completed) return; // nic nie potrzebujemy dla ukończonych
+      const crafted = craftingItem.craftedCount || 0;
+      const remainingQty = Math.max(0, craftingItem.quantity - crafted);
+      if (remainingQty === 0) return; // brak pozostałych sztuk
+
       craftingItem.item.recipe.forEach(recipe => {
         const materialName = recipe.material;
-        const needed = recipe.amount * craftingItem.quantity;
-        
         if (!summary[materialName]) {
           summary[materialName] = {
             needed: 0,
@@ -169,25 +266,23 @@ export function Crafting() {
           };
           materialMaxNeeded[materialName] = 0;
         }
-        
         if (showMinimalMaterials) {
-          // For minimal materials, keep track of the maximum amount needed per item
-          const neededPerItem = recipe.amount;
-          materialMaxNeeded[materialName] = Math.max(materialMaxNeeded[materialName], neededPerItem);
+          // minimal mode – nadal tylko ilość na jedną sztukę danego przedmiotu
+            materialMaxNeeded[materialName] = Math.max(materialMaxNeeded[materialName], recipe.amount);
         } else {
-          // For total materials, sum all needed amounts
-          summary[materialName].needed += needed;
+          // total mode – ale tylko dla pozostałych nie skraftowanych sztuk
+          summary[materialName].needed += recipe.amount * remainingQty;
         }
       });
     });
 
-    // If showing minimal materials, use the maximum needed per item type
     if (showMinimalMaterials) {
       Object.keys(materialMaxNeeded).forEach(material => {
         summary[material].needed = materialMaxNeeded[material];
       });
     }
-
+    // Usuń materiały, których już nie potrzeba
+    Object.keys(summary).forEach(m => { if (summary[m].needed === 0) delete summary[m]; });
     return summary;
   };
 
@@ -444,11 +539,15 @@ export function Crafting() {
                       <Hammer size={14} />
                       <span className="truncate">
                         {item.item.name} x{maxQuantity}
-                        {maxQuantity < item.quantity && (
-                          <span className="text-xs text-muted-foreground ml-1">
-                            (of {item.quantity} wanted)
-                          </span>
-                        )}
+                        {(() => {
+                          const crafted = item.craftedCount || 0;
+                          const remaining = Math.max(0, item.quantity - crafted);
+                          return maxQuantity < remaining && remaining > 0 ? (
+                            <span className="text-xs text-muted-foreground ml-1">
+                              (of {remaining} wanted)
+                            </span>
+                          ) : null;
+                        })()}
                       </span>
                     </div>
                   ))}
@@ -488,7 +587,7 @@ export function Crafting() {
                             </div>
                             
                             <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                              <span>{t('quantity')}: {craftingItem.quantity}</span>
+                              <span>{t('quantity')}: {(craftingItem.craftedCount || 0)}/{craftingItem.quantity}</span>
                               <span>
                                 {t('cost')}: $
                                 {showMinimalMaterials 
@@ -517,7 +616,29 @@ export function Crafting() {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2 mr-8">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => craftOne(craftingItem.id)}
+                            className="h-8 w-8 p-0"
+                            disabled={isLoading || craftingItem.completed || (craftingItem.craftedCount || 0) >= craftingItem.quantity}
+                            title={t('craftOne')}
+                          >
+                            <Hammer size={12} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => undoOne(craftingItem.id)}
+                            className="h-8 w-8 p-0"
+                            disabled={isLoading || (craftingItem.craftedCount || 0) <= 0}
+                            title={t('undoOne')}
+                          >
+                            <ArrowCounterClockwise size={12} />
+                          </Button>
+                        </div>
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           <Button
                             size="sm"
                             variant="outline"
@@ -682,6 +803,12 @@ export function Crafting() {
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed hidden sm:block">{t('materialsInventoryHint')}</p>
               </div>
               <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={clearUnusedMaterials} disabled={isLoading} title={t('clearUnusedMaterials')} className="h-8 w-8 p-0 flex items-center justify-center">
+                  <Broom size={16} />
+                </Button>
+                <Button size="sm" variant="outline" onClick={clearZeroMaterials} disabled={isLoading} title={t('clearZeroMaterials')} className="h-8 w-8 p-0 flex items-center justify-center">
+                  <Trash size={16} />
+                </Button>
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button size="sm" className="gap-2" disabled={isLoading || addableMaterials.length === 0}>
@@ -714,17 +841,11 @@ export function Crafting() {
                     )}
                   </DialogContent>
                 </Dialog>
-                <Button size="sm" variant="outline" onClick={clearUnusedMaterials} disabled={isLoading} title={t('clearUnusedMaterials')} className="h-8 w-8 p-0 flex items-center justify-center">
-                  <Broom size={16} />
-                </Button>
-                <Button size="sm" variant="outline" onClick={clearZeroMaterials} disabled={isLoading} title={t('clearZeroMaterials')} className="h-8 w-8 p-0 flex items-center justify-center">
-                  <Trash size={16} />
-                </Button>
               </div>
             </CardHeader>
             <CardContent className="pt-0 space-y-3">
               {Object.keys(ownedMaterials).length === 0 ? (
-                <div className="text-sm text-muted-foreground py-4">{t('noMaterials')}</div>
+                <div className="text-sm text-muted-foreground py-4">{t('inventoryEmpty')}</div>
               ) : (
                 Object.entries(ownedMaterials)
                   .sort(([nameA], [nameB]) => {
