@@ -5,7 +5,7 @@
  */
 
 // Bump version when changing CORE_ASSETS to ensure clients fetch fresh cache
-const SW_VERSION = 'v2';
+const SW_VERSION = 'v3';
 const CORE_CACHE = `core-${SW_VERSION}`;
 const ASSET_CACHE = `assets-${SW_VERSION}`; // hashed /assets/* files (Vite output)
 const CORE_ASSETS = [
