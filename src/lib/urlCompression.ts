@@ -117,14 +117,20 @@ export function encodeDataForUrl(fullData: any): string {
 }
 
 export function decodeDataFromUrl(hashData: string): any {
-  const bytes = base64UrlToBytes(hashData);
-  const inflated = inflate(bytes, { to: 'string' }) as string;
-  const raw = JSON.parse(inflated);
-  const aliasKeys = [...Object.values(KEY_MAP), ...DEPRECATED_ALIASES];
-  const hasAlias = Object.keys(raw).some(k => k in KEY_MAP_INV || k in META_KEY_MAP_INV || aliasKeys.includes(k));
-  const unpacked = hasAlias ? unpackData(raw) : raw;
-  // If old data had collectibles, they will be silently dropped; nothing else to do.
-  return unpacked;
+  try {
+    const bytes = base64UrlToBytes(hashData);
+    const inflated = inflate(bytes, { to: 'string' }) as string;
+    const raw = JSON.parse(inflated);
+    // Use correct constant for deprecated sections (previously caused ReferenceError)
+    const aliasKeys = [...Object.values(KEY_MAP), ...Array.from(DEPRECATED_COLLECTIBLES_ALIAS)];
+    const hasAlias = Object.keys(raw).some(k => k in KEY_MAP_INV || k in META_KEY_MAP_INV || aliasKeys.includes(k));
+    const unpacked = hasAlias ? unpackData(raw) : raw;
+    // If old data had collectibles, they will be silently dropped; nothing else to do.
+    return unpacked;
+  } catch (err) {
+    console.error('Failed to decode URL data:', err);
+    throw new Error('Invalid or corrupted data payload');
+  }
 }
 
 // Dodatkowe pomocnicze (opcjonalnie export jeśli kiedykolwiek potrzebne)
