@@ -584,7 +584,7 @@ export const modifiers = [
   { name: "Glowing", effect: "Shake Speed" },
   { name: "Scorching", effect: "Dig Strength" },
   { name: "Irradiated", effect: "Modifier Boost" },
-  { name: "Crystalline", effect: "Size Boost" }
+  { name: "Crystalline", effect: "Size Boost" },
   { name: "Iridescent", effect: "Luck" },
   { name: "Electrified", effect: "Dig and Shake Speed" },
   { name: "Voidtorn", effect: "Luck and Capacity" },
