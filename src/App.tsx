@@ -101,11 +101,11 @@ function App() {
   // Inicjalizacja zakładki z hasha oraz nasłuch zmiany hasha (#crafting, #museum, ...)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-  const validTabs = ['info', 'crafting', 'museum', 'equipment'];
+    const validTabs = Object.values(TabsEnum) as string[];
     const init = () => {
-      const fromHash = window.location.hash.replace('#', '') as TabsEnum;
+      const fromHash = window.location.hash.replace('#', '');
       if (validTabs.includes(fromHash)) {
-        setActiveTab(fromHash);
+        setActiveTab(fromHash as TabsEnum);
       }
     };
     init();
@@ -134,14 +134,16 @@ function App() {
         <Tabs
           value={activeTab}
           defaultValue={TabsEnum.Crafting}
-          onValueChange={(val: TabsEnum) => {
-            setActiveTab(val);
-            // aktualizuj hash i przewiń do sekcji
-            const nextUrl = `${window.location.pathname}#${val}`;
-            window.history.replaceState(null, '', nextUrl);
-            const el = document.getElementById(val);
-            if (el) {
-              try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { /* ignore */ }
+          onValueChange={(val: string) => {
+            if (Object.values(TabsEnum).includes(val as TabsEnum)) {
+              setActiveTab(val as TabsEnum);
+              // aktualizuj hash i przewiń do sekcji
+              const nextUrl = `${window.location.pathname}#${val}`;
+              window.history.replaceState(null, '', nextUrl);
+              const el = document.getElementById(val);
+              if (el) {
+                try { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch { /* ignore */ }
+              }
             }
           }}
           className="space-y-6"
@@ -165,19 +167,19 @@ function App() {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="crafting" id="crafting">
+          <TabsContent value={TabsEnum.Crafting} id="crafting">
             <Crafting />
           </TabsContent>
           
-          <TabsContent value="museum" id="museum">
+          <TabsContent value={TabsEnum.Museum} id="museum">
             <Museum />
           </TabsContent>
           
-          <TabsContent value="equipment" id="equipment">
+          <TabsContent value={TabsEnum.Equipment} id="equipment">
             <EquipmentSimulation />
           </TabsContent>
           
-          <TabsContent value="info" id="info">
+          <TabsContent value={TabsEnum.Info} id="info">
             <Info />
           </TabsContent>
         </Tabs>
