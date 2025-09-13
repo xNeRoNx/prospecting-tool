@@ -97,6 +97,19 @@ export const translations = {
     materialsSummary: "Materials Summary",
     canCraft: "Can craft",
     totalCost: "Total Cost",
+
+    // Inventory (materials management)
+    inventory: "Inventory",
+    addMaterial: "Add Material",
+    materialName: "Material Name",
+    materialsInventoryHint: "Manage owned materials manually here. These numbers feed crafting readiness calculations.",
+    alreadyAdded: "Already added",
+    removeMaterial: "Remove Material",
+    clearUnusedMaterials: "Clear Unused Materials",
+    clearZeroMaterials: "Clear Zero Materials",
+    clearUnusedConfirm: "Are you sure you want to remove all materials not required by any active crafting item?",
+    clearUnusedInfo: "Removes all materials not used in any active (not completed) crafting recipes.",
+    clearZeroInfo: "Removes materials with quantity 0 that are not needed by active crafting recipes.",
     
     // Museum
     displayCase: "Display Case",
@@ -329,6 +342,19 @@ export const translations = {
     materialsSummary: "Podsumowanie Materiałów",
     canCraft: "Można stworzyć",
     totalCost: "Łączny Koszt",
+
+    // Inventory (materials management)
+    inventory: "Ekwipunek",
+    addMaterial: "Dodaj Materiał",
+    materialName: "Nazwa Materiału",
+    materialsInventoryHint: "Zarządzaj ręcznie posiadanymi materiałami. Te liczby wpływają na kalkulację gotowości craftingu.",
+    alreadyAdded: "Już dodano",
+    removeMaterial: "Usuń Materiał",
+    clearUnusedMaterials: "Wyczyść Nieużywane Materiały",
+    clearZeroMaterials: "Wyczyść Materiały z Ilością 0",
+    clearUnusedConfirm: "Czy na pewno usunąć wszystkie materiały nieużywane w żadnym aktywnym przedmiocie?",
+    clearUnusedInfo: "Usuwa wszystkie materiały nieużywane w żadnym aktywnym (nieukończonym) przepisie.",
+    clearZeroInfo: "Usuwa materiały z ilością 0, które nie są potrzebne w aktywnych przepisach.",
     
     // Museum  
     displayCase: "Gablota",
@@ -562,6 +588,19 @@ export const translations = {
     canCraft: "Bisa buat",
     totalCost: "Total Biaya",
 
+    // Inventory (materials management)
+    inventory: "Inventaris",
+    addMaterial: "Tambah Material",
+    materialName: "Nama Material",
+    materialsInventoryHint: "Kelola material dimiliki secara manual. Nilai ini dipakai perhitungan kesiapan crafting.",
+    alreadyAdded: "Sudah ditambahkan",
+    removeMaterial: "Hapus Material",
+    clearUnusedMaterials: "Bersihkan Material Tak Terpakai",
+    clearZeroMaterials: "Hapus Material Bernilai 0",
+    clearUnusedConfirm: "Yakin ingin menghapus semua material yang tidak dipakai oleh item crafting aktif?",
+    clearUnusedInfo: "Menghapus semua material yang tidak dipakai di resep crafting aktif (belum selesai).",
+    clearZeroInfo: "Menghapus material bernilai 0 yang tidak dibutuhkan oleh resep aktif.",
+
     // Museum
     displayCase: "Etalase",
     modifier: "Modifier",
@@ -792,6 +831,19 @@ export const translations = {
     materialsSummary: "Resumo de Materiais",
     canCraft: "Pode criar",
     totalCost: "Custo Total",
+
+    // Inventory (materials management)
+    inventory: "Inventário",
+    addMaterial: "Adicionar Material",
+    materialName: "Nome do Material",
+    materialsInventoryHint: "Gerencie manualmente materiais possuídos. Esses números alimentam o cálculo de criação.",
+    alreadyAdded: "Já adicionado",
+    removeMaterial: "Remover Material",
+    clearUnusedMaterials: "Limpar Materiais Inúteis",
+    clearZeroMaterials: "Limpar Materiais com Quantidade 0",
+    clearUnusedConfirm: "Tem certeza que deseja remover todos os materiais não necessários por nenhum item ativo?",
+    clearUnusedInfo: "Remove todos os materiais não usados em nenhuma receita de crafting ativa (não concluída).",
+    clearZeroInfo: "Remove materiais com quantidade 0 que não são necessários em receitas ativas.",
 
     // Museu
     displayCase: "Vitrine",
