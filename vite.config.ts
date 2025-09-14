@@ -5,7 +5,17 @@ import { execSync } from 'node:child_process';
 import { resolve } from 'path'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
-const commit = execSync('git rev-parse --short HEAD').toString().trim();
+
+function randomHex(length: number): string {
+  let out = '';
+  while (out.length < length) {
+    out += Math.floor(Math.random() * 16).toString(16);
+  }
+  return out.slice(0, length);
+}
+
+const commitRaw = execSync('git rev-parse --short HEAD').toString().trim();
+const commit = /^[a-f0-9]{7,}$/.test(commitRaw) ? commitRaw : randomHex(7);
 
 // https://vite.dev/config/
 export default defineConfig({

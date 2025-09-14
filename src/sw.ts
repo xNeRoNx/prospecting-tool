@@ -5,7 +5,7 @@
  * - Avoids runtime caching of dynamic API/data responses to prevent stale content
  */
 
-// Deklaracja stałej wstrzykiwanej przez Vite (define)
+// Declaration of constant injected by Vite (define)
 declare const __BUILD_HASH__: string;
 
 // Bump version when changing CORE_ASSETS or build hash to ensure clients fetch fresh cache
@@ -32,7 +32,7 @@ const CORE_ASSETS = [
   '/og-image.png'
 ];
 
-// Typowe przypisanie self jako ServiceWorkerGlobalScope dla lepszej intellisense
+// Typical assignment of self as ServiceWorkerGlobalScope for better intellisense
 const swSelf = self as unknown as ServiceWorkerGlobalScope;
 
 swSelf.addEventListener('install', (event: ExtendableEvent) => {

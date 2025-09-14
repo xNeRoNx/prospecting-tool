@@ -25,7 +25,7 @@ function formatError(e: unknown): string {
 
 export function initGlobalErrorHandlers() {
   if (typeof window === 'undefined') return;
-  const w = window as any;
+  const w = window as Window & { __globalErrorHandlersInstalled?: boolean };
   if (w.__globalErrorHandlersInstalled) return; // idempotent
   w.__globalErrorHandlersInstalled = true;
 

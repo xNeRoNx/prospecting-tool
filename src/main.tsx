@@ -34,8 +34,8 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => { /* silent */ });
 
-    // Gdy nowy SW przejmie kontrolę (po skipWaiting/activate) pokażemy toast
-    // Zapobieganie duplikatom poprzez globalny identyfikator
+    // When a new service worker takes control (after skipWaiting/activate), show a toast
+    // Prevent duplicates using a global identifier
     interface UpdateToastWindow extends Window { __updateToastId?: string | number }
     const w = window as UpdateToastWindow;
 
@@ -57,7 +57,7 @@ if ('serviceWorker' in navigator) {
               <button
                 onClick={() => {
                   toast.dismiss(tId);
-                  // reload natychmiast – service worker już przejął kontrolę
+                  // reload immediately – service worker has already taken control
                   if (w.__updateToastId === tId) delete w.__updateToastId;
                   window.location.reload();
                 }}

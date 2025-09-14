@@ -91,9 +91,9 @@ export function EquipmentSimulation() {
   // Nowa logika eventów:
   // - Luck Totem oraz Strength Totem są PRE-museum: skalują tylko staty bazowe (przed dodaniem muzeum)
   // - Meteor Shower oraz Admin Shower są POST-museum: skalują wynik już po zastosowaniu bonusów muzeum
-  // W gameData efekty zapisane są jako wartości (np 2 oznacza 2x). Traktujemy to jako mnożnik.
+  // In gameData, effects are stored as values (e.g., 2 means 2x). We treat this as a multiplier.
   const PRE_EVENTS = ["Luck Totem", "Strength Totem"]; // tylko baza
-  const POST_EVENTS = ["Meteor Shower", "Admin Shower"]; // po museum
+  const POST_EVENTS = ["Meteor Shower", "Admin Shower"]; // after museum
 
   interface StatMap { [key: string]: number }
 
