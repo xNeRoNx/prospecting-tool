@@ -495,7 +495,7 @@ export const ores: Ore[] = [
   // Uncommon
   { name: "Titanium", rarity: "Uncommon", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.075 }, maxWeight: 20 },
   { name: "Neodymium", rarity: "Uncommon", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.075 }, maxWeight: 20 },
-  { name: "Glowberry", rarity: "Uncommon", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.075 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Glowberry", rarity: "Uncommon", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.075 }, maxWeight: 20 },
   { name: "Topaz", rarity: "Uncommon", museumEffect: { stat: "Capacity", maxMultiplier: 0.075 }, maxWeight: 10 },
   { name: "Smoky Quartz", rarity: "Uncommon", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.075 }, maxWeight: 10 },
   { name: "Malachite", rarity: "Uncommon", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.075 }, maxWeight: 10 },
@@ -512,14 +512,14 @@ export const ores: Ore[] = [
   { name: "Onyx", rarity: "Rare", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.125 }, maxWeight: 16 },
   { name: "Meteoric Iron", rarity: "Rare", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.125 }, maxWeight: 20 },
   { name: "Glacial Quartz", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.125 }, maxWeight: 21 },
-  { name: "Amber", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.125 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Amber", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.125 }, maxWeight: 10 },
   { name: "Azuralite", rarity: "Rare", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.125 }, maxWeight: 15 },
   { name: "Pyrelith", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.125 }, maxWeight: 16 },
 
   
   // Epic
   { name: "Iridium", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 20 },
-  { name: "Glowmoss", rarity: "Epic", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.2 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Glowmoss", rarity: "Epic", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.2 }, maxWeight: 30 },
   { name: "Moonstone", rarity: "Epic", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.2 }, maxWeight: 25 },
   { name: "Ammonite Fossil", rarity: "Epic", museumEffect: { stat: "Capacity", maxMultiplier: 0.2 }, maxWeight: 25 },
   { name: "Ashvein", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.14 }, maxWeight: 10 },
@@ -529,7 +529,7 @@ export const ores: Ore[] = [
   { name: "Cobalt", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 20 },
   { name: "Borealite", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 10 },
   { name: "Osmium", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.2 }, maxWeight: 40 },
-  { name: "Lightshard", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Lightshard", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 10 },
   { name: "Opal", rarity: "Epic", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.2 }, maxWeight: 10 },
   { name: "Aurorite", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 15 },
   
@@ -541,13 +541,13 @@ export const ores: Ore[] = [
   { name: "Uranium", rarity: "Legendary", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.3 }, maxWeight: 30 },
   { name: "Luminium", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 20 },
   { name: "Volcanic Key", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 10 },
-  { name: "Firefly Stone", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Firefly Stone", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 30 },
   { name: "Fire Opal", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 10 },
   { name: "Dragon Bone", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 25 },
   { name: "Catseye", rarity: "Legendary", museumEffect: { stat: "Capacity", maxMultiplier: 0.3 }, maxWeight: 10 },
   { name: "Starshine", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.15 }, 
     specialEffects: { digSpeed: 0.15, shakeSpeed: 0.15 }, maxWeight: 10 },
-  { name: "Specterite", rarity: "Legendary", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.3 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Specterite", rarity: "Legendary", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.3 }, maxWeight: 5 },
   { name: "Tourmaline", rarity: "Legendary", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.3 }, maxWeight: 12.5 },
   { name: "Aquamarine", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 10 },
   { name: "Aetherite", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 10 },
@@ -558,7 +558,7 @@ export const ores: Ore[] = [
   { name: "Inferlume", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 10 },
   { name: "Vortessence", rarity: "Mythic", museumEffect: { stat: "Capacity", maxMultiplier: 0.5 }, maxWeight: 10 },
   { name: "Mythril", rarity: "Mythic", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.5 }, maxWeight: 30 },
-  { name: "Chrysoberyl", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Chrysoberyl", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 10 },
   { name: "Prismara", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.25 }, 
     specialEffects: { luck: 0.25, capacity: 0.25, digStrength: 0.25, shakeStrength: 0.25 }, maxWeight: 10 },
   { name: "Flarebloom", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.75 },
