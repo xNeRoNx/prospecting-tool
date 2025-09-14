@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import { toast } from 'sonner';
 import { ErrorBoundary } from "react-error-boundary";
+import { initGlobalErrorHandlers } from './globalErrorHandlers';
 
 import App from './App.tsx'
 import { LanguageProvider, LanguageUrlSync } from './hooks/useLanguage.tsx'
@@ -11,6 +12,9 @@ import { ErrorFallback } from './ErrorFallback.tsx'
 import "./main.css"
 import "./styles/theme.css"
 import "./index.css"
+
+// Initialize global handlers before rendering React tree
+initGlobalErrorHandlers();
 
 createRoot(document.getElementById('root')!).render(
   <ErrorBoundary FallbackComponent={ErrorFallback}>

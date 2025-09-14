@@ -16,6 +16,7 @@ const CORE_ASSETS = [
   '/',
   '/offline.html',
   '/404.html',
+  '/500.html',
   // Manifests (default + locale variants)
   '/manifest.webmanifest',
   '/manifest-pl.webmanifest',
