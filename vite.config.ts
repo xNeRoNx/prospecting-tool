@@ -14,8 +14,13 @@ function randomHex(length: number): string {
   return out.slice(0, length);
 }
 
-const commitRaw = execSync('git rev-parse --short HEAD').toString().trim();
-const commit = /^[a-f0-9]{7,}$/.test(commitRaw) ? commitRaw : randomHex(7);
+let commit: string;
+try {
+  const commitRaw = execSync('git rev-parse --short HEAD').toString().trim();
+  commit = /^[a-f0-9]{7,}$/.test(commitRaw) ? commitRaw : randomHex(7);
+} catch (e) {
+  commit = randomHex(7);
+}
 
 // https://vite.dev/config/
 export default defineConfig({
