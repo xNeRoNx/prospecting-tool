@@ -64,7 +64,7 @@ fix(museum): prevent duplicate ore selection
 - [ ] No stray files (logs, editor configs, build artefacts)
 - [ ] Documentation / README updated if behaviour changes
 - [ ] No unnecessary large synchronous imports
-- [ ] PR description: what + why + manual test scope
+- [ ] PR description: what + why
 
 ## 7. Code Standards
 - TypeScript: avoid `any` when a precise type is feasible
