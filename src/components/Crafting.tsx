@@ -344,10 +344,13 @@ export function Crafting() {
     return calculateCraftableItems();
   };
 
-  const craftableItemsSorted = [...craftableItems].sort((a, b) => {
-    const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic'];
-    return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
-  });
+  // We are temporarily hiding items whose name ends with "6*"
+  const craftableItemsSorted = [...craftableItems]
+    .filter(item => !/6\*$/.test(item.name.trim()))
+    .sort((a, b) => {
+      const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic'];
+      return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+    });
 
   // Lista materiałów możliwych do dodania (filtrowanie już posiadanych)
   const addableMaterials = useMemo(() => {
