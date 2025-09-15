@@ -575,7 +575,7 @@ export const ores: Ore[] = [
     specialEffects: { digStrength: 1.5, shakeStrength: 1.5, digSpeed: -1, shakeSpeed: -1 }, maxWeight: 10 },
   { name: "Voidstone", rarity: "Exotic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 },
     specialEffects: { luck: 0.5, capacity: 0.5 }, maxWeight: 10 },
-  { name: "Vineheart", rarity: "Exotic", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.0 }, maxWeight: 0 }, //TODO - verify maxWeight and effect
+  { name: "Vineheart", rarity: "Exotic", museumEffect: { stat: "Luck", maxMultiplier: 1.0 }, maxWeight: 20 }, 
 ];
 
 export const modifiers = [
