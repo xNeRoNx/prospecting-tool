@@ -817,6 +817,36 @@ export function EquipmentSimulation() {
               ))}
             </CardContent>
           </Card>
+
+          {/* Luck Efficiency Calculator */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Luck Efficiency</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <span className="text-lg font-mono">{(() => {
+                function calculateLuckEfficiency(
+                  total_luck, total_capacity, total_dig_strength, total_dig_speed,
+                  total_shake_strength, total_shake_speed,
+                  dig_constant = 2.0, shake_constant = 0.35, time_constant = 4.0
+                ) {
+                  const numerator = total_luck * Math.sqrt(total_capacity) * 0.625;
+                  const dig_component = (dig_constant * Math.ceil(total_capacity / (Math.max(0.0001, total_dig_strength * 1.5)))) / Math.max(0.0001, total_dig_speed);
+                  const shake_component = (shake_constant * Math.ceil(total_capacity / Math.max(0.0001, total_shake_strength))) / Math.max(0.0001, total_shake_speed);
+                  const denominator = dig_component + shake_component + time_constant;
+                  return numerator / Math.max(0.0001, denominator);
+                }
+                const luck = eventStats.luck || 0;
+                const capacity = eventStats.capacity || 0;
+                const digStrength = eventStats.digStrength || 0;
+                const digSpeed = (eventStats.digSpeed || 0) / 100;
+                const shakeStrength = eventStats.shakeStrength || 0;
+                const shakeSpeed = (eventStats.shakeSpeed || 0) / 100;
+                const result = calculateLuckEfficiency(luck, capacity, digStrength, digSpeed, shakeStrength, shakeSpeed);
+                return isNaN(result) ? '' : result.toFixed(6);
+              })()}</span>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
