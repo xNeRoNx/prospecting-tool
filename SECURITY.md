@@ -1,31 +1,46 @@
-Thanks for helping make GitHub safe for everyone.
+# Security Policy
 
-# Security
+## Supported Versions
+This project follows rolling releases. Only the latest deployment from `main` is supported.
 
-GitHub takes the security of our software products and services seriously, including all of the open source code repositories managed through our GitHub organizations, such as [GitHub](https://github.com/GitHub).
+| Version | Supported |
+|---------|-----------|
+| Latest (main) | ✅ |
+| Older commits / tags | ❌ |
 
-Even though [open source repositories are outside of the scope of our bug bounty program](https://bounty.github.com/index.html#scope) and therefore not eligible for bounty rewards, we will ensure that your finding gets passed along to the appropriate maintainers for remediation. 
+## Scope
+This is a static front‑end (no custom backend). Security issues of interest are limited to:
+- Cross-Site Scripting (XSS) or HTML/JS injection via imported JSON / compressed URL data
+- Prototype pollution / object injection through crafted payloads
+- Denial of Service via extremely large or deeply nested import payloads
+- Supply chain risks (malicious npm dependencies)
 
-## Reporting Security Issues
+Out of scope (will be closed without action):
+- Missing HTTP security headers (served by hosting platform)
+- Rate limiting, auth/session issues (no server-side auth)
+- “Open redirect” claims involving only hash fragments
+- Automated scanner low-severity noise without practical exploit
+- Vulnerabilities only present under `--dev` builds
 
-If you believe you have found a security vulnerability in any GitHub-owned repository, please report it to us through coordinated disclosure.
+## Reporting a Vulnerability
+Send a private report via Discord DM to: **x_neron_x**
 
-**Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
+Please include:
+1. Short title
+2. Affected area (e.g. import URL, crafting import)
+3. Steps to reproduce (minimal payload)
+4. Impact (what an attacker could achieve)
+5. Suggested remediation (optional)
+6. Environment (browser + version)
 
-Instead, please send an email to opensource-security[@]github.com.
+Do **not** open a public issue or PR for unpatched vulnerabilities.
 
-Please include as much of the information listed below as you can to help us better understand and resolve the issue:
+## Responsible Disclosure
+- Do not share exploit details publicly before a fix is deployed.
+- Avoid data destruction or privacy invasion while demonstrating impact.
+- No bug bounty program currently. Attribution can be added (credit) if requested.
 
-  * The type of issue (e.g., buffer overflow, SQL injection, or cross-site scripting)
-  * Full paths of source file(s) related to the manifestation of the issue
-  * The location of the affected source code (tag/branch/commit or direct URL)
-  * Any special configuration required to reproduce the issue
-  * Step-by-step instructions to reproduce the issue
-  * Proof-of-concept or exploit code (if possible)
-  * Impact of the issue, including how an attacker might exploit the issue
+## Questions
+Unsure if something counts? Ask privately via Discord `x_neron_x`.
 
-This information will help us triage your report more quickly.
-
-## Policy
-
-See [GitHub's Safe Harbor Policy](https://docs.github.com/en/site-policy/security-policies/github-bug-bounty-program-legal-safe-harbor#1-safe-harbor-terms)
+Thank you for helping keep the project and its users safe.
