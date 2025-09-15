@@ -86,6 +86,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [0.2, 0.7] },
     cost: 2000
   },
+    {
+      name: "Gold Ring 6*",
+      rarity: "Common",
+      position: "Ring",
+      recipe: [{ material: "Gold", amount: 5 }],
+      stats: { luck: [0.22, 0.8] },
+      cost: 2000
+    },
   {
     name: "Amethyst Pendant",
     rarity: "Common", 
@@ -94,6 +102,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { sellBoost: [0, 15], luck: [0.5, 0.2] },
     cost: 10000
   },
+    {
+      name: "Amethyst Pendant 6*",
+      rarity: "Common",
+      position: "Necklace",
+      recipe: [{ material: "Platinum", amount: 8 }, { material: "Amethyst", amount: 2 }],
+      stats: { sellBoost: [0, 18], luck: [0.55, 0.22] },
+      cost: 10000
+    },
   {
     name: "Garden Glove",
     rarity: "Common",
@@ -102,6 +118,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { digStrength: [0.2, 1], capacity: [0, 5] },
     cost: 10000
   },
+    {
+      name: "Garden Glove 6*",
+      rarity: "Common",
+      position: "Necklace",
+      recipe: [{ material: "Titanium", amount: 1 }, { material: "Gold", amount: 5 }, { material: "Pyrite", amount: 5 }],
+      stats: { digStrength: [0.22, 1.1], capacity: [0, 5.5] },
+      cost: 10000
+    },
   {
     name: "Titanium Ring",
     rarity: "Common",
@@ -110,6 +134,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { capacity: [1, 13] },
     cost: 20000
   },
+    {
+      name: "Titanium Ring 6*",
+      rarity: "Common",
+      position: "Ring",
+      recipe: [{ material: "Titanium", amount: 5 }],
+      stats: { capacity: [1.1, 14.3] },
+      cost: 20000
+    },
   // Uncommon
   {
     name: "Smoke Ring",
@@ -119,6 +151,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { modifierBoost: [5, 15] },
     cost: 20000
   },
+    {
+      name: "Smoke Ring 6*",
+      rarity: "Uncommon",
+      position: "Ring",
+      recipe: [{ material: "Smoky Quartz", amount: 4 }],
+      stats: { modifierBoost: [5.5, 16.5] },
+      cost: 20000
+    },
   {
     name: "Pearl Necklace",
     rarity: "Uncommon",
@@ -127,6 +167,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [1, 4], digStrength: [0, 4] },
     cost: 22000
   },
+    {
+      name: "Pearl Necklace 6*",
+      rarity: "Uncommon",
+      position: "Necklace",
+      recipe: [{ material: "Pearl", amount: 8, weight: 0.1 }],
+      stats: { luck: [1.1, 4.4], digStrength: [0, 4.4] },
+      cost: 22000
+    },
   {
     name: "Jade Armband",
     rarity: "Uncommon",
@@ -135,6 +183,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [1, 8], capacity: [1, 10] },
     cost: 50000
   },
+    {
+      name: "Jade Armband 6*",
+      rarity: "Uncommon",
+      position: "Charm",
+      recipe: [{ material: "Jade", amount: 4 }],
+      stats: { luck: [1.1, 8.8], capacity: [1.1, 11] },
+      cost: 50000
+    },
   {
     name: "Topaz Necklace",
     rarity: "Uncommon",
@@ -143,6 +199,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [1, 5], digStrength: [1, 4], shakeStrength: [0.2, 1] },
     cost: 60000
   },
+    {
+      name: "Topaz Necklace 6*",
+      rarity: "Uncommon",
+      position: "Necklace",
+      recipe: [{ material: "Titanium", amount: 3 }, { material: "Topaz", amount: 1 }],
+      stats: { luck: [1.1, 5.5], digStrength: [1.1, 4.4], shakeStrength: [0.22, 1.1] },
+      cost: 60000
+    },
   // Rare
   {
     name: "Ruby Ring",
@@ -152,6 +216,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [1, 3], sizeBoost: [0, 18] },
     cost: 45000
   },
+    {
+      name: "Ruby Ring 6*",
+      rarity: "Rare",
+      position: "Ring",
+      recipe: [{ material: "Platinum", amount: 5, weight: 0.25 }, { material: "Ruby", amount: 1 }],
+      stats: { luck: [1.1, 3.3], sizeBoost: [0, 19.8] },
+      cost: 45000
+    },
   {
     name: "Lapis Armband",
     rarity: "Rare",
@@ -160,6 +232,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [2, 9], digSpeed: [0, 40], shakeSpeed: [0, 40] },
     cost: 111000
   },
+    {
+      name: "Lapis Armband 6*",
+      rarity: "Rare",
+      position: "Charm",
+      recipe: [{ material: "Lapis Lazuli", amount: 2 }, { material: "Gold", amount: 4, weight: 0.5 }],
+      stats: { luck: [2.2, 9.9], digSpeed: [0, 44], shakeSpeed: [0, 44] },
+      cost: 111000
+    },
   {
     name: "Speed Coil",
     rarity: "Rare",
@@ -168,6 +248,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { digSpeed: [0, 70], shakeSpeed: [0, 70] },
     cost: 120000
   },
+    {
+      name: "Speed Coil 6*",
+      rarity: "Rare",
+      position: "Charm",
+      recipe: [{ material: "Meteoric Iron", amount: 1 }, { material: "Neodymium", amount: 3 }, { material: "Titanium", amount: 5 }],
+      stats: { digSpeed: [0, 77], shakeSpeed: [0, 77] },
+      cost: 120000
+    },
   {
     name: "Meteor Ring",
     rarity: "Rare",
@@ -176,6 +264,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { digStrength: [0.5, 3], shakeStrength: [0, 1] },
     cost: 150000
   },
+    {
+      name: "Meteor Ring 6*",
+      rarity: "Rare",
+      position: "Charm",
+      recipe: [{ material: "Meteoric Iron", amount: 3 }],
+      stats: { digStrength: [0.55, 3.3], shakeStrength: [0, 1.1] },
+      cost: 150000
+    },
   // Epic
   {
     name: "Opal Amulet",
@@ -185,6 +281,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [2, 13], modifierBoost: [0, 90] },
     cost: 400000
   },
+    {
+      name: "Opal Amulet 6*",
+      rarity: "Epic",
+      position: "Necklace",
+      recipe: [{ material: "Opal", amount: 1 }, { material: "Jade", amount: 1, weight: 0.3 }],
+      stats: { luck: [2.2, 14.3], modifierBoost: [0, 99] },
+      cost: 400000
+    },
   {
     name: "Moon Ring",
     rarity: "Epic",
@@ -193,6 +297,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [1, 7], digSpeed: [10, 40], shakeSpeed: [10, 40] },
     cost: 500000
   },
+    {
+      name: "Moon Ring 6*",
+      rarity: "Epic",
+      position: "Ring",
+      recipe: [{ material: "Moonstone", amount: 1, weight: 0.4 }, { material: "Iridium", amount: 1, weight: 0.4 }],
+      stats: { luck: [1.1, 7.7], digSpeed: [11, 44], shakeSpeed: [11, 44] },
+      cost: 500000
+    },
   {
     name: "Gravity Coil",
     rarity: "Epic",
@@ -201,6 +313,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { capacity: [10, 140] },
     cost: 1000000
   },
+    {
+      name: "Gravity Coil 6*",
+      rarity: "Epic",
+      position: "Charm",
+      recipe: [{ material: "Aurorite", amount: 1 }, { material: "Moonstone", amount: 1 }, { material: "Osmium", amount: 1 }],
+      stats: { capacity: [11, 154] },
+      cost: 1000000
+    },
   {
     name: "Heart of the Ocean",
     rarity: "Epic",
@@ -209,6 +329,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [3, 10], shakeSpeed: [0, 20], sellBoost: [10, 20] },
     cost: 1000000
   },
+    {
+      name: "Heart of the Ocean 6*",
+      rarity: "Epic",
+      position: "Ring",
+      recipe: [{ material: "Coral", amount: 10 }, { material: "Silver Clamshell", amount: 5 }, { material: "Golden Pearl", amount: 3 }],
+      stats: { luck: [3.3, 11], shakeSpeed: [0, 22], sellBoost: [11, 22] },
+      cost: 1000000
+    },
   // Legendary
   {
     name: "Guiding Light",
@@ -218,6 +346,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [5, 20], capacity: [10, 40], modifierBoost: [0, 45] },
     cost: 1500000
   },
+    {
+      name: "Guiding Light 6*",
+      rarity: "Legendary",
+      position: "Charm",
+      recipe: [{ material: "Catseye", amount: 1 }, { material: "Golden Pearl", amount: 2 }],
+      stats: { luck: [5.5, 22], capacity: [11, 44], modifierBoost: [0, 49.5] },
+      cost: 1500000
+    },
   {
     name: "Lightkeeper's Ring",
     rarity: "Legendary",
@@ -226,6 +362,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { digSpeed: [5, 25], sellBoost: [5, 25], modifierBoost: [5, 25] },
     cost: 2000000
   },
+    {
+      name: "Lightkeeper's Ring 6*",
+      rarity: "Legendary",
+      position: "Ring",
+      recipe: [{ material: "Opal", amount: 2 }, { material: "Luminium", amount: 1 }],
+      stats: { digSpeed: [5.5, 27.5], sellBoost: [5.5, 27.5], modifierBoost: [5.5, 27.5] },
+      cost: 2000000
+    },
   {
     name: "Mass Accumulator",
     rarity: "Legendary",
@@ -234,6 +378,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { capacity: [20, 60], sizeBoost: [10, 80] },
     cost: 3000000
   },
+    {
+      name: "Mass Accumulator 6*",
+      rarity: "Legendary",
+      position: "Necklace",
+      recipe: [{ material: "Aurorite", amount: 1 }, { material: "Uranium", amount: 1 }, { material: "Osmium", amount: 2 }],
+      stats: { capacity: [22, 66], sizeBoost: [11, 88] },
+      cost: 3000000
+    },
   {
     name: "Crown",
     rarity: "Legendary",
@@ -248,6 +400,20 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [5, 30], sizeBoost: [0, 45], sellBoost: [0, 90] },
     cost: 5000000
   },
+    {
+      name: "Crown 6*",
+      rarity: "Legendary",
+      position: "Charm",
+      recipe: [
+        { material: "Ruby", amount: 3, weight: 0.25 },
+        { material: "Gold", amount: 8, weight: 1 },
+        { material: "Emerald", amount: 2, weight: 0.2 },
+        { material: "Diamond", amount: 1 },
+        { material: "Sapphire", amount: 3, weight: 0.25 }
+      ],
+      stats: { luck: [5.5, 33], sizeBoost: [0, 49.5], sellBoost: [0, 99] },
+      cost: 5000000
+    },
   {
     name: "Dragon Claw",
     rarity: "Legendary",
@@ -256,6 +422,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { digStrength: [10, 30], shakeStrength: [1, 8] },
     cost: 10000000
   },
+    {
+      name: "Dragon Claw 6*",
+      rarity: "Legendary",
+      position: "Charm",
+      recipe: [{ material: "Ammonite Fossil", amount: 5 }, { material: "Dragon Bone", amount: 2 }],
+      stats: { digStrength: [11, 33], shakeStrength: [1.1, 8.8] },
+      cost: 10000000
+    },
   // Mythic
   {
     name: "Royal Federation Crown",
@@ -269,6 +443,18 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [10, 90], sizeBoost: [0, 90], sellBoost: [0, 180] },
     cost: 30000000
   },
+    {
+      name: "Royal Federation Crown 6*",
+      rarity: "Mythic",
+      position: "Charm",
+      recipe: [
+        { material: "Rose Gold", amount: 3, weight: 0.4 },
+        { material: "Golden Pearl", amount: 5, weight: 0.2 },
+        { material: "Pink Diamond", amount: 1 }
+      ],
+      stats: { luck: [11, 100], sizeBoost: [0, 100], sellBoost: [0, 200] },
+  cost: 30000000
+    },
   {
     name: "Phoenix Heart",
     rarity: "Mythic",
@@ -277,6 +463,14 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [100, 300], sizeBoost: [-70, -40] },
     cost: 40000000
   },
+    {
+      name: "Phoenix Heart 6*",
+      rarity: "Mythic",
+      position: "Necklace",
+      recipe: [{ material: "Uranium", amount: 3 }, { material: "Inferlume", amount: 1 }, { material: "Starshine", amount: 2 }],
+    stats: { luck: [110, 325], sizeBoost: [-77, -35] },
+  cost: 40000000
+    },
   {
     name: "Celestial Rings",
     rarity: "Mythic",
@@ -290,6 +484,19 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [30, 90], capacity: [50, 250], sizeBoost: [0, 45], modifierBoost: [20, 140] },
     cost: 50000000
   },
+    {
+      name: "Celestial Rings 6*",
+      rarity: "Mythic",
+      position: "Necklace",
+      recipe: [
+        { material: "Vortessence", amount: 1 },
+        { material: "Meteoric Iron", amount: 8, weight: 0.3 },
+        { material: "Moonstone", amount: 5, weight: 0.3 },
+        { material: "Catseye", amount: 2 }
+      ],
+      stats: { luck: [33, 100], capacity: [55, 275], sizeBoost: [0, 50], modifierBoost: [22, 150] },
+  cost: 50000000
+    },
   {
     name: "Apocalypse Bringer",
     rarity: "Mythic",
@@ -304,6 +511,20 @@ export const craftableItems: CraftableItem[] = [
     stats: { digStrength: [5, 20], luck: [10, 40], shakeStrength: [2, 5], sellBoost: [10, 50] },
     cost: 50000000
   },
+    {
+      name: "Apocalypse Bringer 6*",
+      rarity: "Mythic",
+      position: "Ring",
+      recipe: [
+        { material: "Ashvein", amount: 4 },
+        { material: "Ruby", amount: 10 },
+        { material: "Emerald", amount: 2, weight: 0.2 },
+        { material: "Palladium", amount: 2 },
+        { material: "Painite", amount: 1 }
+      ],
+      stats: { digStrength: [5.5, 22], luck: [11, 45], shakeStrength: [2.2, 5.5], sellBoost: [11, 55] },
+  cost: 50000000
+    },
   {
     name: "Mythril Ring",
     rarity: "Mythic",
@@ -317,6 +538,19 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [20, 80], digSpeed: [20, 40], shakeSpeed: [20, 40], sellBoost: [5, 24] },
     cost: 60000000
   },
+    {
+      name: "Mythril Ring 6*",
+      rarity: "Mythic",
+      position: "Ring",
+      recipe: [
+        { material: "Tourmaline", amount: 2 },
+        { material: "Cinnabar", amount: 2 },
+        { material: "Starshine", amount: 1 },
+        { material: "Mythril", amount: 1 }
+      ],
+      stats: { luck: [22, 90], digSpeed: [22, 42], shakeSpeed: [22, 42], sellBoost: [5.5, 26] },
+  cost: 60000000
+    },
   {
     name: "Phoenix Wings",
     rarity: "Mythic",
@@ -329,6 +563,18 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [100, 300], capacity: [-80, -40] },
     cost: 65000000
   },
+    {
+      name: "Phoenix Wings 6*",
+      rarity: "Mythic",
+      position: "Charm",
+      recipe: [
+        { material: "Flarebloom", amount: 1 },
+        { material: "Cinnabar", amount: 2 },
+        { material: "Fire Opal", amount: 2 }
+      ],
+      stats: { luck: [110, 325], capacity: [-88, -35] },
+  cost: 65000000
+    },
   {
     name: "Prismatic Star",
     rarity: "Mythic",
@@ -354,6 +600,31 @@ export const craftableItems: CraftableItem[] = [
     },
     cost: 75000000
   },
+    {
+      name: "Prismatic Star 6*",
+      rarity: "Mythic",
+      position: "Ring",
+      recipe: [
+        { material: "Diamond", amount: 1 },
+        { material: "Prismara", amount: 1 },
+        { material: "Pink Diamond", amount: 1 },
+        { material: "Borealite", amount: 5 },
+        { material: "Luminium", amount: 1 },
+        { material: "Starshine", amount: 1 }
+      ],
+      stats: {
+  luck: [5.5, 22],
+  digStrength: [2.2, 11],
+  capacity: [11, 45],
+  digSpeed: [5.5, 22],
+  shakeStrength: [1.1, 3.2],
+  shakeSpeed: [5.5, 22],
+  sellBoost: [11, 22],
+  sizeBoost: [5.5, 22],
+  modifierBoost: [5.5, 22]
+      },
+      cost: 75000000
+    },
   {
     name: "Cryogenic Preserver",
     rarity: "Mythic",
@@ -367,6 +638,19 @@ export const craftableItems: CraftableItem[] = [
     stats: { luck: [100, 250], shakeStrength: [10, 40], shakeSpeed: [-40, -20], sellBoost: [0, 50] },
     cost: 75000000
   },
+    {
+      name: "Cryogenic Preserver 6*",
+      rarity: "Mythic",
+      position: "Charm",
+      recipe: [
+        { material: "Borealite", amount: 5 },
+        { material: "Frostshard", amount: 1 },
+        { material: "Aetherite", amount: 3 },
+        { material: "Mythril", amount: 1 }
+      ],
+      stats: { luck: [110, 275], shakeStrength: [11, 45], shakeSpeed: [-44, -18], sellBoost: [0, 55] },
+  cost: 75000000
+    },
   {
     name: "Ring of Thorns",
     rarity: "Mythic",
@@ -386,6 +670,25 @@ export const craftableItems: CraftableItem[] = [
     },
     cost: 75000000
   },
+    {
+      name: "Ring of Thorns 6*",
+      rarity: "Mythic",
+      position: "Ring",
+      recipe: [
+        { material: "Chrysoberyl", amount: 1 },
+        { material: "Painite", amount: 2 },
+        { material: "Lightshard", amount: 5 },
+        { material: "Glowmoss", amount: 5 },
+        { material: "Firefly Stone", amount: 5 }
+      ],
+      stats: {
+  digStrength: [5.5, 45],
+  luck: [22, 100],
+  sizeBoost: [11, 30],
+  modifierBoost: [22, 60]
+      },
+      cost: 75000000
+    },
   {
     name: "Solar Ring",
     rarity: "Mythic",
@@ -406,6 +709,26 @@ export const craftableItems: CraftableItem[] = [
     },
     cost: 90000000
   },
+    {
+      name: "Solar Ring 6*",
+      rarity: "Mythic",
+      position: "Ring",
+      recipe: [
+        { material: "Vortessence", amount: 1 },
+        { material: "Fire Opal", amount: 2 },
+        { material: "Volcanic Core", amount: 1 },
+        { material: "Pyronium", amount: 10 }
+      ],
+      stats: {
+        luck: [22, 110],
+        digStrength: [2.2, 8.8],
+        digSpeed: [-33, -11],
+        shakeStrength: [0, 2.2],
+        shakeSpeed: [-33, -11],
+        modifierBoost: [5.5, 22]
+      },
+      cost: 90000000
+    },
   {
     name: "Amulet of Life",
     rarity: "Mythic",
@@ -421,6 +744,21 @@ export const craftableItems: CraftableItem[] = [
     },
     cost: 150000000
   },
+    {
+      name: "Amulet of Life 6*",
+      rarity: "Mythic",
+      position: "Necklace",
+      recipe: [
+        { material: "Specterite", amount: 5 },
+        { material: "Chrysoberyl", amount: 1 },
+        { material: "Prismara", amount: 1 }
+      ],
+      stats: {
+        luck: [110, 330],
+        modifierBoost: [55, 165]
+      },
+      cost: 150000000
+    },
   // Exotic
   {
     name: "Fossilized Crown",
@@ -433,6 +771,19 @@ export const craftableItems: CraftableItem[] = [
       { material: "Dragon Bone", amount: 5 }
     ],
     stats: { luck: [50, 250], capacity: [50, 200], shakeSpeed: [10, 30], sizeBoost: [0, 50], sellBoost: [0, 100] },
+    cost: 100000000
+  },
+  {
+    name: "Fossilized Crown 6*",
+    rarity: "Exotic",
+    position: "Charm",
+    recipe: [
+      { material: "Dinosaur Skull", amount: 1 },
+      { material: "Cinnabar", amount: 5 },
+      { material: "Volcanic Core", amount: 1 },
+      { material: "Dragon Bone", amount: 5 }
+    ],
+    stats: { luck: [55, 260], capacity: [55, 225], shakeSpeed: [11, 32], sizeBoost: [0, 55], sellBoost: [0, 110] },
     cost: 100000000
   },
   {
@@ -450,6 +801,20 @@ export const craftableItems: CraftableItem[] = [
     cost: 200000000
   },
   {
+    name: "Frostthorn Pendant 6*",
+    rarity: "Exotic",
+    position: "Necklace",
+    recipe: [
+      { material: "Tourmaline", amount: 5 },
+      { material: "Cobalt", amount: 10 },
+      { material: "Frostshard", amount: 2 },
+      { material: "Aquamarine", amount: 5 },
+      { material: "Cryogenic Artifact", amount: 1 }
+    ],
+    stats: { luck: [110, 450], digStrength: [110, 215], capacity: [55, 225], digSpeed: [-55, -28], sizeBoost: [33, 110] },
+    cost: 200000000
+  },
+  {
     name: "Antlers of Life",
     rarity: "Exotic",
     position: "Charm",
@@ -463,6 +828,19 @@ export const craftableItems: CraftableItem[] = [
     cost: 300000000
   },
   {
+    name: "Antlers of Life 6*",
+    rarity: "Exotic",
+    position: "Charm",
+    recipe: [
+      { material: "Chrysoberyl", amount: 3 },
+      { material: "Vineheart", amount: 1 },
+      { material: "Radiant Gold", amount: 2 },
+      { material: "Firefly Stone", amount: 10 }
+    ],
+    stats: { luck: [0, 640], digSpeed: [0, 44], sizeBoost: [0, 65], modifierBoost: [0, 220] }, // Min stats needed but not very important
+    cost: 300000000
+  },
+  {
     name: "Vortex Ring",
     rarity: "Exotic",
     position: "Ring",
@@ -473,7 +851,19 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { digStrength: [20, 80], luck: [50, 140], capacity: [100, 300], shakeStrength: [3, 10] },
     cost: 333000000
-  }
+  },
+  {
+    name: "Vortex Ring 6*",
+    rarity: "Exotic",
+    position: "Ring",
+    recipe: [
+      { material: "Voidstone", amount: 1 },
+      { material: "Prismara", amount: 2 },
+      { material: "Vortessence", amount: 3 }
+    ],
+    stats: { digStrength: [22, 90], luck: [55, 155], capacity: [110, 325], shakeStrength: [3.3, 11] },
+    cost: 333000000
+  },
 ];
 
 // Note: The maxWeight values for each ore are determined by specific game mechanics.
