@@ -565,7 +565,7 @@ export const ores: Ore[] = [
     specialEffects: { luck: 0.75, sizeBoost: -0.5 }, maxWeight: 10 },
   { name: "Volcanic Core", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.25 },
     specialEffects: { digStrength: 0.25, sizeBoost: 0.2 }, maxWeight: 10 },
-  { name: "Radiant Gold", rarity: "Mythic", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.5 }, maxWeight: 0 }, //TODO - verify maxWeight
+  { name: "Radiant Gold", rarity: "Mythic", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.5 }, maxWeight: 30 }, 
   { name: "Frostshard", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.5 }, maxWeight: 10 },
   
   // Exotic
