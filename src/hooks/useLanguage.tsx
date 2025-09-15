@@ -35,7 +35,18 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguageState(prev => (prev === lang ? prev : lang));
   }, []);
 
-  const t = useMemo(() => (key: TranslationKey) => translations[language]?.[key] ?? key, [language]);
+  const t = useMemo(() => (key: TranslationKey) => {
+    // 1. Attempt current language
+    const current = translations[language];
+    if (current && current[key]) return current[key];
+    // 2. Fallback to English (default & required complete set)
+    if (language !== 'en') {
+      const en = translations['en'];
+      if (en && en[key]) return en[key];
+    }
+    // 3. Final fallback: raw key
+    return key;
+  }, [language]);
 
   const value: LanguageContextValue = useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
 
