@@ -70,7 +70,7 @@ swSelf.addEventListener('fetch', (event: FetchEvent) => {
     event.respondWith(
       fetch(req)
         .then(async r => {
-          // 404: do not cache as shell; return generated /404.html (from cache or network)
+          // 404 responses: avoid caching as shell page; serve /404.html from cache or fetch from network
           if (r.status === 404) {
             const notFound = await caches.match('/404.html') || await fetch('/404.html');
             return notFound;

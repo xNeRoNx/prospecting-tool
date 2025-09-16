@@ -89,7 +89,7 @@ export function Info() {
                       <ul className="space-y-0.5">
                         {(() => {
                           const base: Record<string, any> = (item as any).stats || {};
-                          const ext: Record<string, any> = (item as any).statsExtension || {};
+                          const ext: Record<string, any> = (item as any).sixStarStats || {};
                           const keys = Array.from(new Set([...Object.keys(base), ...Object.keys(ext)]));
                           return keys.map(stat => {
                             const baseVal = base[stat];
@@ -127,8 +127,7 @@ export function Info() {
       {/* Materials / Ores */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('materialsOresTitle')}</h3>
-        <p className="text-sm text-muted-foreground
-        ">{t('materialsOresDesc')}</p>
+        <p className="text-sm text-muted-foreground">{t('materialsOresDesc')}</p>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ores.map(ore => {
             const effects = ore.specialEffects ? Object.entries(ore.specialEffects) : [];

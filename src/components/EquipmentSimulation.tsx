@@ -28,7 +28,7 @@ export function EquipmentSimulation() {
 
   // 5★/6★ helpers
   const getItemStatsForTier = (item: CraftableItem, useSix?: boolean) => 
-    useSix && item.statsExtension ? item.statsExtension : item.stats;
+    useSix && item.sixStarStats ? item.sixStarStats : item.stats;
 
   const isRingSix = (index: number) => equipment.ringsSix?.[index] ?? false;
   const setRingSix = (index: number, value: boolean) => {
@@ -552,7 +552,7 @@ export function EquipmentSimulation() {
                           </div>
                           <p className="text-sm font-medium">{ring.name}</p>
                           {renderItemStats(ring, isRingSix(index))}
-                          {!ring.statsExtension ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
+                          {!ring.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
                         </div>
                       ) : (
                         <Dialog>
@@ -571,10 +571,10 @@ export function EquipmentSimulation() {
                                 .map(item => {
                                   const allStatKeys = new Set<string>();
                                   Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
-                                  Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
+                                  Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
                                   const rows = Array.from(allStatKeys).map(key => {
                                     const baseRange = item.stats?.[key];
-                                    const extRange = item.statsExtension?.[key];
+                                    const extRange = item.sixStarStats?.[key];
                                     if (!Array.isArray(baseRange)) return null;
                                     const [bMin, bMax] = baseRange as [number, number];
                                     const isPercent = /Speed|Boost/i.test(key);
@@ -650,7 +650,7 @@ export function EquipmentSimulation() {
                     </div>
                     <p className="font-medium">{equipment.necklace.name}</p>
                     {renderItemStats(equipment.necklace, equipment.necklaceSix)}
-                    {!equipment.necklace.statsExtension ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
+                    {!equipment.necklace.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
                   </div>
                 ) : (
                   <Dialog>
@@ -669,10 +669,10 @@ export function EquipmentSimulation() {
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
-                            Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
+                            Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
                             const rows = Array.from(allStatKeys).map(key => {
                               const baseRange = item.stats?.[key];
-                              const extRange = item.statsExtension?.[key];
+                              const extRange = item.sixStarStats?.[key];
                               if (!Array.isArray(baseRange)) return null;
                               const [bMin, bMax] = baseRange as [number, number];
                               const isPercent = /Speed|Boost/i.test(key);
@@ -742,7 +742,7 @@ export function EquipmentSimulation() {
                     </div>
                     <p className="font-medium">{equipment.charm.name}</p>
                     {renderItemStats(equipment.charm, equipment.charmSix)}
-                    {!equipment.charm.statsExtension ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
+                    {!equipment.charm.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
                   </div>
                 ) : (
                   <Dialog>
@@ -761,10 +761,10 @@ export function EquipmentSimulation() {
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
-                            Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
+                            Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
                             const rows = Array.from(allStatKeys).map(key => {
                               const baseRange = item.stats?.[key];
-                              const extRange = item.statsExtension?.[key];
+                              const extRange = item.sixStarStats?.[key];
                               if (!Array.isArray(baseRange)) return null;
                               const [bMin, bMax] = baseRange as [number, number];
                               const isPercent = /Speed|Boost/i.test(key);

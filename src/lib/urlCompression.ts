@@ -24,7 +24,7 @@ const invert = (obj: Record<string, string>) => Object.fromEntries(Object.entrie
 const KEY_MAP_INV = invert(KEY_MAP);
 const META_KEY_MAP_INV = invert(META_KEY_MAP);
 
-// Remove empty arrays/objects on the top level (non-recursive for simplicity and speed)
+// Removes empty arrays and objects only at the top level (recursion is avoided for performance reasons and to keep the function simple)
 function stripEmptyTopLevel(data: any) {
   const out: any = {};
   Object.entries(data).forEach(([k, v]) => {
@@ -130,4 +130,6 @@ export function decodeDataFromUrl(hashData: string): any {
   }
 }
 
+// Export internal helpers for debugging and testing purposes only.
+// Do not use __debug in production code.
 export const __debug = { stripEmptyTopLevel, packData, unpackData, packMetadata, unpackMetadata };

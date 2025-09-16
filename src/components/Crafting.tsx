@@ -320,7 +320,7 @@ export function Crafting() {
 
   const formatStats = (item: CraftableItem) => {
     const baseStats: Record<string, any> = (item as any).stats || {};
-    const extStats: Record<string, any> = (item as any).statsExtension || {};
+    const extStats: Record<string, any> = (item as any).sixStarStats || {};
     const keys = Array.from(new Set([...Object.keys(baseStats), ...Object.keys(extStats)]));
     return keys.map(key => {
       const baseVal = baseStats[key];

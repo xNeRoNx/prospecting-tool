@@ -74,7 +74,7 @@ function useProvideAppData(): AppDataContextValue {
 	const [equipment, setEquipment] = useLocalStorageState<EquipmentSlot | null>('equipment', null);
 	const [ownedMaterials, setOwnedMaterials] = useLocalStorageState<{ [key: string]: number } | null>('owned-materials', null);
 
-	// Initialize default values and set isLoading=false when everything is ready.
+	// Initialize default values for localStorage-backed states and set isLoading=false when craftingItems, museumSlots, equipment, and ownedMaterials are all initialized.
 	useEffect(() => {
 		// Set default structures only if missing (null in localStorage)
 		if (craftingItems === null) setCraftingItems([]);

@@ -22,7 +22,7 @@ export interface CraftableItem {
   position: 'Ring' | 'Necklace' | 'Charm';
   recipe: Recipe[];
   stats: Stats;
-  statsExtension?: Stats; // For 6* items
+  sixStarStats?: Stats; // For 6* items
   cost: number;
 }
 
@@ -85,7 +85,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Gold", amount: 5 }],
     stats: { luck: [0.2, 0.7] },
-    statsExtension: { luck: [0.22, 0.8] },
+    sixStarStats: { luck: [0.22, 0.8] },
     cost: 2000
   },
   {
@@ -94,7 +94,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Platinum", amount: 8 }, { material: "Amethyst", amount: 2 }],
     stats: { sellBoost: [0, 15], luck: [0.5, 0.2] },
-    statsExtension: { sellBoost: [0, 18], luck: [0.55, 0.22] },
+    sixStarStats: { sellBoost: [0, 18], luck: [0.55, 0.22] },
     cost: 10000
   },
   {
@@ -103,7 +103,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Titanium", amount: 1 }, { material: "Gold", amount: 5 }, { material: "Pyrite", amount: 5 }],
     stats: { digStrength: [0.2, 1], capacity: [0, 5] },
-    statsExtension: { digStrength: [0.22, 1.1], capacity: [0, 5.5] },
+    sixStarStats: { digStrength: [0.22, 1.1], capacity: [0, 5.5] },
     cost: 10000
   },
   {
@@ -112,7 +112,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Titanium", amount: 5 }],
     stats: { capacity: [1, 13] },
-    statsExtension: { capacity: [1.1, 14.3] },
+    sixStarStats: { capacity: [1.1, 14.3] },
     cost: 20000
   },
   // Uncommon
@@ -122,7 +122,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Smoky Quartz", amount: 4 }],
     stats: { modifierBoost: [5, 15] },
-    statsExtension: { modifierBoost: [5.5, 16.5] },
+    sixStarStats: { modifierBoost: [5.5, 16.5] },
     cost: 20000
   },
   {
@@ -131,7 +131,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Pearl", amount: 8, weight: 0.1 }],
     stats: { luck: [1, 4], digStrength: [0, 4] },
-    statsExtension: { luck: [1.1, 4.4], digStrength: [0, 4.4] },
+    sixStarStats: { luck: [1.1, 4.4], digStrength: [0, 4.4] },
     cost: 22000
   },
   {
@@ -140,7 +140,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Jade", amount: 4 }],
     stats: { luck: [1, 8], capacity: [1, 10] },
-    statsExtension: { luck: [1.1, 8.8], capacity: [1.1, 11] },
+    sixStarStats: { luck: [1.1, 8.8], capacity: [1.1, 11] },
     cost: 50000
   },
   {
@@ -149,7 +149,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Titanium", amount: 3 }, { material: "Topaz", amount: 1 }],
     stats: { luck: [1, 5], digStrength: [1, 4], shakeStrength: [0.2, 1] },
-    statsExtension: { luck: [1.1, 5.5], digStrength: [1.1, 4.4], shakeStrength: [0.22, 1.1] },
+    sixStarStats: { luck: [1.1, 5.5], digStrength: [1.1, 4.4], shakeStrength: [0.22, 1.1] },
     cost: 60000
   },
   // Rare
@@ -159,7 +159,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Platinum", amount: 5, weight: 0.25 }, { material: "Ruby", amount: 1 }],
     stats: { luck: [1, 3], sizeBoost: [0, 18] },
-    statsExtension: { luck: [1.1, 3.3], sizeBoost: [0, 19.8] },
+    sixStarStats: { luck: [1.1, 3.3], sizeBoost: [0, 19.8] },
     cost: 45000
   },
   {
@@ -168,7 +168,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Lapis Lazuli", amount: 2 }, { material: "Gold", amount: 4, weight: 0.5 }],
     stats: { luck: [2, 9], digSpeed: [0, 40], shakeSpeed: [0, 40] },
-    statsExtension: { luck: [2.2, 9.9], digSpeed: [0, 44], shakeSpeed: [0, 44] },
+    sixStarStats: { luck: [2.2, 9.9], digSpeed: [0, 44], shakeSpeed: [0, 44] },
     cost: 111000
   },
   {
@@ -177,7 +177,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Meteoric Iron", amount: 1 }, { material: "Neodymium", amount: 3 }, { material: "Titanium", amount: 5 }],
     stats: { digSpeed: [0, 70], shakeSpeed: [0, 70] },
-    statsExtension: { digSpeed: [0, 77], shakeSpeed: [0, 77] },
+    sixStarStats: { digSpeed: [0, 77], shakeSpeed: [0, 77] },
     cost: 120000
   },
   {
@@ -186,7 +186,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Meteoric Iron", amount: 3 }],
     stats: { digStrength: [0.5, 3], shakeStrength: [0, 1] },
-    statsExtension: { digStrength: [0.55, 3.3], shakeStrength: [0, 1.1] },
+    sixStarStats: { digStrength: [0.55, 3.3], shakeStrength: [0, 1.1] },
     cost: 150000
   },
   // Epic
@@ -196,7 +196,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Opal", amount: 1 }, { material: "Jade", amount: 1, weight: 0.3 }],
     stats: { luck: [2, 13], modifierBoost: [0, 90] },
-    statsExtension: { luck: [2.2, 14.3], modifierBoost: [0, 99] },
+    sixStarStats: { luck: [2.2, 14.3], modifierBoost: [0, 99] },
     cost: 400000
   },
   {
@@ -205,7 +205,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Moonstone", amount: 1, weight: 0.4 }, { material: "Iridium", amount: 1, weight: 0.4 }],
     stats: { luck: [1, 7], digSpeed: [10, 40], shakeSpeed: [10, 40] },
-    statsExtension: { luck: [1.1, 7.7], digSpeed: [11, 44], shakeSpeed: [11, 44] },
+    sixStarStats: { luck: [1.1, 7.7], digSpeed: [11, 44], shakeSpeed: [11, 44] },
     cost: 500000
   },
   {
@@ -214,7 +214,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Aurorite", amount: 1 }, { material: "Moonstone", amount: 1 }, { material: "Osmium", amount: 1 }],
     stats: { capacity: [10, 140] },
-    statsExtension: { capacity: [11, 154] },
+    sixStarStats: { capacity: [11, 154] },
     cost: 1000000
   },
   {
@@ -223,7 +223,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Coral", amount: 10 }, { material: "Silver Clamshell", amount: 5 }, { material: "Golden Pearl", amount: 3 }],
     stats: { luck: [3, 10], shakeSpeed: [0, 20], sellBoost: [10, 20] },
-    statsExtension: { luck: [3.3, 11], shakeSpeed: [0, 22], sellBoost: [11, 22] },
+    sixStarStats: { luck: [3.3, 11], shakeSpeed: [0, 22], sellBoost: [11, 22] },
     cost: 1000000
   },
   // Legendary
@@ -233,7 +233,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Catseye", amount: 1 }, { material: "Golden Pearl", amount: 2 }],
     stats: { luck: [5, 20], capacity: [10, 40], modifierBoost: [0, 45] },
-    statsExtension: { luck: [5.5, 22], capacity: [11, 44], modifierBoost: [0, 49.5] },
+    sixStarStats: { luck: [5.5, 22], capacity: [11, 44], modifierBoost: [0, 49.5] },
     cost: 1500000
   },
   {
@@ -242,7 +242,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Ring",
     recipe: [{ material: "Opal", amount: 2 }, { material: "Luminium", amount: 1 }],
     stats: { digSpeed: [5, 25], sellBoost: [5, 25], modifierBoost: [5, 25] },
-    statsExtension: { digSpeed: [5.5, 27.5], sellBoost: [5.5, 27.5], modifierBoost: [5.5, 27.5] },
+    sixStarStats: { digSpeed: [5.5, 27.5], sellBoost: [5.5, 27.5], modifierBoost: [5.5, 27.5] },
     cost: 2000000
   },
   {
@@ -251,7 +251,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Aurorite", amount: 1 }, { material: "Uranium", amount: 1 }, { material: "Osmium", amount: 2 }],
     stats: { capacity: [20, 60], sizeBoost: [10, 80] },
-    statsExtension: { capacity: [22, 66], sizeBoost: [11, 88] },
+    sixStarStats: { capacity: [22, 66], sizeBoost: [11, 88] },
     cost: 3000000
   },
   {
@@ -266,7 +266,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Sapphire", amount: 3, weight: 0.25 }
     ],
     stats: { luck: [5, 30], sizeBoost: [0, 45], sellBoost: [0, 90] },
-    statsExtension: { luck: [5.5, 33], sizeBoost: [0, 49.5], sellBoost: [0, 99] },
+    sixStarStats: { luck: [5.5, 33], sizeBoost: [0, 49.5], sellBoost: [0, 99] },
     cost: 5000000
   },
   {
@@ -275,7 +275,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Charm",
     recipe: [{ material: "Ammonite Fossil", amount: 5 }, { material: "Dragon Bone", amount: 2 }],
     stats: { digStrength: [10, 30], shakeStrength: [1, 8] },
-    statsExtension: { digStrength: [11, 33], shakeStrength: [1.1, 8.8] },
+    sixStarStats: { digStrength: [11, 33], shakeStrength: [1.1, 8.8] },
     cost: 10000000
   },
   // Mythic
@@ -289,7 +289,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Pink Diamond", amount: 1 }
     ],
     stats: { luck: [10, 90], sizeBoost: [0, 90], sellBoost: [0, 180] },
-    statsExtension: { luck: [11, 100], sizeBoost: [0, 100], sellBoost: [0, 200] },
+    sixStarStats: { luck: [11, 100], sizeBoost: [0, 100], sellBoost: [0, 200] },
     cost: 30000000
   },
   {
@@ -298,7 +298,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Uranium", amount: 3 }, { material: "Inferlume", amount: 1 }, { material: "Starshine", amount: 2 }],
     stats: { luck: [100, 300], sizeBoost: [-70, -40] },
-    statsExtension: { luck: [110, 325], sizeBoost: [-77, -35] },
+    sixStarStats: { luck: [110, 325], sizeBoost: [-77, -35] },
     cost: 40000000
   },
   {
@@ -312,7 +312,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Catseye", amount: 2 }
     ],
     stats: { luck: [30, 90], capacity: [50, 250], sizeBoost: [0, 45], modifierBoost: [20, 140] },
-    statsExtension: { luck: [33, 100], capacity: [55, 275], sizeBoost: [0, 50], modifierBoost: [22, 150] },
+    sixStarStats: { luck: [33, 100], capacity: [55, 275], sizeBoost: [0, 50], modifierBoost: [22, 150] },
     cost: 50000000
   },
   {
@@ -327,7 +327,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Painite", amount: 1 }
     ],
     stats: { digStrength: [5, 20], luck: [10, 40], shakeStrength: [2, 5], sellBoost: [10, 50] },
-    statsExtension: { digStrength: [5.5, 22], luck: [11, 45], shakeStrength: [2.2, 5.5], sellBoost: [11, 55] },
+    sixStarStats: { digStrength: [5.5, 22], luck: [11, 45], shakeStrength: [2.2, 5.5], sellBoost: [11, 55] },
     cost: 50000000
   },
   {
@@ -341,7 +341,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Mythril", amount: 1 }
     ],
     stats: { luck: [20, 80], digSpeed: [20, 40], shakeSpeed: [20, 40], sellBoost: [5, 24] },
-    statsExtension: { luck: [22, 90], digSpeed: [22, 42], shakeSpeed: [22, 42], sellBoost: [5.5, 26] },
+    sixStarStats: { luck: [22, 90], digSpeed: [22, 42], shakeSpeed: [22, 42], sellBoost: [5.5, 26] },
     cost: 60000000
   },
   {
@@ -354,7 +354,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Fire Opal", amount: 2 }
     ],
     stats: { luck: [100, 300], capacity: [-80, -40] },
-    statsExtension: { luck: [110, 325], capacity: [-88, -35] },
+    sixStarStats: { luck: [110, 325], capacity: [-88, -35] },
     cost: 65000000
   },
   {
@@ -380,7 +380,7 @@ export const craftableItems: CraftableItem[] = [
       sizeBoost: [5, 20],
       modifierBoost: [5, 20]
     },
-    statsExtension: {
+    sixStarStats: {
       luck: [5.5, 22],
       digStrength: [2.2, 11],
       capacity: [11, 45],
@@ -404,7 +404,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Mythril", amount: 1 }
     ],
     stats: { luck: [100, 250], shakeStrength: [10, 40], shakeSpeed: [-40, -20], sellBoost: [0, 50] },
-    statsExtension: { luck: [110, 275], shakeStrength: [11, 45], shakeSpeed: [-44, -18], sellBoost: [0, 55] },
+    sixStarStats: { luck: [110, 275], shakeStrength: [11, 45], shakeSpeed: [-44, -18], sellBoost: [0, 55] },
     cost: 75000000
   },
   {
@@ -424,7 +424,7 @@ export const craftableItems: CraftableItem[] = [
       sizeBoost: [10, 30],
       modifierBoost: [20, 60]
     },
-    statsExtension: {
+    sixStarStats: {
       digStrength: [5.5, 45],
       luck: [22, 100],
       sizeBoost: [11, 30],
@@ -450,7 +450,7 @@ export const craftableItems: CraftableItem[] = [
       shakeSpeed: [-30, -10],
       modifierBoost: [5, 20]
     },
-    statsExtension: {
+    sixStarStats: {
       luck: [22, 110],
       digStrength: [2.2, 8.8],
       digSpeed: [-33, -11],
@@ -473,7 +473,7 @@ export const craftableItems: CraftableItem[] = [
       luck: [100, 300],
       modifierBoost: [50, 150]
     },
-    statsExtension: {
+    sixStarStats: {
       luck: [110, 330],
       modifierBoost: [55, 165]
     },
@@ -491,7 +491,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Dragon Bone", amount: 5 }
     ],
     stats: { luck: [50, 250], capacity: [50, 200], shakeSpeed: [10, 30], sizeBoost: [0, 50], sellBoost: [0, 100] },
-    statsExtension: { luck: [55, 260], capacity: [55, 225], shakeSpeed: [11, 32], sizeBoost: [0, 55], sellBoost: [0, 110] },
+    sixStarStats: { luck: [55, 260], capacity: [55, 225], shakeSpeed: [11, 32], sizeBoost: [0, 55], sellBoost: [0, 110] },
     cost: 100000000
   },
   {
@@ -506,7 +506,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Cryogenic Artifact", amount: 1 }
     ],
     stats: { luck: [100, 400], digStrength: [100, 200], capacity: [50, 200], digSpeed: [-50, -30], sizeBoost: [30, 100] },
-    statsExtension: { luck: [110, 450], digStrength: [110, 215], capacity: [55, 225], digSpeed: [-55, -28], sizeBoost: [33, 110] },
+    sixStarStats: { luck: [110, 450], digStrength: [110, 215], capacity: [55, 225], digSpeed: [-55, -28], sizeBoost: [33, 110] },
     cost: 200000000
   },
   {
@@ -520,7 +520,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Firefly Stone", amount: 10 }
     ],
     stats: { luck: [100, 580], digSpeed: [10, 40], sizeBoost: [20, 60], modifierBoost: [50, 200] },
-    statsExtension: { luck: [0, 640], digSpeed: [0, 44], sizeBoost: [0, 65], modifierBoost: [0, 220] }, // Min stats needed but not very important
+    sixStarStats: { luck: [0, 640], digSpeed: [0, 44], sizeBoost: [0, 65], modifierBoost: [0, 220] }, // Min stats needed but not very important
     cost: 300000000
   },
   {
@@ -533,7 +533,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Vortessence", amount: 3 }
     ],
     stats: { digStrength: [20, 80], luck: [50, 140], capacity: [100, 300], shakeStrength: [3, 10] },
-    statsExtension: { digStrength: [22, 90], luck: [55, 155], capacity: [110, 325], shakeStrength: [3.3, 11] },
+    sixStarStats: { digStrength: [22, 90], luck: [55, 155], capacity: [110, 325], shakeStrength: [3.3, 11] },
     cost: 333000000
   },
 ];
