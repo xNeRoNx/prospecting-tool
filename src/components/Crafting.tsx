@@ -20,7 +20,6 @@ export function Crafting() {
   const [selectedItem, setSelectedItem] = useState<CraftableItem | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
-  // Mapowanie: craftingItem.id -> { material: consumedAmount }
   const [consumedMaterials, setConsumedMaterials] = useState<Record<string, Record<string, number>>>({});
   const addToCraftingList = (item: CraftableItem, qty: number) => {
     const id = Date.now().toString();
@@ -40,10 +39,9 @@ export function Crafting() {
   const removeCraftingItem = (id: string) => {
     const itemToRemove = craftingItems.find(item => item.id === id);
     if (!itemToRemove) return;
-    // Usuń element z listy craftingu
     setCraftingItems(current => (current ?? []).filter(item => item.id !== id));
 
-    // Wyczyść zapis zużytych materiałów (jeśli był) – nie przywracamy ich
+    // Clear the record of consumed materials (if any) — we do not restore them
     setConsumedMaterials(prev => {
       if (!(id in prev)) return prev;
       const copy = { ...prev };
@@ -51,7 +49,7 @@ export function Crafting() {
       return copy;
     });
 
-    // Usuń z ekwipunku tylko te materiały z recepty usuwanego craftingu, które mają ilość 0
+    // From inventory, remove only those materials from the removed crafting's recipe that have quantity 0
     setOwnedMaterials(current => {
       const updated: Record<string, number> = { ...current } as any;
       const recipeMaterials = new Set(itemToRemove.item.recipe.map(r => r.material));
@@ -97,11 +95,11 @@ export function Crafting() {
             });
             return { ...prev, [id]: merged };
           });
-          // Ustaw craftedCount = quantity
+          // Set craftedCount = quantity
           setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: ci.quantity } : ci));
         }
       }
-      // Przejście z completed -> active (odznaczenie) -> zwrot
+      // Transition from completed -> active (uncheck) -> refund materials
       else if (before.completed && !after.completed) {
         const consumed = consumedMaterials[id];
         if (consumed) {
@@ -117,7 +115,7 @@ export function Crafting() {
             delete c[id];
             return c;
           });
-          // Reset craftedCount do 0
+          // Reset craftedCount to 0
           setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: 0 } : ci));
         }
       }
@@ -129,14 +127,14 @@ export function Crafting() {
   const craftOne = (id: string) => {
     const craftingItem = craftingItems.find(ci => ci.id === id);
     if (!craftingItem) return;
-    if (craftingItem.completed) return; // już pełne
+    if (craftingItem.completed) return; // already fully crafted
     const crafted = craftingItem.craftedCount || 0;
     if (crafted >= craftingItem.quantity) return;
-    // Sprawdź czy mamy materiały na 1 sztukę
+    // Check if we have materials for 1 unit
     for (const r of craftingItem.item.recipe) {
-      if ((ownedMaterials[r.material] || 0) < r.amount) return; // brak materiałów
+      if ((ownedMaterials[r.material] || 0) < r.amount) return; // not enough materials
     }
-    // Konsumpcja materiałów dla 1 sztuki
+    // Consume materials for 1 unit
     setOwnedMaterials(mat => {
       const copy: Record<string, number> = { ...mat } as any;
       craftingItem.item.recipe.forEach(r => {
@@ -144,7 +142,7 @@ export function Crafting() {
       });
       return copy;
     });
-    // Zapisz konsumpcję w consumedMaterials (inkrementalnie)
+    // Record consumption in consumedMaterials (incremental)
     setConsumedMaterials(prev => {
       const prevForItem = prev[id] || {};
       const updated: Record<string, number> = { ...prevForItem };
@@ -153,9 +151,9 @@ export function Crafting() {
       });
       return { ...prev, [id]: updated };
     });
-    // Inkrementuj craftedCount
+    // Increment craftedCount
     setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? { ...ci, craftedCount: (ci.craftedCount || 0) + 1 } : ci));
-    // Jeśli osiągnięto pełną ilość – oznacz jako completed
+    // If the full quantity is reached — mark as completed
     setCraftingItems(cur => (cur ?? []).map(ci => ci.id === id ? ( (ci.craftedCount || 0) >= ci.quantity ? { ...ci, completed: true } : ci) : ci));
   };
 
@@ -165,7 +163,7 @@ export function Crafting() {
     if (!craftingItem) return;
     const crafted = craftingItem.craftedCount || 0;
     if (crafted <= 0) return;
-    // Przywróć materiały dla 1 sztuki
+    // Restore materials for 1 unit
     const recipeMap: Record<string, number> = {};
     craftingItem.item.recipe.forEach(r => { recipeMap[r.material] = r.amount; });
     setOwnedMaterials(mat => {
@@ -175,7 +173,7 @@ export function Crafting() {
       });
       return copy;
     });
-    // Zmniejsz zapis konsumpcji
+    // Decrease the recorded consumption
     setConsumedMaterials(prev => {
       const prevForItem = prev[id] || {};
       const updated: Record<string, number> = { ...prevForItem };
@@ -190,7 +188,7 @@ export function Crafting() {
       }
       return { ...prev, [id]: updated };
     });
-    // Decrement craftedCount i jeśli było completed to odznacz jeśli cofamy poniżej quantity
+    // Decrement craftedCount and, if it was completed, unmark when dropping below quantity
     setCraftingItems(cur => (cur ?? []).map(ci => {
       if (ci.id !== id) return ci;
       const newCrafted = Math.max(0, (ci.craftedCount || 0) - 1);
@@ -210,9 +208,9 @@ export function Crafting() {
         item.id === id ? { 
           ...item, 
           quantity: newQuantity, 
-          // Jeżeli nowa ilość jest mniejsza niż dotychczas skraftowana – przytnij craftedCount
+          // If the new quantity is less than already crafted — clamp craftedCount
           craftedCount: Math.min(item.craftedCount || 0, newQuantity),
-          // Jeśli obniżamy ilość poniżej craftedCount i było completed, może pozostać completed tylko jeśli craftedCount == newQuantity
+          // If reducing quantity below craftedCount and it was completed, keep completed only if craftedCount == newQuantity
           completed: (item.completed ? (Math.min(item.craftedCount || 0, newQuantity) === newQuantity) : item.completed)
         } : item
       )
@@ -251,10 +249,10 @@ export function Crafting() {
     const materialMaxNeeded: { [key: string]: number } = {};
 
     craftingItems.forEach(craftingItem => {
-      if (craftingItem.completed) return; // nic nie potrzebujemy dla ukończonych
+      if (craftingItem.completed) return; // nothing needed for completed items
       const crafted = craftingItem.craftedCount || 0;
       const remainingQty = Math.max(0, craftingItem.quantity - crafted);
-      if (remainingQty === 0) return; // brak pozostałych sztuk
+      if (remainingQty === 0) return; // no remaining units
 
       craftingItem.item.recipe.forEach(recipe => {
         const materialName = recipe.material;
@@ -267,10 +265,10 @@ export function Crafting() {
           materialMaxNeeded[materialName] = 0;
         }
         if (showMinimalMaterials) {
-          // minimal mode – nadal tylko ilość na jedną sztukę danego przedmiotu
+          // minimal mode — only the amount for one unit of each item
             materialMaxNeeded[materialName] = Math.max(materialMaxNeeded[materialName], recipe.amount);
         } else {
-          // total mode – ale tylko dla pozostałych nie skraftowanych sztuk
+          // total mode — only for the remaining uncrafted units
           summary[materialName].needed += recipe.amount * remainingQty;
         }
       });
@@ -281,7 +279,7 @@ export function Crafting() {
         summary[material].needed = materialMaxNeeded[material];
       });
     }
-    // Usuń materiały, których już nie potrzeba
+    // Remove materials that are no longer needed
     Object.keys(summary).forEach(m => { if (summary[m].needed === 0) delete summary[m]; });
     return summary;
   };
@@ -358,12 +356,12 @@ export function Crafting() {
   const craftableItemsSorted = [...craftableItems]
     .filter(item => !/6\*$/.test(item.name.trim()))
     .sort((a, b) => {
-      // Sortowanie od najrzadszego do najpowszechniejszego
+      // Sort from rarest to most common
       const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic'];
       return rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
     });
 
-  // Lista materiałów możliwych do dodania (filtrowanie już posiadanych)
+  // List of materials that can be added (filtering out those already owned)
   const addableMaterials = useMemo(() => {
     return ores
       .filter(o => !(o.name in ownedMaterials))
@@ -378,9 +376,9 @@ export function Crafting() {
   };
 
   const removeMaterialManually = (name: string) => {
-    // Nie usuwaj jeśli materiał jest nadal potrzebny w aktywnych (nie ukończonych) recipe
+    // Do not remove if the material is still needed in active (unfinished) recipes
     const neededInActive = craftingItems.some(ci => !ci.completed && ci.item.recipe.some(r => r.material === name));
-    if (neededInActive) return; // bezpieczeństwo – można później rozbudować UI o komunikat
+    if (neededInActive) return; // safety — UI warning can be added later
     setOwnedMaterials(current => {
       const copy = { ...current };
       delete copy[name];
@@ -394,7 +392,7 @@ export function Crafting() {
 
   const clearUnusedMaterials = () => {
     if (!confirm(t('clearUnusedConfirm') + '\n\n' + t('clearUnusedInfo'))) return;
-    // Zbierz zestaw materiałów używanych przez aktywne (nieukończone) craftingi
+    // Collect the set of materials used by active (unfinished) craftings
     const needed = new Set<string>();
     craftingItems.forEach(ci => {
       if (!ci.completed) {
@@ -411,9 +409,9 @@ export function Crafting() {
   };
 
   const clearZeroMaterials = () => {
-    // Informacja dla użytkownika
+    // Inform the user
     alert(t('clearZeroInfo'));
-    // Zbuduj zestaw materiałów potrzebnych w aktywnych (nieukończonych) craftingach
+    // Build the set of materials needed in active (unfinished) craftings
     const needed = new Set<string>();
     craftingItems.forEach(ci => {
       if (!ci.completed) {
@@ -424,7 +422,7 @@ export function Crafting() {
       const filtered: { [k: string]: number } = {};
       Object.entries(current).forEach(([k, v]) => {
         const amount = v as number;
-        // Zachowaj jeśli > 0 albo jeśli 0 ale jest potrzebny
+        // Keep if > 0, or if 0 but still needed
         if (amount > 0 || needed.has(k)) {
           filtered[k] = amount;
         }
@@ -811,7 +809,7 @@ export function Crafting() {
         </div>
 
         <div className="space-y-4 col-span-1 xl:col-span-2">
-          {/* Sekcja ekwipunku materiałów */}
+          {/* Materials inventory section */}
           <Card>
             <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0 gap-4">
               <div>

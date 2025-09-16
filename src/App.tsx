@@ -98,7 +98,6 @@ function App() {
     }
   }, [activeTab, t]);
 
-  // Inicjalizacja zakładki z hasha oraz nasłuch zmiany hasha (#crafting, #museum, ...)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const validTabs = Object.values(TabsEnum) as string[];

@@ -40,7 +40,7 @@ if ('serviceWorker' in navigator) {
     const w = window as UpdateToastWindow;
 
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (w.__updateToastId) return; // toast już istnieje
+      if (w.__updateToastId) return; // toast already exists
       const id = toast.custom((tId) => {
         return (
           <div className="rounded-md border bg-background p-3 shadow-lg max-w-sm flex flex-col gap-2">

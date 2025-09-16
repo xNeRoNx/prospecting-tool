@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
 
 /**
- * Prosty zamiennik dla useKV wykorzystujący localStorage.
- * Przechowuje JSON pod kluczem i zwraca wartość (lub null jeśli brak / błąd odczytu).
+ * Stores JSON under a key and returns the value (or null if missing / read error).
  */
 export function useLocalStorageState<T>(key: string, initial: T | null): [T | null, (value: T | ((prev: T | null) => T | null)) => void] {
   const [value, setValue] = useState<T | null>(() => {
@@ -26,7 +25,7 @@ export function useLocalStorageState<T>(key: string, initial: T | null): [T | nu
           window.localStorage.setItem(key, JSON.stringify(resolved));
         }
       } catch {
-        // ignorujemy błędy zapisu (quota / private mode)
+        // ignore write errors (quota / private mode)
       }
       return resolved;
     });

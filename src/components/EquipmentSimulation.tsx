@@ -104,19 +104,18 @@ export function EquipmentSimulation() {
     updateEquipment({ customStats: newStats });
   };
 
-  // Nowa logika eventów:
-  // - Luck Totem oraz Strength Totem są PRE-museum: skalują tylko staty bazowe (przed dodaniem muzeum)
-  // - Meteor Shower oraz Admin Shower są POST-museum: skalują wynik już po zastosowaniu bonusów muzeum
+  // - Luck Totem and Strength Totem are PRE-museum: they scale only base stats (before adding museum bonuses)
+  // - Meteor Shower and Admin Shower are POST-museum: they scale the result after applying museum bonuses
   // In gameData, effects are stored as values (e.g., 2 means 2x). We treat this as a multiplier.
-  const PRE_EVENTS = ["Luck Totem", "Strength Totem"]; // tylko baza
+  const PRE_EVENTS = ["Luck Totem", "Strength Totem"]; // base only
   const POST_EVENTS = ["Meteor Shower", "Admin Shower"]; // after museum
 
   interface StatMap { [key: string]: number }
 
   const separateEventMultipliers = () => {
     const active = equipment.activeEvents || [];
-    const preTotals: StatMap = {};  // przechowuje sumę (mult-1) dla pre
-    const postTotals: StatMap = {}; // przechowuje sumę (mult-1) dla post
+  const preTotals: StatMap = {};  // stores the sum of (mult-1) for pre
+  const postTotals: StatMap = {}; // stores the sum of (mult-1) for post
 
     active.forEach(name => {
       const event = events.find(e => e.name === name);
@@ -124,7 +123,7 @@ export function EquipmentSimulation() {
       const target = PRE_EVENTS.includes(name) ? preTotals : POST_EVENTS.includes(name) ? postTotals : null;
       if (!target) return;
       Object.entries(event.effects).forEach(([stat, mult]) => {
-        const add = mult - 1; // np 2x => +1 addytywnie
+        const add = mult - 1; // e.g., 2x => +1 additively
         target[stat] = (target[stat] || 0) + add;
       });
     });
@@ -227,13 +226,13 @@ export function EquipmentSimulation() {
     return stats; // Museum & Events applied later
   };
 
-  // Toggle dla trybu muzeum (max vs weight placeholder)
+  // Toggle for museum mode (max vs weight placeholder)
   const [showMaxMuseum, setShowMaxMuseum] = useState(true);
 
-  // Maksymalne bonusy muzeum (zależne tylko od slotów muzeum)
+  // Maximum museum bonuses (depend only on museum slots)
   const museumBonusesMax = sharedCalculateMuseumBonuses(museumSlots);
 
-  // Placeholder bonusy w trybie wagi (0)
+  // Placeholder bonuses in weight mode (0)
   const museumBonusesWeight = {
     luck: 0, digStrength: 0, digSpeed: 0, shakeStrength: 0, shakeSpeed: 0,
     capacity: 0, sellBoost: 0, sizeBoost: 0, modifierBoost: 0
@@ -241,21 +240,21 @@ export function EquipmentSimulation() {
 
   const museumBonusesDisplayed = showMaxMuseum ? museumBonusesMax : museumBonusesWeight;
 
-  // Baza
+  // Base
   const baseStats = calculateBaseStats();
 
-  // 1) Zastosowanie PRE (Luck/Strength Totem) tylko na bazie
+  // 1) Apply PRE (Luck/Strength Totem) only on base
   const baseWithPre: { [key: string]: number } = Object.keys(baseStats).reduce((acc, key) => {
     const base = baseStats[key] || 0;
-    const preAdd = preTotals[key] || 0; // addytywnie: final = base * (1 + suma)
+    const preAdd = preTotals[key] || 0; // additively: final = base * (1 + sum)
     acc[key] = base * (1 + preAdd);
     return acc;
   }, {} as { [key: string]: number });
 
-  // 2) Dodajemy muzeum do (base z pre) — muzeum dalej działa procentowo od (base bez pre?)
-  // Zgodnie z opisem: totemy wpływają tylko na bazę, więc muzeum powinno liczyć się od oryginalnej bazy (bez pre),
-  // a nie od podbitej pre. (Interpretacja: PRE nie wzmacnia efektu muzeum.)
-  // Wzór: finalBeforePost = baseWithPre + (base * museumMultiplier)
+  // 2) Add museum to (base with pre) — the museum still works as a percentage of (base without pre)
+  // According to the description: totems affect only the base, so museum should be computed from the original base (without pre),
+  // not from the base increased by pre. (Interpretation: PRE does not amplify the museum effect.)
+  // Formula: finalBeforePost = baseWithPre + (base * museumMultiplier)
   const finalBeforePost: { [key: string]: number } = Object.keys(baseStats).reduce((acc, key) => {
     const base = baseStats[key] || 0;
     const museumMult = museumBonusesDisplayed[key] || 0;
@@ -263,7 +262,7 @@ export function EquipmentSimulation() {
     return acc;
   }, {} as { [key: string]: number });
 
-  // 3) Zastosowanie POST (Meteor/Admin) na wyniku z muzeum
+  // 3) Apply POST (Meteor/Admin) to the museum-adjusted result
   const eventStats: { [key: string]: number } = Object.keys(finalBeforePost).reduce((acc, key) => {
     const val = finalBeforePost[key] || 0;
     const postAdd = postTotals[key] || 0;
@@ -271,10 +270,10 @@ export function EquipmentSimulation() {
     return acc;
   }, {} as { [key: string]: number });
 
-  // Dla sekcji "withMuseum" chcemy pokazać wartości bez POST (Meteor/Admin)
+  // For the "withMuseum" section we want to show values without POST (Meteor/Admin)
   const finalStats = finalBeforePost;
 
-  const calculateMuseumBonuses = () => museumBonusesMax; // zachowujemy istniejące wywołania w renderze
+  const calculateMuseumBonuses = () => museumBonusesMax; // keep existing calls in the render
 
   const availableItems = [...craftableItems];
 
@@ -287,7 +286,6 @@ export function EquipmentSimulation() {
     const small = Math.abs(value) < 10;
     let str = value.toFixed(small ? 2 : 1);
     if (small) {
-      // Redukuj nadmiarowe zera: 5.50 -> 5.5, 5.00 -> 5.0
       str = str.replace(/(\.\d)0$/, '$1');
     }
     return `${str}${suffix}`;

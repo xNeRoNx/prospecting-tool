@@ -127,7 +127,8 @@ export function Info() {
       {/* Materials / Ores */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('materialsOresTitle')}</h3>
-        <p className="text-sm text-muted-foreground">{t('materialsOresDesc')}</p>
+        <p className="text-sm text-muted-foreground
+        ">{t('materialsOresDesc')}</p>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ores.map(ore => {
             const effects = ore.specialEffects ? Object.entries(ore.specialEffects) : [];

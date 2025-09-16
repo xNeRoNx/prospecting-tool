@@ -42,7 +42,7 @@ interface ImportPreview {
   fileName?: string;
 }
 
-// Komponent odpowiedzialny wyłącznie za zarządzanie eksportem / importem i slotami zapisu
+// Component responsible solely for managing export/import and save slots
 export function DataManagement() {
   const { t } = useLanguage();
   const { isLoading, craftingItems, museumSlots, equipment, ownedMaterials, importDataSelective, getSaves, saveToSlot, loadFromSlot, deleteSave } = useAppData();
@@ -75,12 +75,12 @@ export function DataManagement() {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [deleteConfirmSlot, setDeleteConfirmSlot] = useState<number | null>(null);
 
-  // Wczytaj listę zapisów na start
+  // Load the list of saves on start
   useEffect(() => {
     setSaves(getSaves());
   }, [getSaves]);
 
-  // Reset stanu importu po zamknięciu dialogu
+  // Reset import state when the dialog is closed
   useEffect(() => {
     if (!dataDialogOpen) {
       setImportPreview(null);
@@ -92,7 +92,7 @@ export function DataManagement() {
     }
   }, [dataDialogOpen]);
 
-  // Import poprzez URL w hash-u: otwieramy Import Preview (bez auto-importu)
+  // Import via URL hash: open Import Preview (no auto-import)
   useEffect(() => {
     const hash = window.location.hash;
     if (!hash.includes('#data=')) return;
@@ -112,7 +112,7 @@ export function DataManagement() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Pomocnicze
+  // Helpers
   const getSelectedData = (selection: DataSelection) => {
     const data: any = {};
     if (selection.craftingItems) data.craftingItems = craftingItems;
@@ -136,7 +136,7 @@ export function DataManagement() {
     isExport ? setExportSelection(none) : setImportSelection(none);
   };
 
-  // Eksport
+  // Export
   const handleExportFile = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
@@ -162,7 +162,7 @@ export function DataManagement() {
   const handleExportToUrl = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
-      // Utrzymujemy version w metadata (aliasowane w module kompresji)
+      // Keep version in metadata (aliased in the compression module)
       const dataWithMetadata = { metadata: { ...saveMetadata, createdAt: new Date().toISOString(), version: saveMetadata.version }, ...selectedData };
       const compressed = encodeDataForUrl(dataWithMetadata);
       const url = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
@@ -224,7 +224,7 @@ export function DataManagement() {
   };
   const handleCancelImport = () => { setImportPreview(null); setShowPreview(false); setUrlInput(''); };
 
-  // Sloty zapisu
+  // Save slots
   const openSaveDialog = (slot: number) => { setSelectedSaveSlot(slot); setSaveDialogOpen(true); };
   const handleSaveToSlot = (slot: number) => {
     try {
@@ -243,7 +243,7 @@ export function DataManagement() {
   };
   const handleDeleteSave = (slot: number) => { try { deleteSave(slot); setSaves(getSaves()); toast.success(t('deleteSuccessful')); setDeleteConfirmSlot(null); } catch (e) { console.error(e); toast.error(t('deleteError')); } };
 
-  // Renderery częściowe
+  // Partial renderers
   const renderDataSelection = (selection: DataSelection, isExport: boolean) => {
     const current = isExport ? exportSelection : importSelection;
     return (

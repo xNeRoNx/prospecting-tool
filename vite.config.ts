@@ -40,7 +40,6 @@ export default defineConfig({
         sw: 'src/sw.ts',
       },
       output: {
-        // Stała nazwa dla service workera – ważne dla rejestracji
         entryFileNames: (chunk) => {
           if (chunk.name === 'sw') return 'sw.js';
           return 'assets/[name]-[hash].js';
