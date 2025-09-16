@@ -1,5 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { translations, type Language, type TranslationKey } from '../lib/translations';
+// Language hook with on-demand language pack loading
+// - Uses ensureLanguage() to code-split non-EN packs
+// - Falls back to EN while loading or for missing keys
+// - packVersion forces re-computation of t() after dynamic import resolves
+import { translations, ensureLanguage, type Language, type TranslationKey } from '../lib/translations';
 
 interface LanguageContextValue {
   language: Language;
@@ -31,21 +35,39 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [language]);
 
+  // Optional: could expose 'loading' via context if useful for UI
+  const [loading, setLoading] = useState(false);
+  const [packVersion, setPackVersion] = useState(0);
+
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(prev => (prev === lang ? prev : lang));
   }, []);
 
+  // Memoized translator: current lang -> EN fallback -> raw key
   const t = useMemo(() => (key: TranslationKey) => {
-    // 1. Attempt current language
+    // 1. Attempt current language (may be partially loaded)
     const current = translations[language];
-    if (current && current[key]) return current[key];
-    // 2. Fallback to English (default & required complete set)
-    if (language !== 'en') {
-      const en = translations['en'];
-      if (en && en[key]) return en[key];
-    }
+    if (current && current[key]) return current[key]!;
+    // 2. Fallback to English (complete set)
+    const enPack = translations['en'];
+    if (enPack && enPack[key]) return enPack[key]!;
     // 3. Final fallback: raw key
     return key;
+  }, [language, packVersion]);
+
+  // Load language pack on change (if not already loaded)
+  // Load language pack when switching to a not-yet-cached language
+  useEffect(() => {
+    let active = true;
+    if (language === 'en' || translations[language]) return; 
+    setLoading(true);
+    ensureLanguage(language).finally(() => {
+      if (!active) return;
+      setLoading(false);
+      // force consumers to re-render with freshly loaded pack
+      setPackVersion(v => v + 1);
+    });
+    return () => { active = false; };
   }, [language]);
 
   const value: LanguageContextValue = useMemo(() => ({ language, setLanguage, t }), [language, setLanguage, t]);
