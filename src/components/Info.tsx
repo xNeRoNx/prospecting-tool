@@ -56,6 +56,10 @@ export function Info() {
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoEquipmentTitle')}</h3>
         <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoEquipmentDesc')}</p>
+        <div className="space-y-2">
+          <h4 className="text-sm font-semibold">{t('infoEquipmentStarsTitle')}</h4>
+          <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoEquipmentStarsDesc')}</p>
+        </div>
       </section>
 
       <section className="space-y-4">
