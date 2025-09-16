@@ -584,7 +584,7 @@ export function EquipmentSimulation() {
                                       const [eMin, eMax] = extRange as [number, number];
                                       extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
                                     }
-                                    return `${key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
+                                    return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
                                   }).filter(Boolean) as string[];
                                   return (
                                     <Tooltip key={item.name}>
@@ -682,7 +682,7 @@ export function EquipmentSimulation() {
                                 const [eMin, eMax] = extRange as [number, number];
                                 extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
                               }
-                              return `${key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
+                              return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
                             }).filter(Boolean) as string[];
                             return (
                               <Tooltip key={item.name}>
@@ -774,7 +774,7 @@ export function EquipmentSimulation() {
                                 const [eMin, eMax] = extRange as [number, number];
                                 extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
                               }
-                              return `${key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
+                              return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
                             }).filter(Boolean) as string[];
                             return (
                               <Tooltip key={item.name}>

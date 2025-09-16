@@ -331,10 +331,10 @@ export function Crafting() {
       if (Array.isArray(baseVal) && Array.isArray(extVal)) {
         const [bMin, bMax] = baseVal;
         const [eMin, eMax] = extVal;
-        return `${key}: ${bMin}${suffix} - ${bMax}${suffix} [${eMin}${suffix} - ${eMax}${suffix}]`;
+        return `${t(key as any) || key}: ${bMin}${suffix} - ${bMax}${suffix} [${eMin}${suffix} - ${eMax}${suffix}]`;
       } else if (Array.isArray(baseVal)) {
         const [bMin, bMax] = baseVal;
-        return `${key}: ${bMin}${suffix} - ${bMax}${suffix}`;
+        return `${t(key as any) || key}: ${bMin}${suffix} - ${bMax}${suffix}`;
       } else return '';
     }).filter(Boolean);
   };
