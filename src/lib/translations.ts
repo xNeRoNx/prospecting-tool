@@ -22,6 +22,7 @@ export const translations = {
     infoItemsHeader: "All Craftable Items",
     infoItemsDesc: "Below is a complete list of items defined in the data with their recipes, stat ranges, rarity and cost.",
     position: "Position",
+
     // Added sections (Info extended)
     materialsOresTitle: "Materials (Ores)",
     materialsOresDesc: "All ores that can be placed in the museum with their max bonuses.",
@@ -100,6 +101,7 @@ export const translations = {
     crafted: "Crafted",
     craftOne: "Craft one",
     undoOne: "Undo one",
+    statsInfo: "Left value: 5★ stats, right value: 6★ stats",
 
     // Inventory (materials management)
     inventory: "Inventory",
@@ -271,6 +273,7 @@ export const translations = {
     infoItemsHeader: "Wszystkie Przedmioty",
     infoItemsDesc: "Poniżej pełna lista przedmiotów w danych wraz z przepisami, przedziałami statystyk, rzadkością i kosztem.",
     position: "Pozycja",
+
     // Added sections (Info extended)
     materialsOresTitle: "Materiały (Rudy)",
     materialsOresDesc: "Wszystkie rudy które można umieścić w muzeum wraz z maksymalnymi bonusami.",
@@ -349,6 +352,7 @@ export const translations = {
     crafted: "Wykonano",
     craftOne: "Wykonaj 1 szt.",
     undoOne: "Cofnij 1 szt.",
+    statsInfo: "Lewa wartość: statystyki 5★, prawa wartość: statystyki 6★",
 
     // Inventory (materials management)
     inventory: "Ekwipunek",
@@ -598,6 +602,7 @@ export const translations = {
     crafted: "Dibuat",
     craftOne: "Buat 1",
     undoOne: "Batalkan 1",
+    statsInfo: "Nilai kiri: statistik 5★, nilai kanan: statistik 6★",
 
     // Inventory (materials management)
     inventory: "Inventaris",
@@ -846,6 +851,7 @@ export const translations = {
     crafted: "Produzido",
     craftOne: "Produzir 1",
     undoOne: "Desfazer 1",
+    statsInfo: "Valor esquerdo: atributos 5★, valor direito: atributos 6★",
 
     // Inventory (materials management)
     inventory: "Inventário",

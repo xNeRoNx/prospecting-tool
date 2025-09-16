@@ -321,13 +321,23 @@ export function Crafting() {
   };
 
   const formatStats = (item: CraftableItem) => {
-    return Object.entries(item.stats).map(([key, value]) => {
-      if (Array.isArray(value)) {
-        const [min, max] = value;
-        const suffix = key.includes('Speed') || key.includes('Boost') ? '%' : '';
-        return `${key}: ${min}${suffix} - ${max}${suffix}`;
-      }
-      return '';
+    const baseStats: Record<string, any> = (item as any).stats || {};
+    const extStats: Record<string, any> = (item as any).statsExtension || {};
+    const keys = Array.from(new Set([...Object.keys(baseStats), ...Object.keys(extStats)]));
+    return keys.map(key => {
+      const baseVal = baseStats[key];
+      const extVal = extStats[key];
+      const lowerKey = key.toLowerCase();
+      const suffix = (lowerKey.includes('speed') || lowerKey.includes('boost')) ? '%' : '';
+
+      if (Array.isArray(baseVal) && Array.isArray(extVal)) {
+        const [bMin, bMax] = baseVal;
+        const [eMin, eMax] = extVal;
+        return `${key}: ${bMin}${suffix} - ${bMax}${suffix} [${eMin}${suffix} - ${eMax}${suffix}]`;
+      } else if (Array.isArray(baseVal)) {
+        const [bMin, bMax] = baseVal;
+        return `${key}: ${bMin}${suffix} - ${bMax}${suffix}`;
+      } else return '';
     }).filter(Boolean);
   };
 
@@ -348,8 +358,9 @@ export function Crafting() {
   const craftableItemsSorted = [...craftableItems]
     .filter(item => !/6\*$/.test(item.name.trim()))
     .sort((a, b) => {
+      // Sortowanie od najrzadszego do najpowszechniejszego
       const rarityOrder = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Exotic'];
-      return rarityOrder.indexOf(a.rarity) - rarityOrder.indexOf(b.rarity);
+      return rarityOrder.indexOf(b.rarity) - rarityOrder.indexOf(a.rarity);
     });
 
   // Lista materiałów możliwych do dodania (filtrowanie już posiadanych)
@@ -479,6 +490,8 @@ export function Crafting() {
                   </Card>
                 ))}
               </div>
+
+              <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
               
               {selectedItem && (
                 <div className="space-y-4 border-t pt-4">
