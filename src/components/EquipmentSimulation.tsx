@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
@@ -508,21 +509,49 @@ export function EquipmentSimulation() {
                             <div className="space-y-2 max-h-96 overflow-y-auto">
                               {availableItems
                                 .filter(item => item.position === 'Ring')
-                                .map(item => (
-                                  <Button
-                                    key={item.name}
-                                    variant="outline"
-                                    onClick={() => equipItem(item, 'rings', index)}
-                                    className="w-full justify-start"
-                                    disabled={isLoading}
-                                  >
-                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                      {item.rarity}
-                                    </Badge>
-                                    <span className="ml-2 font-medium truncate">{item.name}</span>
-                                  </Button>
-                                ))}
+                                .map(item => {
+                                  const allStatKeys = new Set<string>();
+                                  Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
+                                  Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
+                                  const rows = Array.from(allStatKeys).map(key => {
+                                    const baseRange = item.stats?.[key];
+                                    const extRange = (item as any).statsExtension?.[key];
+                                    if (!Array.isArray(baseRange)) return null;
+                                    const [bMin, bMax] = baseRange as [number, number];
+                                    const isPercent = /Speed|Boost/i.test(key);
+                                    const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                    let extPart = '';
+                                    if (Array.isArray(extRange)) {
+                                      const [eMin, eMax] = extRange as [number, number];
+                                      extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                    }
+                                    return `${key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
+                                  }).filter(Boolean) as string[];
+                                  return (
+                                    <Tooltip key={item.name}>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          onClick={() => equipItem(item, 'rings', index)}
+                                          className="w-full justify-start"
+                                          disabled={isLoading}
+                                        >
+                                          <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                            {item.rarity}
+                                          </Badge>
+                                          <span className="ml-2 font-medium truncate">{item.name}</span>
+                                        </Button>
+                                      </TooltipTrigger>
+                                      {rows.length > 0 && (
+                                        <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
+                                          {rows.join('\n')}
+                                        </TooltipContent>
+                                      )}
+                                    </Tooltip>
+                                  );
+                                })}
                             </div>
+                            <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                           </DialogContent>
                         </Dialog>
                       )}
@@ -572,21 +601,49 @@ export function EquipmentSimulation() {
                       <div className="space-y-2 max-h-96 overflow-y-auto">
                         {availableItems
                           .filter(item => item.position === 'Necklace')
-                          .map(item => (
-                            <Button
-                              key={item.name}
-                              variant="outline"
-                              onClick={() => equipItem(item, 'necklace')}
-                              className="w-full justify-start"
-                              disabled={isLoading}
-                            >
-                              <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                {item.rarity}
-                              </Badge>
-                              <span className="ml-2 font-medium truncate">{item.name}</span>
-                            </Button>
-                          ))}
+                          .map(item => {
+                            const allStatKeys = new Set<string>();
+                            Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
+                            Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
+                            const rows = Array.from(allStatKeys).map(key => {
+                              const baseRange = item.stats?.[key];
+                              const extRange = (item as any).statsExtension?.[key];
+                              if (!Array.isArray(baseRange)) return null;
+                              const [bMin, bMax] = baseRange as [number, number];
+                              const isPercent = /Speed|Boost/i.test(key);
+                              const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                              let extPart = '';
+                              if (Array.isArray(extRange)) {
+                                const [eMin, eMax] = extRange as [number, number];
+                                extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                              }
+                              return `${key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
+                            }).filter(Boolean) as string[];
+                            return (
+                              <Tooltip key={item.name}>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => equipItem(item, 'necklace')}
+                                    className="w-full justify-start"
+                                    disabled={isLoading}
+                                  >
+                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                      {item.rarity}
+                                    </Badge>
+                                    <span className="ml-2 font-medium truncate">{item.name}</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                {rows.length > 0 && (
+                                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
+                                    {rows.join('\n')}
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            );
+                          })}
                       </div>
+                      <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                     </DialogContent>
                   </Dialog>
                 )}
@@ -630,21 +687,49 @@ export function EquipmentSimulation() {
                       <div className="space-y-2 max-h-96 overflow-y-auto">
                         {availableItems
                           .filter(item => item.position === 'Charm')
-                          .map(item => (
-                            <Button
-                              key={item.name}
-                              variant="outline"
-                              onClick={() => equipItem(item, 'charm')}
-                              className="w-full justify-start"
-                              disabled={isLoading}
-                            >
-                              <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                {item.rarity}
-                              </Badge>
-                              <span className="ml-2 font-medium truncate">{item.name}</span>
-                            </Button>
-                          ))}
+                          .map(item => {
+                            const allStatKeys = new Set<string>();
+                            Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
+                            Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
+                            const rows = Array.from(allStatKeys).map(key => {
+                              const baseRange = item.stats?.[key];
+                              const extRange = (item as any).statsExtension?.[key];
+                              if (!Array.isArray(baseRange)) return null;
+                              const [bMin, bMax] = baseRange as [number, number];
+                              const isPercent = /Speed|Boost/i.test(key);
+                              const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                              let extPart = '';
+                              if (Array.isArray(extRange)) {
+                                const [eMin, eMax] = extRange as [number, number];
+                                extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                              }
+                              return `${key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
+                            }).filter(Boolean) as string[];
+                            return (
+                              <Tooltip key={item.name}>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => equipItem(item, 'charm')}
+                                    className="w-full justify-start"
+                                    disabled={isLoading}
+                                  >
+                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                      {item.rarity}
+                                    </Badge>
+                                    <span className="ml-2 font-medium truncate">{item.name}</span>
+                                  </Button>
+                                </TooltipTrigger>
+                                {rows.length > 0 && (
+                                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
+                                    {rows.join('\n')}
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            );
+                          })}
                       </div>
+                      <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                     </DialogContent>
                   </Dialog>
                 )}
