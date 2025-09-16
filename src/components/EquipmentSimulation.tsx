@@ -23,7 +23,22 @@ export function EquipmentSimulation() {
   const [customStatValue, setCustomStatValue] = useState(0);
 
   const updateEquipment = (updates: Partial<typeof equipment>) => {
-    setEquipment({...equipment, ...updates });
+    setEquipment((prev: typeof equipment) => ({ ...prev, ...updates }));
+  };
+
+  // 5★/6★ helpers
+  const getItemStatsForTier = (item: CraftableItem, useSix?: boolean) => 
+    useSix && item.statsExtension ? item.statsExtension : item.stats;
+
+  const isRingSix = (index: number) => equipment.ringsSix?.[index] ?? false;
+  const setRingSix = (index: number, value: boolean) => {
+    const current = [...(equipment.ringsSix ?? new Array(equipment.rings.length).fill(false))];
+    current[index] = value;
+    updateEquipment({ ringsSix: current });
+  };
+  const massSetRingsSix = (value: boolean) => {
+    const current = new Array(equipment.rings.length).fill(value);
+    updateEquipment({ ringsSix: current });
   };
 
   const equipItem = (item: CraftableItem, position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
@@ -179,16 +194,35 @@ export function EquipmentSimulation() {
       if (stats[key] !== undefined) stats[key] += value; else stats[key] = value;
     });
 
-    // 5) Equipment Items (rings, necklace, charm) using max roll values
-    [...equipment.rings, equipment.necklace, equipment.charm].forEach(item => {
+    // 5) Equipment Items (rings, necklace, charm) using max roll values, respecting 5★/6★ selection
+    equipment.rings.forEach((item, idx) => {
       if (!item) return;
-      Object.entries(item.stats).forEach(([key, value]) => {
+      const selected = getItemStatsForTier(item, isRingSix(idx));
+      Object.entries(selected).forEach(([key, value]) => {
         if (Array.isArray(value)) {
           const maxValue = value[1];
           if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
         }
       });
     });
+    if (equipment.necklace) {
+      const selected = getItemStatsForTier(equipment.necklace, equipment.necklaceSix);
+      Object.entries(selected).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          const maxValue = value[1];
+          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+        }
+      });
+    }
+    if (equipment.charm) {
+      const selected = getItemStatsForTier(equipment.charm, equipment.charmSix);
+      Object.entries(selected).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          const maxValue = value[1];
+          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+        }
+      });
+    }
 
     return stats; // Museum & Events applied later
   };
@@ -250,14 +284,20 @@ export function EquipmentSimulation() {
 
   const formatStatValue = (key: string, value: number) => {
     const suffix = key.includes('Speed') || key.includes('Boost') ? '%' : '';
-    return `${value.toFixed(1)}${suffix}`;
+    const small = Math.abs(value) < 10;
+    let str = value.toFixed(small ? 2 : 1);
+    if (small) {
+      // Redukuj nadmiarowe zera: 5.50 -> 5.5, 5.00 -> 5.0
+      str = str.replace(/(\.\d)0$/, '$1');
+    }
+    return `${str}${suffix}`;
   };
 
-  const renderItemStats = (item: CraftableItem) => {
+  const renderItemStats = (item: CraftableItem, useSix?: boolean) => {
     if (!item?.stats) return null;
     return (
       <div className="mt-1 space-y-0.5">
-        {Object.entries(item.stats).map(([statKey, range]) => {
+        {Object.entries(getItemStatsForTier(item, useSix)).map(([statKey, range]) => {
           if (!Array.isArray(range)) return null;
             const [min, max] = range as [number, number];
             const isPercent = /Speed|Boost/i.test(statKey);
@@ -469,7 +509,22 @@ export function EquipmentSimulation() {
           {/* Rings */}
           <Card>
             <CardHeader>
-              <CardTitle>{t('rings')} (8)</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>{t('rings')} (8)</CardTitle>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>5★</span>
+                  <Switch
+                    checked={(() => {
+                      const arr = (equipment.ringsSix || []) as boolean[];
+                      if (!arr.length) return false;
+                      return arr.every(Boolean);
+                    })()}
+                    onCheckedChange={(v)=> massSetRingsSix(v)}
+                    aria-label="Toggle all rings to 6★"
+                  />
+                  <span>6★</span>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -482,6 +537,11 @@ export function EquipmentSimulation() {
                             <Badge className={getRarityClass(ring.rarity)} variant="outline">
                               {ring.rarity}
                             </Badge>
+                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                              <span>5★</span>
+                              <Switch checked={isRingSix(index)} onCheckedChange={(v)=> setRingSix(index, v)} aria-label={`Toggle ${ring.name} tier`} />
+                              <span>6★</span>
+                            </div>
                             <Button
                               size="sm"
                               variant="outline"
@@ -493,7 +553,8 @@ export function EquipmentSimulation() {
                             </Button>
                           </div>
                           <p className="text-sm font-medium">{ring.name}</p>
-                          {renderItemStats(ring)}
+                          {renderItemStats(ring, isRingSix(index))}
+                          {!ring.statsExtension ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
                         </div>
                       ) : (
                         <Dialog>
@@ -515,7 +576,7 @@ export function EquipmentSimulation() {
                                   Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
                                   const rows = Array.from(allStatKeys).map(key => {
                                     const baseRange = item.stats?.[key];
-                                    const extRange = (item as any).statsExtension?.[key];
+                                    const extRange = item.statsExtension?.[key];
                                     if (!Array.isArray(baseRange)) return null;
                                     const [bMin, bMax] = baseRange as [number, number];
                                     const isPercent = /Speed|Boost/i.test(key);
@@ -575,6 +636,11 @@ export function EquipmentSimulation() {
                       <Badge className={getRarityClass(equipment.necklace.rarity)} variant="outline">
                         {equipment.necklace.rarity}
                       </Badge>
+                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <span>5★</span>
+                        <Switch checked={!!equipment.necklaceSix} onCheckedChange={(v)=> updateEquipment({ necklaceSix: v })} aria-label={`Toggle ${equipment.necklace.name} tier`} />
+                        <span>6★</span>
+                      </div>
                       <Button
                         size="sm"
                         variant="outline"
@@ -585,7 +651,8 @@ export function EquipmentSimulation() {
                       </Button>
                     </div>
                     <p className="font-medium">{equipment.necklace.name}</p>
-                    {renderItemStats(equipment.necklace)}
+                    {renderItemStats(equipment.necklace, equipment.necklaceSix)}
+                    {!equipment.necklace.statsExtension ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
                   </div>
                 ) : (
                   <Dialog>
@@ -607,7 +674,7 @@ export function EquipmentSimulation() {
                             Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
                             const rows = Array.from(allStatKeys).map(key => {
                               const baseRange = item.stats?.[key];
-                              const extRange = (item as any).statsExtension?.[key];
+                              const extRange = item.statsExtension?.[key];
                               if (!Array.isArray(baseRange)) return null;
                               const [bMin, bMax] = baseRange as [number, number];
                               const isPercent = /Speed|Boost/i.test(key);
@@ -661,6 +728,11 @@ export function EquipmentSimulation() {
                       <Badge className={getRarityClass(equipment.charm.rarity)} variant="outline">
                         {equipment.charm.rarity}
                       </Badge>
+                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <span>5★</span>
+                        <Switch checked={!!equipment.charmSix} onCheckedChange={(v)=> updateEquipment({ charmSix: v })} aria-label={`Toggle ${equipment.charm.name} tier`} />
+                        <span>6★</span>
+                      </div>
                       <Button
                         size="sm"
                         variant="outline"
@@ -671,7 +743,8 @@ export function EquipmentSimulation() {
                       </Button>
                     </div>
                     <p className="font-medium">{equipment.charm.name}</p>
-                    {renderItemStats(equipment.charm)}
+                    {renderItemStats(equipment.charm, equipment.charmSix)}
+                    {!equipment.charm.statsExtension ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
                   </div>
                 ) : (
                   <Dialog>
@@ -693,7 +766,7 @@ export function EquipmentSimulation() {
                             Object.keys(item.statsExtension || {}).forEach(k => allStatKeys.add(k));
                             const rows = Array.from(allStatKeys).map(key => {
                               const baseRange = item.stats?.[key];
-                              const extRange = (item as any).statsExtension?.[key];
+                              const extRange = item.statsExtension?.[key];
                               if (!Array.isArray(baseRange)) return null;
                               const [bMin, bMax] = baseRange as [number, number];
                               const isPercent = /Speed|Boost/i.test(key);
@@ -901,7 +974,7 @@ export function EquipmentSimulation() {
               <Separator />
 
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')} (max)</h4>
+                <h4 className="text-sm font-semibold text-muted-foreground">{t('museumBonuses')}</h4>
                 {Object.entries(calculateMuseumBonuses()).map(([stat, bonus]) => {
                   if (bonus === 0) return null;
                   const shownBonus = showMaxMuseum ? bonus : 0; // placeholder for weight mode

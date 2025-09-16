@@ -26,8 +26,11 @@ export interface MuseumSlot {
 }
 export interface EquipmentSlot {
 	rings: (CraftableItem | null)[]; 
+	ringsSix?: boolean[];
 	necklace: CraftableItem | null; 
+	necklaceSix?: boolean;
 	charm: CraftableItem | null; 
+	charmSix?: boolean;
 	shovel: string | null; 
 	pan: string | null; 
 	enchant: string | null; 
@@ -37,8 +40,14 @@ export interface EquipmentSlot {
 
 const DEFAULT_EQUIPMENT: EquipmentSlot = { 
 	rings: new Array(8).fill(null), 
+	/** default 5★ (false) */
+	ringsSix: new Array(8).fill(false),
 	necklace: null, 
+	/** default 5★ (false) */
+	necklaceSix: false,
 	charm: null, 
+	/** default 5★ (false) */
+	charmSix: false,
 	shovel: null, 
 	pan: null, 
 	enchant: null, 
@@ -96,8 +105,34 @@ function useProvideAppData(): AppDataContextValue {
 	}, [craftingItems, museumSlots, equipment, ownedMaterials, isLoading, setCraftingItems, setMuseumSlots, setEquipment, setOwnedMaterials]);
 
 	useEffect(() => {
-		if (equipment && !equipment.activeEvents && !isLoading) {
+		if (!equipment || isLoading) return;
+		// Migracja: ensure activeEvents exists
+		if (!equipment.activeEvents) {
 			setEquipment({ ...equipment, activeEvents: [] });
+			return;
+		}
+		// Migracja: ensure ringsSix/necklaceSix/charmSix exist and have correct lengths/defaults
+		let needsMigration = false;
+		let ringsSix: boolean[];
+		if (!Array.isArray((equipment as any).ringsSix)) {
+			ringsSix = new Array(equipment.rings.length).fill(false);
+			needsMigration = true;
+		} else {
+			ringsSix = ([...((equipment as any).ringsSix as boolean[])]);
+			if (ringsSix.length !== equipment.rings.length) {
+				// normalize length
+				const normalized = new Array(equipment.rings.length).fill(false);
+				for (let i = 0; i < Math.min(ringsSix.length, normalized.length); i++) normalized[i] = !!ringsSix[i];
+				ringsSix = normalized;
+				needsMigration = true;
+			}
+		}
+		const necklaceSix = typeof (equipment as any).necklaceSix === 'boolean' ? (equipment as any).necklaceSix : false;
+		if (typeof (equipment as any).necklaceSix !== 'boolean') needsMigration = true;
+		const charmSix = typeof (equipment as any).charmSix === 'boolean' ? (equipment as any).charmSix : false;
+		if (typeof (equipment as any).charmSix !== 'boolean') needsMigration = true;
+		if (needsMigration) {
+			setEquipment({ ...equipment, ringsSix, necklaceSix, charmSix });
 		}
 	}, [equipment, setEquipment, isLoading]);
 
