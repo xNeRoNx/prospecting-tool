@@ -330,6 +330,44 @@ export function EquipmentSimulation() {
     );
   };
 
+  // Luck Efficiency calculation (extracted & optimized) 
+  const calculateLuckEfficiency = (
+    total_luck: number,
+    total_capacity: number,
+    total_dig_strength: number,
+    total_dig_speed_pct: number, // percent value
+    total_shake_strength: number,
+    total_shake_speed_pct: number, // percent value
+    dig_constant = 2.0,
+    shake_constant = 0.35,
+    time_constant = 4.0
+  ): number => {
+    const digSpeed = Math.max(0.0001, total_dig_speed_pct / 100);
+    const shakeSpeed = Math.max(0.0001, total_shake_speed_pct / 100);
+    const capacity = Math.max(0.0001, total_capacity);
+    const digStrength = Math.max(0.0001, total_dig_strength * 1.5);
+    const shakeStrength = Math.max(0.0001, total_shake_strength);
+
+    const numerator = total_luck * Math.sqrt(capacity) * 0.625;
+    const digCycles = Math.ceil(capacity / digStrength);
+    const shakeCycles = Math.ceil(capacity / shakeStrength);
+    const dig_component = (dig_constant * digCycles) / digSpeed;
+    const shake_component = (shake_constant * shakeCycles) / shakeSpeed;
+    const denominator = dig_component + shake_component + time_constant;
+    return numerator / Math.max(0.0001, denominator);
+  };
+
+  const luckEfficiencyValue = (() => {
+    const luck = eventStats.luck || 0;
+    const capacity = eventStats.capacity || 0;
+    const digStrength = eventStats.digStrength || 0;
+    const digSpeed = eventStats.digSpeed || 0; // percent
+    const shakeStrength = eventStats.shakeStrength || 0;
+    const shakeSpeed = eventStats.shakeSpeed || 0; // percent
+    const result = calculateLuckEfficiency(luck, capacity, digStrength, digSpeed, shakeStrength, shakeSpeed);
+    return isNaN(result) ? '' : result.toFixed(1);
+  })();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -820,32 +858,10 @@ export function EquipmentSimulation() {
 
           {/* Luck Efficiency Calculator */}
           <Card>
-            <CardHeader>
+            <CardHeader className='flex items-center justify-between'>
               <CardTitle>Luck Efficiency</CardTitle>
+              <span>{luckEfficiencyValue}</span>
             </CardHeader>
-            <CardContent>
-              <span className="text-lg font-mono">{(() => {
-                function calculateLuckEfficiency(
-                  total_luck, total_capacity, total_dig_strength, total_dig_speed,
-                  total_shake_strength, total_shake_speed,
-                  dig_constant = 2.0, shake_constant = 0.35, time_constant = 4.0
-                ) {
-                  const numerator = total_luck * Math.sqrt(total_capacity) * 0.625;
-                  const dig_component = (dig_constant * Math.ceil(total_capacity / (Math.max(0.0001, total_dig_strength * 1.5)))) / Math.max(0.0001, total_dig_speed);
-                  const shake_component = (shake_constant * Math.ceil(total_capacity / Math.max(0.0001, total_shake_strength))) / Math.max(0.0001, total_shake_speed);
-                  const denominator = dig_component + shake_component + time_constant;
-                  return numerator / Math.max(0.0001, denominator);
-                }
-                const luck = eventStats.luck || 0;
-                const capacity = eventStats.capacity || 0;
-                const digStrength = eventStats.digStrength || 0;
-                const digSpeed = (eventStats.digSpeed || 0) / 100;
-                const shakeStrength = eventStats.shakeStrength || 0;
-                const shakeSpeed = (eventStats.shakeSpeed || 0) / 100;
-                const result = calculateLuckEfficiency(luck, capacity, digStrength, digSpeed, shakeStrength, shakeSpeed);
-                return isNaN(result) ? '' : result.toFixed(6);
-              })()}</span>
-            </CardContent>
           </Card>
         </div>
       </div>
