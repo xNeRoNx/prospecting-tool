@@ -56,11 +56,15 @@ export function Info() {
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoEquipmentTitle')}</h3>
         <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoEquipmentDesc')}</p>
+        <div className="space-y-2">
+          <h4 className="text-sm font-semibold">{t('infoEquipmentStarsTitle')}</h4>
+          <p className="text-sm text-muted-foreground whitespace-pre-line border-l-2 border-primary/40 pl-4">{t('infoEquipmentStarsDesc')}</p>
+        </div>
       </section>
 
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('infoItemsHeader')}</h3>
-        <p className="text-sm text-muted-foreground max-w-3xl">{t('infoItemsDesc')}</p>
+        <p className="text-sm text-muted-foreground">{t('infoItemsDesc')} {t('statsInfo')}</p>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {craftableItems.map(item => (
               <Card key={item.name} className="flex flex-col">
@@ -87,12 +91,33 @@ export function Info() {
                     <div>
                       <p className="font-medium mb-1">{t('stats')}:</p>
                       <ul className="space-y-0.5">
-                        {Object.entries(item.stats).map(([stat, range]) => (
-                          <li key={stat} className="flex justify-between gap-2">
-                            <span className="truncate">{t(stat as any) || stat}</span>
-                            <span className="text-muted-foreground">{range[0]} – {range[1]}</span>
-                          </li>
-                        ))}
+                        {(() => {
+                          const base: Record<string, any> = (item as any).stats || {};
+                          const ext: Record<string, any> = (item as any).sixStarStats || {};
+                          const keys = Array.from(new Set([...Object.keys(base), ...Object.keys(ext)]));
+                          return keys.map(stat => {
+                            const baseVal = base[stat];
+                            const extVal = ext[stat];
+                            if (!Array.isArray(baseVal) && !Array.isArray(extVal)) return null;
+                            const lower = stat.toLowerCase();
+                            const suffix = (lower.includes('speed') || lower.includes('boost')) ? '%' : '';
+                            let text = '';
+                            if (Array.isArray(baseVal) && Array.isArray(extVal)) {
+                              const [bMin, bMax] = baseVal;
+                              const [eMin, eMax] = extVal;
+                              text = `${bMin}${suffix} - ${bMax}${suffix} [${eMin}${suffix} - ${eMax}${suffix}]`;
+                            } else if (Array.isArray(baseVal)) {
+                              const [bMin, bMax] = baseVal;
+                              text = `${bMin}${suffix} - ${bMax}${suffix}`;
+                            }
+                            return (
+                              <li key={stat} className="flex justify-between gap-2">
+                                <span className="truncate">{t(stat as any) || stat}</span>
+                                <span className="text-muted-foreground">{text}</span>
+                              </li>
+                            );
+                          });
+                        })()}
                       </ul>
                     </div>
                   )}
@@ -106,7 +131,7 @@ export function Info() {
       {/* Materials / Ores */}
       <section className="space-y-4">
         <h3 className="text-xl font-semibold">{t('materialsOresTitle')}</h3>
-        <p className="text-sm text-muted-foreground max-w-3xl">{t('materialsOresDesc')}</p>
+        <p className="text-sm text-muted-foreground">{t('materialsOresDesc')}</p>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {ores.map(ore => {
             const effects = ore.specialEffects ? Object.entries(ore.specialEffects) : [];

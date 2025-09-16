@@ -26,8 +26,11 @@ export interface MuseumSlot {
 }
 export interface EquipmentSlot {
 	rings: (CraftableItem | null)[]; 
+	ringsSix?: boolean[];
 	necklace: CraftableItem | null; 
+	necklaceSix?: boolean;
 	charm: CraftableItem | null; 
+	charmSix?: boolean;
 	shovel: string | null; 
 	pan: string | null; 
 	enchant: string | null; 
@@ -37,8 +40,11 @@ export interface EquipmentSlot {
 
 const DEFAULT_EQUIPMENT: EquipmentSlot = { 
 	rings: new Array(8).fill(null), 
+	ringsSix: new Array(8).fill(false),
 	necklace: null, 
+	necklaceSix: false,
 	charm: null, 
+	charmSix: false,
 	shovel: null, 
 	pan: null, 
 	enchant: null, 
@@ -68,15 +74,15 @@ function useProvideAppData(): AppDataContextValue {
 	const [equipment, setEquipment] = useLocalStorageState<EquipmentSlot | null>('equipment', null);
 	const [ownedMaterials, setOwnedMaterials] = useLocalStorageState<{ [key: string]: number } | null>('owned-materials', null);
 
-	// Inicjalizacja wartości domyślnych i ustawienie isLoading=false gdy wszystko gotowe.
+	// Initialize default values for localStorage-backed states and set isLoading=false when craftingItems, museumSlots, equipment, and ownedMaterials are all initialized.
 	useEffect(() => {
-		// Ustaw domyślne struktury tylko jeśli jeszcze brak (null w localStorage)
+		// Set default structures only if missing (null in localStorage)
 		if (craftingItems === null) setCraftingItems([]);
 		if (museumSlots === null) setMuseumSlots([]);
 		if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
 		if (ownedMaterials === null) setOwnedMaterials({});
 
-		// Migracja: dodaj craftedCount jeśli brak
+		// Migration: add craftedCount if missing
 		if (craftingItems !== null) {
 			let needsMigration = false;
 			const migrated = craftingItems.map(ci => {
@@ -96,8 +102,34 @@ function useProvideAppData(): AppDataContextValue {
 	}, [craftingItems, museumSlots, equipment, ownedMaterials, isLoading, setCraftingItems, setMuseumSlots, setEquipment, setOwnedMaterials]);
 
 	useEffect(() => {
-		if (equipment && !equipment.activeEvents && !isLoading) {
+		if (!equipment || isLoading) return;
+		// Migration: ensure activeEvents exists
+		if (!equipment.activeEvents) {
 			setEquipment({ ...equipment, activeEvents: [] });
+			return;
+		}
+		// Migration: ensure ringsSix/necklaceSix/charmSix exist and have correct lengths/defaults
+		let needsMigration = false;
+		let ringsSix: boolean[];
+		if (!Array.isArray((equipment as any).ringsSix)) {
+			ringsSix = new Array(equipment.rings.length).fill(false);
+			needsMigration = true;
+		} else {
+			ringsSix = ([...((equipment as any).ringsSix as boolean[])]);
+			if (ringsSix.length !== equipment.rings.length) {
+				// Normalize length
+				const normalized = new Array(equipment.rings.length).fill(false);
+				for (let i = 0; i < Math.min(ringsSix.length, normalized.length); i++) normalized[i] = !!ringsSix[i];
+				ringsSix = normalized;
+				needsMigration = true;
+			}
+		}
+		const necklaceSix = typeof (equipment as any).necklaceSix === 'boolean' ? (equipment as any).necklaceSix : false;
+		if (typeof (equipment as any).necklaceSix !== 'boolean') needsMigration = true;
+		const charmSix = typeof (equipment as any).charmSix === 'boolean' ? (equipment as any).charmSix : false;
+		if (typeof (equipment as any).charmSix !== 'boolean') needsMigration = true;
+		if (needsMigration) {
+			setEquipment({ ...equipment, ringsSix, necklaceSix, charmSix });
 		}
 	}, [equipment, setEquipment, isLoading]);
 
@@ -226,7 +258,7 @@ function useProvideAppData(): AppDataContextValue {
 		const saves = getSaves(); 
 		const saveData = saves[slotIndex]; 
 		if (!saveData) throw new Error('No save data in this slot.'); 
-		// Zawsze wykonaj backup przed załadowaniem jakiegokolwiek slota (również slota 5)
+		// Always create a backup before loading any slot (including slot 5)
 		createBackupBeforeImport(); 
 		importData(saveData); 
 		return saveData; 

@@ -4,7 +4,7 @@
 
 import { deflate, inflate } from 'pako';
 
-// Mapy aliasów (top-level + metadata)
+// Alias maps (top-level + metadata)
 const KEY_MAP: Record<string, string> = {
   metadata: 'm',
   craftingItems: 'c',
@@ -24,13 +24,13 @@ const invert = (obj: Record<string, string>) => Object.fromEntries(Object.entrie
 const KEY_MAP_INV = invert(KEY_MAP);
 const META_KEY_MAP_INV = invert(META_KEY_MAP);
 
-// Usuwa puste tablice / obiekty z najwyższego poziomu (nie wchodzi rekurencyjnie dla prostoty i szybkości)
+// Removes empty arrays and objects only at the top level (recursion is avoided for performance reasons and to keep the function simple)
 function stripEmptyTopLevel(data: any) {
   const out: any = {};
   Object.entries(data).forEach(([k, v]) => {
-    if (v == null) return; // pomijamy null/undefined
-    if (Array.isArray(v) && v.length === 0) return; // pusta tablica
-    if (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) return; // pusty obiekt
+    if (v == null) return; // skip null/undefined
+    if (Array.isArray(v) && v.length === 0) return; // empty array
+    if (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0) return; // empty object
     out[k] = v;
   });
   return out;
@@ -39,7 +39,7 @@ function stripEmptyTopLevel(data: any) {
 function packMetadata(meta: any) {
   const m: any = {};
   Object.entries(meta || {}).forEach(([k, v]) => {
-    if (k === 'description' && (v === '' || v == null)) return; // usuń pusty opis
+    if (k === 'description' && (v === '' || v == null)) return; // remove empty description
     const alias = META_KEY_MAP[k];
     m[alias || k] = v;
   });
@@ -80,7 +80,7 @@ function unpackData(data: any) {
   return unpacked;
 }
 
-// base64url helpers (bez paddingu)
+// base64url helpers (no padding)
 function bytesToBase64Url(bytes: Uint8Array) {
   let binary = '';
   for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
@@ -99,11 +99,8 @@ function base64UrlToBytes(str: string) {
 
 // Public API
 export function encodeDataForUrl(fullData: any): string {
-  // 1. usuń puste sekcje
   const stripped = stripEmptyTopLevel(fullData);
-  // 2. spakuj aliasy
   const packed = packData(stripped);
-  // 3. JSON -> deflate
   const json = JSON.stringify(packed);
   let deflated: Uint8Array;
   try {
@@ -133,5 +130,6 @@ export function decodeDataFromUrl(hashData: string): any {
   }
 }
 
-// Dodatkowe pomocnicze (opcjonalnie export jeśli kiedykolwiek potrzebne)
+// Export internal helpers for debugging and testing purposes only.
+// Do not use __debug in production code.
 export const __debug = { stripEmptyTopLevel, packData, unpackData, packMetadata, unpackMetadata };
