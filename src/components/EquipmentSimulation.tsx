@@ -859,7 +859,7 @@ export function EquipmentSimulation() {
           {/* Luck Efficiency Calculator */}
           <Card>
             <CardHeader className='flex items-center justify-between'>
-              <CardTitle>Luck Efficiency</CardTitle>
+              <CardTitle>{t('luckEfficiency')}</CardTitle>
               <span>{luckEfficiencyValue}</span>
             </CardHeader>
           </Card>
