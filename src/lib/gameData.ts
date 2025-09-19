@@ -743,5 +743,6 @@ export const events: Event[] = [
   { name: "Meteor Shower", effects: { luck: 2 } },
   { name: "Admin Shower", effects: { luck: 2, digStrength: 2, shakeStrength: 2 } },
   { name: "Luck Totem", effects: { luck: 2 } },
-  { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } }
+  { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } },
+  { name: "Perfect Dig", effects: { digStrength: 1.5 } }
 ];
