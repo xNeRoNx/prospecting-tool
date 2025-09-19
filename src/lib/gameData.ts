@@ -77,6 +77,19 @@ export interface Enchant {
   };
 }
 
+export interface Potions {
+  name: string;
+  effects: {
+    [key: string]: number;
+  };
+}
+
+export const potions: Potions[] = [
+  { name: "Basic Luck Potion", effects: { luck: 5 } },
+  { name: "Greater Luck Potion", effects: { luck: 15 } },
+  { name: "", effects: { luck: 5 } }                                       //to do 
+];
+
 export const craftableItems: CraftableItem[] = [
   // Common
   {
@@ -730,6 +743,8 @@ export const enchants: Enchant[] = [
   { name: "Infernal", effects: { luck: 80, capacity: -20, sizeBoost: -10 } }
 ];
 
+
+
 export interface Event {
   name: string;
   effects: {
@@ -745,5 +760,8 @@ export const events: Event[] = [
   { name: "Luck Totem", effects: { luck: 2 } },
   { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } },
   { name: "Perfect Dig", effects: { digStrength: 1.5 } },
-  { name: "Blizzard", effects: { luck: 2 } }
+  { name: "Blizzard", effects: { luck: 2 } },
+  { name: "Codes", effects: { luck: 2 } },
+  { name: "Daily luck bonus", effects: { luck: 2 } },
+  { name: "friends", effects: { luck: 1.5 } }
 ];
