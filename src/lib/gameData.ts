@@ -77,6 +77,19 @@ export interface Enchant {
   };
 }
 
+export interface Potions {
+  name: string;
+  effects: {
+    [key: string]: number;
+  };
+}
+
+export const potions: Potions[] = [
+  { name: "Basic Luck Potion", effects: { luck: 5 } },
+  { name: "Greater Luck Potion", effects: { luck: 15 } },
+  { name: "", effects: { luck: 5 } }                                       //to do 
+];
+
 export const craftableItems: CraftableItem[] = [
   // Common
   {
@@ -705,8 +718,8 @@ export const pans: Pan[] = [
   { name: "Worldshaker Pan", stats: { luck: 70, capacity: 150, shakeStrength: 5, shakeSpeed: 100 }, passive: "Size boost of (+25%)", price: 125000000 },
   { name: "Dragonflame Pan", stats: { luck: 150, capacity: 180, shakeStrength: 10, shakeSpeed: 110 }, passive: "Size boost of (-10%)", price: 400000000 },
   { name: "Fossilized Pan", stats: { luck: 200, capacity: 225, shakeStrength: 8, shakeSpeed: 100 }, passive: "Modifier boost of (+50%)", price: 1000000000 },
-  { name: "Galactic Pan", stats: { luck: 100, capacity: 500, shakeStrength: 25, shakeSpeed: 100 }, passive: "Size Boost of (+25%) and has a chance to give Voidtorn items", price: 2000000000 },
-  { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "Size Boost of (+25%)", price: 10000000000 },
+  { name: "Galactic Pan", stats: { luck: 100, capacity: 500, shakeStrength: 25, shakeSpeed: 100 }, passive: "Size boost of (+25%) and has a chance to give Voidtorn items", price: 2000000000 },
+  { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "Size boost of (+25%)", price: 10000000000 },
   { name: "Lifetouched Pan", stats: { luck: 400, capacity: 300, shakeStrength: 8, shakeSpeed: 110 }, passive: "Modifier boost of (+50%)", price: 100000000000 }
 ];
 
@@ -743,5 +756,10 @@ export const events: Event[] = [
   { name: "Meteor Shower", effects: { luck: 2 } },
   { name: "Admin Shower", effects: { luck: 2, digStrength: 2, shakeStrength: 2 } },
   { name: "Luck Totem", effects: { luck: 2 } },
-  { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } }
+  { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } },
+  { name: "Perfect Dig", effects: { digStrength: 1.5 } },
+  { name: "Blizzard", effects: { luck: 2 } },
+  { name: "Codes", effects: { luck: 2 } },
+  { name: "Daily luck bonus", effects: { luck: 2 } },
+  { name: "Friends", effects: { luck: 1.5 } }
 ];

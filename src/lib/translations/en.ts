@@ -151,6 +151,11 @@ export const en = {
   adminshower: "Admin Shower", 
   lucktotem: "Luck Totem",
   strengthtotem: "Strength Totem",
+  perfectdig: "Perfect Dig",
+  blizzard: "Blizzard",
+  codes: "Codes",
+  dailyluckbonus: "Daily luck bonus",
+  friends: "Friends",
   
   // Stats
   luck: "Luck",
