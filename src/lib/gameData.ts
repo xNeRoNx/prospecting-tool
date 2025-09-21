@@ -743,8 +743,6 @@ export const enchants: Enchant[] = [
   { name: "Infernal", effects: { luck: 80, capacity: -20, sizeBoost: -10 } }
 ];
 
-
-
 export interface Event {
   name: string;
   effects: {
@@ -763,5 +761,5 @@ export const events: Event[] = [
   { name: "Blizzard", effects: { luck: 2 } },
   { name: "Codes", effects: { luck: 2 } },
   { name: "Daily luck bonus", effects: { luck: 2 } },
-  { name: "friends", effects: { luck: 1.5 } }
+  { name: "Friends", effects: { luck: 1.5 } }
 ];
