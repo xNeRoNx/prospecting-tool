@@ -108,12 +108,12 @@ export function EquipmentSimulation() {
   // - Meteor Shower and Admin Shower are POST-museum: they scale the result after applying museum bonuses
   // In gameData, effects are stored as values (e.g., 2 means 2x). We treat this as a multiplier.
   const PRE_EVENTS = ["Luck Totem", "Strength Totem"]; // base only
-  const POST_EVENTS = ["Meteor Shower", "Admin Shower"]; // after museum
+  const POST_EVENTS = ["Meteor Shower", "Admin Shower", "Perfect Dig", "Blizzard", "Codes", "Daily luck bonus", "Friends"]; // after museum
 
   interface StatMap { [key: string]: number }
 
   const separateEventMultipliers = () => {
-    const active = equipment.activeEvents || [];
+  const active = equipment.activeEvents || [];
   const preTotals: StatMap = {};  // stores the sum of (mult-1) for pre
   const postTotals: StatMap = {}; // stores the sum of (mult-1) for post
 
@@ -827,7 +827,7 @@ export function EquipmentSimulation() {
                       disabled={isLoading}
                     />
                     <Label htmlFor={event.name} className="text-sm">
-                      {t(event.name.toLowerCase().replace(/\s+/g, '') as any) || event.name}
+                      {event.name}
                     </Label>
                   </div>
                 ))}
