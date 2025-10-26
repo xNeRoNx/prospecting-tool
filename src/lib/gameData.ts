@@ -1,26 +1,33 @@
+export type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary' | 'Mythic' | 'Exotic';
+export type Positions = 'Ring' | 'Necklace' | 'Charm';
+
 export interface Recipe {
   material: string;
   amount: number;
   weight?: number;
 }
 
-export interface Stats {
-  luck?: [number, number];
-  digStrength?: [number, number];
-  digSpeed?: [number, number];
-  shakeStrength?: [number, number];
-  walkSpeed?: [number, number];
-  shakeSpeed?: [number, number];
-  capacity?: [number, number];
-  sellBoost?: [number, number];
-  sizeBoost?: [number, number];
-  modifierBoost?: [number, number];
+export interface Effects {
+  luck?: number;
+  digStrength?: number;
+  digSpeed?: number;
+  shakeStrength?: number;
+  walkSpeed?: number;
+  shakeSpeed?: number;
+  capacity?: number;
+  sellBoost?: number;
+  sizeBoost?: number;
+  modifierBoost?: number;
+}
+
+export type Stats = {
+  [K in keyof Effects]?: [number, number];
 }
 
 export interface CraftableItem {
   name: string;
-  rarity: 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary' | 'Mythic' | 'Exotic';
-  position: 'Ring' | 'Necklace' | 'Charm';
+  rarity: Rarity;
+  position: Positions;
   recipe: Recipe[];
   stats: Stats;
   sixStarStats?: Stats; // For 6* items
@@ -29,25 +36,14 @@ export interface CraftableItem {
 
 export interface Ore {
   name: string;
-  rarity: 'Common' | 'Uncommon' | 'Rare' | 'Epic' | 'Legendary' | 'Mythic' | 'Exotic';
+  rarity: Rarity;
   museumEffect: {
     stat: string;
     maxMultiplier: number;
   };
   // Maximum weight (kg) at which maximum modifier is achieved.
   maxWeight: number;
-  specialEffects?: {
-    luck?: number;
-    capacity?: number;
-    digStrength?: number;
-    shakeStrength?: number;
-    walkSpeed?: number;
-    digSpeed?: number;
-    shakeSpeed?: number;
-    sellBoost?: number;
-    sizeBoost?: number;
-    modifierBoost?: number;
-  };
+  specialEffects?: Effects;
 }
 
 export interface Shovel {
@@ -76,22 +72,19 @@ export interface Pan {
 
 export interface Enchant {
   name: string;
-  effects: {
-    [key: string]: number;
-  };
+  effects: Effects;
 }
 
 export interface Potions {
   name: string;
-  effects: {
-    [key: string]: number;
-  };
+  effects: Effects;
 }
 
 export const potions: Potions[] = [
   { name: "Basic Luck Potion", effects: { luck: 5 } },
-  { name: "Greater Luck Potion", effects: { luck: 15 } },
-  { name: "", effects: { luck: 5 } } //TODO - verify
+  { name: "Basic Capacity Potion", effects: { capacity: 25 } },
+  { name: "Greater Luck Potion", effects: { luck: 10 } },
+  { name: "Greater Capacity Potion", effects: { capacity: 50 } },
 ];
 
 export const craftableItems: CraftableItem[] = [

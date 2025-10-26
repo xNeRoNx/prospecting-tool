@@ -41,6 +41,60 @@ export function EquipmentSimulation() {
     updateEquipment({ ringsSix: current });
   };
 
+  // Helper to check if item data is outdated by comparing with current gameData
+  const isItemDataOutdated = (item: CraftableItem | null) => {
+    if (!item) return false;
+    
+    // Find the current version of this item in gameData
+    const currentItem = craftableItems.find(i => i.name === item.name && i.position === item.position);
+    
+    // If item doesn't exist in gameData anymore, it's outdated
+    if (!currentItem) return true;
+    
+    // Check if sixStarStats exists in current data but not in saved item
+    if (currentItem.sixStarStats && !item.sixStarStats) return true;
+    
+    // Compare stats structure - check if all stat keys match
+    const savedStatsKeys = Object.keys(item.stats || {}).sort();
+    const currentStatsKeys = Object.keys(currentItem.stats || {}).sort();
+    
+    if (savedStatsKeys.join(',') !== currentStatsKeys.join(',')) return true;
+    
+    // Compare sixStarStats structure if both exist
+    if (item.sixStarStats && currentItem.sixStarStats) {
+      const savedSixStatsKeys = Object.keys(item.sixStarStats).sort();
+      const currentSixStatsKeys = Object.keys(currentItem.sixStarStats).sort();
+      
+      if (savedSixStatsKeys.join(',') !== currentSixStatsKeys.join(',')) return true;
+    }
+    
+    // Compare stat values (ranges)
+    for (const [key, value] of Object.entries(currentItem.stats)) {
+      const savedValue = item.stats?.[key];
+      if (!savedValue || !Array.isArray(value) || !Array.isArray(savedValue)) continue;
+      
+      const [currentMin, currentMax] = value as [number, number];
+      const [savedMin, savedMax] = savedValue as [number, number];
+      
+      if (currentMin !== savedMin || currentMax !== savedMax) return true;
+    }
+    
+    // Compare sixStarStats values if both exist
+    if (item.sixStarStats && currentItem.sixStarStats) {
+      for (const [key, value] of Object.entries(currentItem.sixStarStats)) {
+        const savedValue = item.sixStarStats[key];
+        if (!savedValue || !Array.isArray(value) || !Array.isArray(savedValue)) continue;
+        
+        const [currentMin, currentMax] = value as [number, number];
+        const [savedMin, savedMax] = savedValue as [number, number];
+        
+        if (currentMin !== savedMin || currentMax !== savedMax) return true;
+      }
+    }
+    
+    return false;
+  };
+
   const equipItem = (item: CraftableItem, position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
     if (position === 'rings' && typeof slotIndex === 'number') {
       const newRings = [...equipment.rings];
@@ -622,7 +676,9 @@ export function EquipmentSimulation() {
                           </div>
                           <p className="text-sm font-medium">{ring.name}</p>
                           {renderItemStats(ring, isRingSix(index))}
-                          {!ring.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
+                          {isItemDataOutdated(ring) && (
+                            <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p>
+                          )}
                         </div>
                       ) : (
                         <Dialog>
@@ -720,7 +776,9 @@ export function EquipmentSimulation() {
                     </div>
                     <p className="font-medium">{equipment.necklace.name}</p>
                     {renderItemStats(equipment.necklace, equipment.necklaceSix)}
-                    {!equipment.necklace.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
+                    {isItemDataOutdated(equipment.necklace) && (
+                      <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p>
+                    )}
                   </div>
                 ) : (
                   <Dialog>
@@ -812,7 +870,9 @@ export function EquipmentSimulation() {
                     </div>
                     <p className="font-medium">{equipment.charm.name}</p>
                     {renderItemStats(equipment.charm, equipment.charmSix)}
-                    {!equipment.charm.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
+                    {isItemDataOutdated(equipment.charm) && (
+                      <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p>
+                    )}
                   </div>
                 ) : (
                   <Dialog>

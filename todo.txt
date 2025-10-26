@@ -1,2 +1,0 @@
-TODO:
-- Validation whether saved items are current in the equipment simulation
