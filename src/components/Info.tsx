@@ -2,10 +2,10 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { craftableItems, ores, modifiers, enchants, pans, shovels } from '@/lib/gameData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function Info() {
   const { t } = useLanguage();
+  const LAST_UPDATE = '26.10.2025';
 
   return (
     <div className="space-y-8">
@@ -13,6 +13,9 @@ export function Info() {
         <h2 className="text-2xl font-bold">{t('infoTitle')}</h2>
         <p className="text-muted-foreground leading-relaxed whitespace-pre-line border-l-2 border-primary/40 pl-4">
           {t('infoIntro')}
+        </p>
+        <p className="text-sm text-muted-foreground italic">
+          {t('infoLastUpdate')}: {LAST_UPDATE}
         </p>
       </section>
 
@@ -222,6 +225,7 @@ export function Info() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="text-sm font-semibold leading-tight">{p.name}</CardTitle>
+                  {p.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground">${p.price.toLocaleString()}</p>
               </CardHeader>
@@ -251,6 +255,7 @@ export function Info() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <CardTitle className="text-sm font-semibold leading-tight">{s.name}</CardTitle>
+                  {s.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground">${s.price.toLocaleString()}</p>
               </CardHeader>

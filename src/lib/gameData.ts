@@ -41,6 +41,7 @@ export interface Ore {
     capacity?: number;
     digStrength?: number;
     shakeStrength?: number;
+    walkSpeed?: number;
     digSpeed?: number;
     shakeSpeed?: number;
     sellBoost?: number;

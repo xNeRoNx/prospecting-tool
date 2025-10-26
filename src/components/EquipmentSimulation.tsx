@@ -428,14 +428,32 @@ export function EquipmentSimulation() {
                   disabled={isLoading}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select shovel" />
+                    <SelectValue placeholder="Select shovel">
+                      {equipment.shovel || "Select shovel"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {shovels.map(shovel => (
-                      <SelectItem key={shovel.name} value={shovel.name}>
-                        {shovel.name} - ${shovel.price.toLocaleString()}
-                      </SelectItem>
-                    ))}
+                    {shovels.map(shovel => {
+                      const statsList = [
+                        `${t('digStrength')}: ${shovel.stats.digStrength}`,
+                        `${t('digSpeed')}: ${shovel.stats.digSpeed}%`,
+                        `${t('toughness')}: ${shovel.stats.toughness}`
+                      ];
+                      
+                      return (
+                        <SelectItem key={shovel.name} value={shovel.name}>
+                          <div className="flex flex-col items-start gap-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{shovel.name} - ${shovel.price.toLocaleString()}</span>
+                              {shovel.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground">
+                              {statsList.join(', ')}
+                            </div>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 {renderShovelStats()}
@@ -454,14 +472,42 @@ export function EquipmentSimulation() {
                     disabled={isLoading}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select pan" />
+                      <SelectValue placeholder="Select pan">
+                        {equipment.pan || "Select pan"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {pans.map(pan => (
-                        <SelectItem key={pan.name} value={pan.name}>
-                          {pan.name} - ${pan.price.toLocaleString()}
-                        </SelectItem>
-                      ))}
+                      {pans.map(pan => {
+                        const statsList = [
+                          `${t('luck')}: ${pan.stats.luck}`,
+                          `${t('capacity')}: ${pan.stats.capacity}`,
+                          `${t('shakeStrength')}: ${pan.stats.shakeStrength}`,
+                          `${t('shakeSpeed')}: ${pan.stats.shakeSpeed}%`
+                        ];
+                        
+                        // Split into chunks of 3
+                        const chunks: string[][] = [];
+                        for (let i = 0; i < statsList.length; i += 3) {
+                          chunks.push(statsList.slice(i, i + 3));
+                        }
+                        
+                        return (
+                          <SelectItem key={pan.name} value={pan.name}>
+                            <div className="flex flex-col items-start gap-0.5">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{pan.name} - ${pan.price.toLocaleString()}</span>
+                                {pan.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+                              </div>
+                              <div className="text-[10px] text-muted-foreground">
+                                {chunks.map((chunk, idx) => (
+                                  <div key={idx}>{chunk.join(', ')}</div>
+                                ))}
+                              {pan.passive && <div>{pan.passive}</div>}
+                              </div>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                   
@@ -473,14 +519,38 @@ export function EquipmentSimulation() {
                         disabled={isLoading}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select enchant" />
+                          <SelectValue placeholder="Select enchant">
+                            {equipment.enchant || "Select enchant"}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                          {enchants.map(enchant => (
-                            <SelectItem key={enchant.name} value={enchant.name}>
-                              {enchant.name}
-                            </SelectItem>
-                          ))}
+                          {enchants.map(enchant => {
+                            const statsEntries = Object.entries(enchant.effects);
+                            const statsList = statsEntries
+                              .map(([stat, val]) => {
+                                const isPercent = /Speed|Boost/i.test(stat);
+                                return `${t(stat as keyof typeof t)}: ${val > 0 ? '+' : ''}${val}${isPercent ? '%' : ''}`;
+                              });
+                            
+                            // Split into chunks of 3
+                            const chunks: string[][] = [];
+                            for (let i = 0; i < statsList.length; i += 3) {
+                              chunks.push(statsList.slice(i, i + 3));
+                            }
+                            
+                            return (
+                              <SelectItem key={enchant.name} value={enchant.name}>
+                                <div className="flex flex-col items-start gap-0.5">
+                                  <span className="font-medium">{enchant.name}</span>
+                                  <div className="text-[10px] text-muted-foreground">
+                                    {chunks.map((chunk, idx) => (
+                                      <div key={idx}>{chunk.join(', ')}</div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       {equipment.enchant && (
@@ -883,6 +953,7 @@ export function EquipmentSimulation() {
                     <SelectItem value="sizeBoost">Size Boost</SelectItem>
                     <SelectItem value="modifierBoost">Modifier Boost</SelectItem>
                     <SelectItem value="toughness">Toughness</SelectItem>
+                    <SelectItem value="walkSpeed">Walk Speed</SelectItem>
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">

@@ -1,4 +1,2 @@
 TODO:
-- Add information for pan and shovel whether the item comes from an event
 - Validation whether saved items are current in the equipment simulation
-- Add information about last update in the info section
