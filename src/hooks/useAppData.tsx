@@ -35,6 +35,7 @@ export interface EquipmentSlot {
 	pan: string | null; 
 	enchant: string | null; 
 	customStats: { [key: string]: number }; 
+	activePotions: string[];
 	activeEvents: string[];
 }
 
@@ -49,6 +50,7 @@ const DEFAULT_EQUIPMENT: EquipmentSlot = {
 	pan: null, 
 	enchant: null, 
 	customStats: {}, 
+	activePotions: [],
 	activeEvents: [] 
 };
 

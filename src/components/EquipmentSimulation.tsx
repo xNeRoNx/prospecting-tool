@@ -8,12 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
+import { Plus, X, Calculator, Calendar, Flask } from '@phosphor-icons/react';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
-import { craftableItems, shovels, pans, enchants, events, ores, modifiers, getModifierBonus, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, shovels, pans, enchants, potions, events, availableStats, type CraftableItem } from '@/lib/gameData';
 import { calculateMuseumBonuses as sharedCalculateMuseumBonuses } from '@/lib/museumUtils';
 
 export function EquipmentSimulation() {
@@ -122,9 +122,8 @@ export function EquipmentSimulation() {
   const addCustomStat = () => {
     if (!customStatName.trim() || customStatValue === 0) return;
     
-    // Only allow adding to existing base stat types
-    const validStats = ['luck', 'digStrength', 'digSpeed', 'shakeStrength', 'shakeSpeed', 'capacity', 'sellBoost', 'sizeBoost', 'modifierBoost', 'toughness'];
-    if (!validStats.includes(customStatName)) return;
+    // Validate against available stats
+    if (!availableStats.includes(customStatName as any)) return;
     
     updateEquipment({
       customStats: {
@@ -135,6 +134,21 @@ export function EquipmentSimulation() {
     
     setCustomStatName('');
     setCustomStatValue(0);
+  };
+
+  const togglePotion = (potionName: string) => {
+    const currentPotions = equipment.activePotions || [];
+    const isActive = currentPotions.includes(potionName);
+    
+    if (isActive) {
+      updateEquipment({
+        activePotions: currentPotions.filter(p => p !== potionName)
+      });
+    } else {
+      updateEquipment({
+        activePotions: [...currentPotions, potionName]
+      });
+    }
   };
 
   const toggleEvent = (eventName: string) => {
@@ -247,7 +261,18 @@ export function EquipmentSimulation() {
       if (stats[key] !== undefined) stats[key] += value; else stats[key] = value;
     });
 
-    // 5) Equipment Items (rings, necklace, charm) using max roll values, respecting 5★/6★ selection
+    // 5) Potions
+    const activePotions = equipment.activePotions || [];
+    activePotions.forEach(potionName => {
+      const potion = potions.find(p => p.name === potionName);
+      if (potion) {
+        Object.entries(potion.effects).forEach(([key, value]) => {
+          if (stats[key] !== undefined) stats[key] += value;
+        });
+      }
+    });
+
+    // 6) Equipment Items (rings, necklace, charm) using max roll values, respecting 5★/6★ selection
     equipment.rings.forEach((item, idx) => {
       if (!item) return;
       const selected = getItemStatsForTier(item, isRingSix(idx));
@@ -938,6 +963,55 @@ export function EquipmentSimulation() {
             </Card>
           </div>
 
+          {/* Potions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Flask size={20} />
+                {t('potions')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {potions.map(potion => (
+                  <div key={potion.name} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={potion.name}
+                      checked={(equipment.activePotions || []).includes(potion.name)}
+                      onCheckedChange={() => togglePotion(potion.name)}
+                      disabled={isLoading}
+                    />
+                    <Label htmlFor={potion.name} className="text-sm">
+                      {potion.name}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {(equipment.activePotions || []).length > 0 && (
+                <div className="mt-4 p-3 bg-muted rounded-lg">
+                  <p className="text-sm font-medium mb-2">{t('activePotions')}:</p>
+                  <div className="space-y-1">
+                    {(equipment.activePotions || []).map(potionName => {
+                      const potion = potions.find(p => p.name === potionName);
+                      if (!potion) return null;
+                      
+                      return (
+                        <div key={potionName} className="text-xs">
+                          <span className="font-medium">{potion.name}:</span>
+                          <span className="ml-1">
+                            {Object.entries(potion.effects).map(([stat, value]) => 
+                              `${stat.replace(/([A-Z])/g, ' $1').toLowerCase()} +${value}`
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Events */}
           <Card>
             <CardHeader>
@@ -992,7 +1066,7 @@ export function EquipmentSimulation() {
             <CardHeader>
               <CardTitle>{t('customStats')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               <div className="flex flex-col sm:flex-row gap-2">
                 <Select
                   value={customStatName}
@@ -1003,17 +1077,11 @@ export function EquipmentSimulation() {
                     <SelectValue placeholder="Select stat to boost" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="luck">Luck</SelectItem>
-                    <SelectItem value="digStrength">Dig Strength</SelectItem>
-                    <SelectItem value="digSpeed">Dig Speed</SelectItem>
-                    <SelectItem value="shakeStrength">Shake Strength</SelectItem>
-                    <SelectItem value="shakeSpeed">Shake Speed</SelectItem>
-                    <SelectItem value="capacity">Capacity</SelectItem>
-                    <SelectItem value="sellBoost">Sell Boost</SelectItem>
-                    <SelectItem value="sizeBoost">Size Boost</SelectItem>
-                    <SelectItem value="modifierBoost">Modifier Boost</SelectItem>
-                    <SelectItem value="toughness">Toughness</SelectItem>
-                    <SelectItem value="walkSpeed">Walk Speed</SelectItem>
+                    {availableStats.map(stat => (
+                      <SelectItem key={stat} value={stat}>
+                        {t(stat as any) || stat.charAt(0).toUpperCase() + stat.slice(1).replace(/([A-Z])/g, ' $1')}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">
@@ -1031,20 +1099,22 @@ export function EquipmentSimulation() {
                 </div>
               </div>
               
-              {Object.entries(equipment.customStats).map(([name, value]) => (
-                <div key={name} className="flex items-center justify-between bg-muted p-2 rounded">
-                  <span className="text-sm truncate">{name}: {value}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => removeCustomStat(name)}
-                    className="flex-shrink-0"
-                    disabled={isLoading}
-                  >
-                    <X size={12} />
-                  </Button>
-                </div>
-              ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {Object.entries(equipment.customStats).map(([name, value]) => (
+                  <div key={name} className="flex items-center justify-between bg-muted px-2 py-1 rounded">
+                    <span className="text-sm truncate">{t(name as any)}: {value}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeCustomStat(name)}
+                      className="flex-shrink-0"
+                      disabled={isLoading}
+                    >
+                      <X size={12} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>

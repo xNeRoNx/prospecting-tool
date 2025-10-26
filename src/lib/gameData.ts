@@ -18,6 +18,7 @@ export interface Effects {
   sellBoost?: number;
   sizeBoost?: number;
   modifierBoost?: number;
+  toughness?: number;
 }
 
 export type Stats = {
@@ -86,6 +87,12 @@ export const potions: Potions[] = [
   { name: "Greater Luck Potion", effects: { luck: 10 } },
   { name: "Greater Capacity Potion", effects: { capacity: 50 } },
 ];
+
+export const availableStats: (keyof Effects)[] = [
+    'luck', 'digStrength', 'digSpeed', 'shakeStrength', 
+    'walkSpeed', 'shakeSpeed', 'capacity', 'sellBoost', 
+    'sizeBoost', 'modifierBoost', 'toughness'
+  ];
 
 export const craftableItems: CraftableItem[] = [
   // Common

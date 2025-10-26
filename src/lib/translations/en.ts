@@ -141,6 +141,8 @@ export const en = {
   withEventBonuses: "With Event Bonuses",
   museumBonuses: "Museum Bonuses",
   customStats: "Custom Stats",
+  potions: "Potions",
+  activePotions: "Active Potions",
   activeEvents: "Active Events",
   events: "Events",
   luckEfficiency: "Luck Efficiency",
