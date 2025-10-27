@@ -8,12 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, X, Calculator, Calendar } from '@phosphor-icons/react';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
+import { Plus, X, Calculator, Calendar, Flask } from '@phosphor-icons/react';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
-import { craftableItems, shovels, pans, enchants, events, ores, modifiers, getModifierBonus, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, shovels, pans, enchants, potions, events, availableStats, type CraftableItem, getItemByReference, createItemReference } from '@/lib/gameData';
 import { calculateMuseumBonuses as sharedCalculateMuseumBonuses } from '@/lib/museumUtils';
 
 export function EquipmentSimulation() {
@@ -40,23 +39,25 @@ export function EquipmentSimulation() {
     const current = new Array(equipment.rings.length).fill(value);
     updateEquipment({ ringsSix: current });
   };
-
+    
+    // If item doesn't exist in gameData anymore, it's outdated
   const equipItem = (item: CraftableItem, position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
+    const reference = createItemReference(item);
     if (position === 'rings' && typeof slotIndex === 'number') {
       const newRings = [...equipment.rings];
-      newRings[slotIndex] = item;
+      newRings[slotIndex] = reference;
       updateEquipment({ rings: newRings });
     } else if (position === 'necklace') {
-      updateEquipment({ necklace: item });
+      updateEquipment({ necklace: reference });
     } else if (position === 'charm') {
-      updateEquipment({ charm: item });
+      updateEquipment({ charm: reference });
     }
   };
 
   const unequipItem = (position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
     if (position === 'rings' && typeof slotIndex === 'number') {
       const newRings = [...equipment.rings];
-      newRings[slotIndex] = null;
+      newRings[slotIndex] = null as any;
       updateEquipment({ rings: newRings });
     } else if (position === 'necklace') {
       updateEquipment({ necklace: null });
@@ -68,9 +69,8 @@ export function EquipmentSimulation() {
   const addCustomStat = () => {
     if (!customStatName.trim() || customStatValue === 0) return;
     
-    // Only allow adding to existing base stat types
-    const validStats = ['luck', 'digStrength', 'digSpeed', 'shakeStrength', 'shakeSpeed', 'capacity', 'sellBoost', 'sizeBoost', 'modifierBoost', 'toughness'];
-    if (!validStats.includes(customStatName)) return;
+    // Validate against available stats
+    if (!availableStats.includes(customStatName as any)) return;
     
     updateEquipment({
       customStats: {
@@ -81,6 +81,21 @@ export function EquipmentSimulation() {
     
     setCustomStatName('');
     setCustomStatValue(0);
+  };
+
+  const togglePotion = (potionName: string) => {
+    const currentPotions = equipment.activePotions || [];
+    const isActive = currentPotions.includes(potionName);
+    
+    if (isActive) {
+      updateEquipment({
+        activePotions: currentPotions.filter(p => p !== potionName)
+      });
+    } else {
+      updateEquipment({
+        activePotions: [...currentPotions, potionName]
+      });
+    }
   };
 
   const toggleEvent = (eventName: string) => {
@@ -193,8 +208,21 @@ export function EquipmentSimulation() {
       if (stats[key] !== undefined) stats[key] += value; else stats[key] = value;
     });
 
-    // 5) Equipment Items (rings, necklace, charm) using max roll values, respecting 5★/6★ selection
-    equipment.rings.forEach((item, idx) => {
+    // 5) Potions
+    const activePotions = equipment.activePotions || [];
+    activePotions.forEach(potionName => {
+      const potion = potions.find(p => p.name === potionName);
+      if (potion) {
+        Object.entries(potion.effects).forEach(([key, value]) => {
+          if (stats[key] !== undefined) stats[key] += value;
+        });
+      }
+    });
+
+    // 6) Equipment Items (rings, necklace, charm) using max roll values, respecting 5★/6★ selection
+    equipment.rings.forEach((itemRef, idx) => {
+      if (!itemRef) return;
+      const item = getItemByReference(itemRef);
       if (!item) return;
       const selected = getItemStatsForTier(item, isRingSix(idx));
       Object.entries(selected).forEach(([key, value]) => {
@@ -205,22 +233,28 @@ export function EquipmentSimulation() {
       });
     });
     if (equipment.necklace) {
-      const selected = getItemStatsForTier(equipment.necklace, equipment.necklaceSix);
-      Object.entries(selected).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          const maxValue = value[1];
-          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
-        }
-      });
+      const item = getItemByReference(equipment.necklace);
+      if (item) {
+        const selected = getItemStatsForTier(item, equipment.necklaceSix);
+        Object.entries(selected).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            const maxValue = value[1];
+            if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+          }
+        });
+      }
     }
     if (equipment.charm) {
-      const selected = getItemStatsForTier(equipment.charm, equipment.charmSix);
-      Object.entries(selected).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          const maxValue = value[1];
-          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
-        }
-      });
+      const item = getItemByReference(equipment.charm);
+      if (item) {
+        const selected = getItemStatsForTier(item, equipment.charmSix);
+        Object.entries(selected).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            const maxValue = value[1];
+            if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+          }
+        });
+      }
     }
 
     return stats; // Museum & Events applied later
@@ -276,6 +310,25 @@ export function EquipmentSimulation() {
   const calculateMuseumBonuses = () => museumBonusesMax; // keep existing calls in the render
 
   const availableItems = [...craftableItems];
+
+  // Rarity order from Exotic to Common
+  const rarityOrder: { [key: string]: number } = {
+    'Exotic': 0,
+    'Mythic': 1,
+    'Legendary': 2,
+    'Epic': 3,
+    'Rare': 4,
+    'Uncommon': 5,
+    'Common': 6
+  };
+
+  const sortByRarity = (items: CraftableItem[]) => {
+    return items.sort((a, b) => {
+      const orderA = rarityOrder[a.rarity] ?? 999;
+      const orderB = rarityOrder[b.rarity] ?? 999;
+      return orderA - orderB;
+    });
+  };
 
   const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
@@ -428,14 +481,32 @@ export function EquipmentSimulation() {
                   disabled={isLoading}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select shovel" />
+                    <SelectValue placeholder="Select shovel">
+                      {equipment.shovel || "Select shovel"}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {shovels.map(shovel => (
-                      <SelectItem key={shovel.name} value={shovel.name}>
-                        {shovel.name} - ${shovel.price.toLocaleString()}
-                      </SelectItem>
-                    ))}
+                    {shovels.map(shovel => {
+                      const statsList = [
+                        `${t('digStrength')}: ${shovel.stats.digStrength}`,
+                        `${t('digSpeed')}: ${shovel.stats.digSpeed}%`,
+                        `${t('toughness')}: ${shovel.stats.toughness}`
+                      ];
+                      
+                      return (
+                        <SelectItem key={shovel.name} value={shovel.name}>
+                          <div className="flex flex-col items-start gap-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{shovel.name} - ${shovel.price.toLocaleString()}</span>
+                              {shovel.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground">
+                              {statsList.join(', ')}
+                            </div>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 {renderShovelStats()}
@@ -454,14 +525,42 @@ export function EquipmentSimulation() {
                     disabled={isLoading}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select pan" />
+                      <SelectValue placeholder="Select pan">
+                        {equipment.pan || "Select pan"}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {pans.map(pan => (
-                        <SelectItem key={pan.name} value={pan.name}>
-                          {pan.name} - ${pan.price.toLocaleString()}
-                        </SelectItem>
-                      ))}
+                      {pans.map(pan => {
+                        const statsList = [
+                          `${t('luck')}: ${pan.stats.luck}`,
+                          `${t('capacity')}: ${pan.stats.capacity}`,
+                          `${t('shakeStrength')}: ${pan.stats.shakeStrength}`,
+                          `${t('shakeSpeed')}: ${pan.stats.shakeSpeed}%`
+                        ];
+                        
+                        // Split into chunks of 3
+                        const chunks: string[][] = [];
+                        for (let i = 0; i < statsList.length; i += 3) {
+                          chunks.push(statsList.slice(i, i + 3));
+                        }
+                        
+                        return (
+                          <SelectItem key={pan.name} value={pan.name}>
+                            <div className="flex flex-col items-start gap-0.5">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{pan.name} - ${pan.price.toLocaleString()}</span>
+                                {pan.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+                              </div>
+                              <div className="text-[10px] text-muted-foreground">
+                                {chunks.map((chunk, idx) => (
+                                  <div key={idx}>{chunk.join(', ')}</div>
+                                ))}
+                              {pan.passive && <div>{pan.passive}</div>}
+                              </div>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                   
@@ -473,14 +572,38 @@ export function EquipmentSimulation() {
                         disabled={isLoading}
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select enchant" />
+                          <SelectValue placeholder="Select enchant">
+                            {equipment.enchant || "Select enchant"}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                          {enchants.map(enchant => (
-                            <SelectItem key={enchant.name} value={enchant.name}>
-                              {enchant.name}
-                            </SelectItem>
-                          ))}
+                          {enchants.map(enchant => {
+                            const statsEntries = Object.entries(enchant.effects);
+                            const statsList = statsEntries
+                              .map(([stat, val]) => {
+                                const isPercent = /Speed|Boost/i.test(stat);
+                                return `${t(stat as keyof typeof t)}: ${val > 0 ? '+' : ''}${val}${isPercent ? '%' : ''}`;
+                              });
+                            
+                            // Split into chunks of 3
+                            const chunks: string[][] = [];
+                            for (let i = 0; i < statsList.length; i += 3) {
+                              chunks.push(statsList.slice(i, i + 3));
+                            }
+                            
+                            return (
+                              <SelectItem key={enchant.name} value={enchant.name}>
+                                <div className="flex flex-col items-start gap-0.5">
+                                  <span className="font-medium">{enchant.name}</span>
+                                  <div className="text-[10px] text-muted-foreground">
+                                    {chunks.map((chunk, idx) => (
+                                      <div key={idx}>{chunk.join(', ')}</div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       {equipment.enchant && (
@@ -526,97 +649,103 @@ export function EquipmentSimulation() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {equipment.rings.map((ring, index) => (
-                  <Card key={index} className="relative">
-                    <CardContent className="p-3">
-                      {ring ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Badge className={getRarityClass(ring.rarity)} variant="outline">
-                              {ring.rarity}
-                            </Badge>
-                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                              <span>5★</span>
-                              <Switch checked={isRingSix(index)} onCheckedChange={(v)=> setRingSix(index, v)} aria-label={`Toggle ${ring.name} tier`} />
-                              <span>6★</span>
+                {equipment.rings.map((ringRef, index) => {
+                  const ring = ringRef ? getItemByReference(ringRef) : null;
+                  return (
+                    <Card key={index} className="relative">
+                      <CardContent className="p-3">
+                        {ring ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Badge className={getRarityClass(ring.rarity)} variant="outline">
+                                {ring.rarity}
+                              </Badge>
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                                <span>5★</span>
+                                <Switch checked={isRingSix(index)} onCheckedChange={(v)=> setRingSix(index, v)} aria-label={`Toggle ${ring.name} tier`} />
+                                <span>6★</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => unequipItem('rings', index)}
+                                className="h-6 w-6 p-0"
+                                disabled={isLoading}
+                              >
+                                <X size={12} />
+                              </Button>
                             </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => unequipItem('rings', index)}
-                              className="h-6 w-6 p-0"
-                              disabled={isLoading}
-                            >
-                              <X size={12} />
-                            </Button>
+                            <p className="text-sm font-medium">{ring.name}</p>
+                            {renderItemStats(ring, isRingSix(index))}
                           </div>
-                          <p className="text-sm font-medium">{ring.name}</p>
-                          {renderItemStats(ring, isRingSix(index))}
-                          {!ring.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
-                        </div>
-                      ) : (
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" className="w-full h-16 border-dashed">
-                              <Plus size={16} />
+                        ) : (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" className="w-full h-16 border-dashed">
+                                <Plus size={16} />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                             <DialogHeader>
-                              <DialogTitle>Select Ring</DialogTitle>
+                              <DialogTitle>{t('selectRing')}</DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-2 max-h-96 overflow-y-auto">
-                              {availableItems
-                                .filter(item => item.position === 'Ring')
+                            <div className="grid grid-cols-1 gap-2">
+                              {sortByRarity(availableItems.filter(item => item.position === 'Ring'))
                                 .map(item => {
                                   const allStatKeys = new Set<string>();
                                   Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
                                   Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
-                                  const rows = Array.from(allStatKeys).map(key => {
-                                    const baseRange = item.stats?.[key];
-                                    const extRange = item.sixStarStats?.[key];
-                                    if (!Array.isArray(baseRange)) return null;
-                                    const [bMin, bMax] = baseRange as [number, number];
-                                    const isPercent = /Speed|Boost/i.test(key);
-                                    const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
-                                    let extPart = '';
-                                    if (Array.isArray(extRange)) {
-                                      const [eMin, eMax] = extRange as [number, number];
-                                      extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
-                                    }
-                                    return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
-                                  }).filter(Boolean) as string[];
                                   return (
-                                    <Tooltip key={item.name}>
-                                      <TooltipTrigger asChild>
-                                        <Button
-                                          variant="outline"
-                                          onClick={() => equipItem(item, 'rings', index)}
-                                          className="w-full justify-start"
-                                          disabled={isLoading}
-                                        >
-                                          <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                            {item.rarity}
-                                          </Badge>
-                                          <span className="ml-2 font-medium truncate">{item.name}</span>
-                                        </Button>
-                                      </TooltipTrigger>
-                                      {rows.length > 0 && (
-                                        <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
-                                          {rows.join('\n')}
-                                        </TooltipContent>
-                                      )}
-                                    </Tooltip>
+                                    <Card 
+                                      key={item.name}
+                                      className="cursor-pointer transition-colors hover:bg-accent/10"
+                                      onClick={() => equipItem(item, 'rings', index)}
+                                    >
+                                      <CardContent className="px-3">
+                                        <div className="flex items-start justify-between">
+                                          <div className="space-y-1 flex-1">
+                                            <div className="flex items-center gap-2">
+                                              <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                                {item.rarity}
+                                              </Badge>
+                                              <span className="font-medium">{item.name}</span>
+                                            </div>
+                                            
+                                            <div className="text-xs space-y-1">
+                                              {Array.from(allStatKeys).map(key => {
+                                                const baseRange = item.stats?.[key];
+                                                const extRange = item.sixStarStats?.[key];
+                                                if (!Array.isArray(baseRange)) return null;
+                                                const [bMin, bMax] = baseRange as [number, number];
+                                                const isPercent = /Speed|Boost/i.test(key);
+                                                const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                                let extPart = '';
+                                                if (Array.isArray(extRange)) {
+                                                  const [eMin, eMax] = extRange as [number, number];
+                                                  extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                                }
+                                                return (
+                                                  <div key={key} className="text-muted-foreground">
+                                                    {t(key as any) || key}: {fmt(bMin)} - {fmt(bMax)}{extPart}
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
                                   );
                                 })}
+                              <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                             </div>
-                            <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                           </DialogContent>
                         </Dialog>
                       )}
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -628,90 +757,96 @@ export function EquipmentSimulation() {
                 <CardTitle>{t('necklace')}</CardTitle>
               </CardHeader>
               <CardContent>
-                {equipment.necklace ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Badge className={getRarityClass(equipment.necklace.rarity)} variant="outline">
-                        {equipment.necklace.rarity}
-                      </Badge>
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span>5★</span>
-                        <Switch checked={!!equipment.necklaceSix} onCheckedChange={(v)=> updateEquipment({ necklaceSix: v })} aria-label={`Toggle ${equipment.necklace.name} tier`} />
-                        <span>6★</span>
+                {(() => {
+                  const necklace = equipment.necklace ? getItemByReference(equipment.necklace) : null;
+                  return necklace ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Badge className={getRarityClass(necklace.rarity)} variant="outline">
+                          {necklace.rarity}
+                        </Badge>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                          <span>5★</span>
+                          <Switch checked={!!equipment.necklaceSix} onCheckedChange={(v)=> updateEquipment({ necklaceSix: v })} aria-label={`Toggle ${necklace.name} tier`} />
+                          <span>6★</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => unequipItem('necklace')}
+                          disabled={isLoading}
+                        >
+                          <X size={12} />
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => unequipItem('necklace')}
-                        disabled={isLoading}
-                      >
-                        <X size={12} />
-                      </Button>
+                      <p className="font-medium">{necklace.name}</p>
+                      {renderItemStats(necklace, equipment.necklaceSix)}
                     </div>
-                    <p className="font-medium">{equipment.necklace.name}</p>
-                    {renderItemStats(equipment.necklace, equipment.necklaceSix)}
-                    {!equipment.necklace.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
-                  </div>
-                ) : (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full h-24 border-dashed">
-                        <Plus size={20} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Select Necklace</DialogTitle>
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full h-24 border-dashed">
+                          <Plus size={20} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
+                        <DialogHeader>
+                          <DialogTitle>{t('selectNecklace')}</DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {availableItems
-                          .filter(item => item.position === 'Necklace')
+                      <div className="grid grid-cols-1 gap-2">
+                        {sortByRarity(availableItems.filter(item => item.position === 'Necklace'))
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
                             Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
-                            const rows = Array.from(allStatKeys).map(key => {
-                              const baseRange = item.stats?.[key];
-                              const extRange = item.sixStarStats?.[key];
-                              if (!Array.isArray(baseRange)) return null;
-                              const [bMin, bMax] = baseRange as [number, number];
-                              const isPercent = /Speed|Boost/i.test(key);
-                              const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
-                              let extPart = '';
-                              if (Array.isArray(extRange)) {
-                                const [eMin, eMax] = extRange as [number, number];
-                                extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
-                              }
-                              return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
-                            }).filter(Boolean) as string[];
                             return (
-                              <Tooltip key={item.name}>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    onClick={() => equipItem(item, 'necklace')}
-                                    className="w-full justify-start"
-                                    disabled={isLoading}
-                                  >
-                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                      {item.rarity}
-                                    </Badge>
-                                    <span className="ml-2 font-medium truncate">{item.name}</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                {rows.length > 0 && (
-                                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
-                                    {rows.join('\n')}
-                                  </TooltipContent>
-                                )}
-                              </Tooltip>
+                              <Card 
+                                key={item.name}
+                                className="cursor-pointer transition-colors hover:bg-accent/10"
+                                onClick={() => equipItem(item, 'necklace')}
+                              >
+                                <CardContent className="px-3">
+                                  <div className="flex items-start justify-between">
+                                    <div className="space-y-1 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                          {item.rarity}
+                                        </Badge>
+                                        <span className="font-medium">{item.name}</span>
+                                      </div>
+                                      
+                                      <div className="text-xs space-y-1">
+                                        {Array.from(allStatKeys).map(key => {
+                                          const baseRange = item.stats?.[key];
+                                          const extRange = item.sixStarStats?.[key];
+                                          if (!Array.isArray(baseRange)) return null;
+                                          const [bMin, bMax] = baseRange as [number, number];
+                                          const isPercent = /Speed|Boost/i.test(key);
+                                          const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                          let extPart = '';
+                                          if (Array.isArray(extRange)) {
+                                            const [eMin, eMax] = extRange as [number, number];
+                                            extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                          }
+                                          return (
+                                            <div key={key} className="text-muted-foreground">
+                                              {t(key as any) || key}: {fmt(bMin)} - {fmt(bMax)}{extPart}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
                             );
                           })}
                       </div>
                       <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                     </DialogContent>
                   </Dialog>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
 
@@ -720,93 +855,148 @@ export function EquipmentSimulation() {
                 <CardTitle>{t('charm')}</CardTitle>
               </CardHeader>
               <CardContent>
-                {equipment.charm ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Badge className={getRarityClass(equipment.charm.rarity)} variant="outline">
-                        {equipment.charm.rarity}
-                      </Badge>
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span>5★</span>
-                        <Switch checked={!!equipment.charmSix} onCheckedChange={(v)=> updateEquipment({ charmSix: v })} aria-label={`Toggle ${equipment.charm.name} tier`} />
-                        <span>6★</span>
+                {(() => {
+                  const charm = equipment.charm ? getItemByReference(equipment.charm) : null;
+                  return charm ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Badge className={getRarityClass(charm.rarity)} variant="outline">
+                          {charm.rarity}
+                        </Badge>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                          <span>5★</span>
+                          <Switch checked={!!equipment.charmSix} onCheckedChange={(v)=> updateEquipment({ charmSix: v })} aria-label={`Toggle ${charm.name} tier`} />
+                          <span>6★</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => unequipItem('charm')}
+                          disabled={isLoading}
+                        >
+                          <X size={12} />
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => unequipItem('charm')}
-                        disabled={isLoading}
-                      >
-                        <X size={12} />
-                      </Button>
+                      <p className="font-medium">{charm.name}</p>
+                      {renderItemStats(charm, equipment.charmSix)}
                     </div>
-                    <p className="font-medium">{equipment.charm.name}</p>
-                    {renderItemStats(equipment.charm, equipment.charmSix)}
-                    {!equipment.charm.sixStarStats ? <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p> : null}
-                  </div>
-                ) : (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full h-24 border-dashed">
-                        <Plus size={20} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Select Charm</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {availableItems
-                          .filter(item => item.position === 'Charm')
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full h-24 border-dashed">
+                          <Plus size={20} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
+                        <DialogHeader>
+                          <DialogTitle>{t('selectCharm')}</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid grid-cols-1 gap-2">
+                          {sortByRarity(availableItems.filter(item => item.position === 'Charm'))
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
                             Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
-                            const rows = Array.from(allStatKeys).map(key => {
-                              const baseRange = item.stats?.[key];
-                              const extRange = item.sixStarStats?.[key];
-                              if (!Array.isArray(baseRange)) return null;
-                              const [bMin, bMax] = baseRange as [number, number];
-                              const isPercent = /Speed|Boost/i.test(key);
-                              const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
-                              let extPart = '';
-                              if (Array.isArray(extRange)) {
-                                const [eMin, eMax] = extRange as [number, number];
-                                extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
-                              }
-                              return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
-                            }).filter(Boolean) as string[];
                             return (
-                              <Tooltip key={item.name}>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    onClick={() => equipItem(item, 'charm')}
-                                    className="w-full justify-start"
-                                    disabled={isLoading}
-                                  >
-                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                      {item.rarity}
-                                    </Badge>
-                                    <span className="ml-2 font-medium truncate">{item.name}</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                {rows.length > 0 && (
-                                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
-                                    {rows.join('\n')}
-                                  </TooltipContent>
-                                )}
-                              </Tooltip>
+                              <Card 
+                                key={item.name}
+                                className="cursor-pointer transition-colors hover:bg-accent/10"
+                                onClick={() => equipItem(item, 'charm')}
+                              >
+                                <CardContent className="px-3">
+                                  <div className="flex items-start justify-between">
+                                    <div className="space-y-1 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                          {item.rarity}
+                                        </Badge>
+                                        <span className="font-medium">{item.name}</span>
+                                      </div>
+                                      
+                                      <div className="text-xs space-y-1">
+                                        {Array.from(allStatKeys).map(key => {
+                                          const baseRange = item.stats?.[key];
+                                          const extRange = item.sixStarStats?.[key];
+                                          if (!Array.isArray(baseRange)) return null;
+                                          const [bMin, bMax] = baseRange as [number, number];
+                                          const isPercent = /Speed|Boost/i.test(key);
+                                          const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                          let extPart = '';
+                                          if (Array.isArray(extRange)) {
+                                            const [eMin, eMax] = extRange as [number, number];
+                                            extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                          }
+                                          return (
+                                            <div key={key} className="text-muted-foreground">
+                                              {t(key as any) || key}: {fmt(bMin)} - {fmt(bMax)}{extPart}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
                             );
                           })}
                       </div>
                       <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                     </DialogContent>
                   </Dialog>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
           </div>
+
+          {/* Potions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Flask size={20} />
+                {t('potions')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {potions.map(potion => (
+                  <div key={potion.name} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={potion.name}
+                      checked={(equipment.activePotions || []).includes(potion.name)}
+                      onCheckedChange={() => togglePotion(potion.name)}
+                      disabled={isLoading}
+                    />
+                    <Label htmlFor={potion.name} className="text-sm">
+                      {potion.name}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+              {(equipment.activePotions || []).length > 0 && (
+                <div className="mt-4 p-3 bg-muted rounded-lg">
+                  <p className="text-sm font-medium mb-2">{t('activePotions')}:</p>
+                  <div className="space-y-1">
+                    {(equipment.activePotions || []).map(potionName => {
+                      const potion = potions.find(p => p.name === potionName);
+                      if (!potion) return null;
+                      
+                      return (
+                        <div key={potionName} className="text-xs">
+                          <span className="font-medium">{potion.name}:</span>
+                          <span className="ml-1">
+                            {Object.entries(potion.effects).map(([stat, value]) => 
+                              `${stat.replace(/([A-Z])/g, ' $1').toLowerCase()} +${value}`
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Events */}
           <Card>
@@ -862,7 +1052,7 @@ export function EquipmentSimulation() {
             <CardHeader>
               <CardTitle>{t('customStats')}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               <div className="flex flex-col sm:flex-row gap-2">
                 <Select
                   value={customStatName}
@@ -870,19 +1060,14 @@ export function EquipmentSimulation() {
                   disabled={isLoading}
                 >
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Select stat to boost" />
+                    <SelectValue placeholder={t('selectStatToBoost')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="luck">Luck</SelectItem>
-                    <SelectItem value="digStrength">Dig Strength</SelectItem>
-                    <SelectItem value="digSpeed">Dig Speed</SelectItem>
-                    <SelectItem value="shakeStrength">Shake Strength</SelectItem>
-                    <SelectItem value="shakeSpeed">Shake Speed</SelectItem>
-                    <SelectItem value="capacity">Capacity</SelectItem>
-                    <SelectItem value="sellBoost">Sell Boost</SelectItem>
-                    <SelectItem value="sizeBoost">Size Boost</SelectItem>
-                    <SelectItem value="modifierBoost">Modifier Boost</SelectItem>
-                    <SelectItem value="toughness">Toughness</SelectItem>
+                    {availableStats.map(stat => (
+                      <SelectItem key={stat} value={stat}>
+                        {t(stat as any) || stat.charAt(0).toUpperCase() + stat.slice(1).replace(/([A-Z])/g, ' $1')}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2">
@@ -900,20 +1085,22 @@ export function EquipmentSimulation() {
                 </div>
               </div>
               
-              {Object.entries(equipment.customStats).map(([name, value]) => (
-                <div key={name} className="flex items-center justify-between bg-muted p-2 rounded">
-                  <span className="text-sm truncate">{name}: {value}</span>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => removeCustomStat(name)}
-                    className="flex-shrink-0"
-                    disabled={isLoading}
-                  >
-                    <X size={12} />
-                  </Button>
-                </div>
-              ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {Object.entries(equipment.customStats).map(([name, value]) => (
+                  <div key={name} className="flex items-center justify-between bg-muted px-2 py-1 rounded">
+                    <span className="text-sm truncate">{t(name as any)}: {value}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => removeCustomStat(name)}
+                      className="flex-shrink-0"
+                      disabled={isLoading}
+                    >
+                      <X size={12} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -945,7 +1132,7 @@ export function EquipmentSimulation() {
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-accent">{t('withMuseum')}</CardTitle>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Weight</span>
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{t('weight')}</span>
                 <Switch
                   checked={showMaxMuseum}
                   onCheckedChange={(v) => setShowMaxMuseum(v)}
@@ -988,7 +1175,7 @@ export function EquipmentSimulation() {
                   );
                 })}
                 {!showMaxMuseum && (
-                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values are currently set to 0.0%. I'm currently working on adding functionality</p>
+                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">{t('weightModePlaceholder')}</p>
                 )}
               </div>
             </CardContent>

@@ -6,8 +6,9 @@ export const pl = {
   infoTab: "Informator",
   infoTitle: "Prospecting! Tools – Informator",
   infoIntro: "Ta sekcja zawiera opis dostępnych narzędzi oraz pełną listę przedmiotów z ich statystykami.",
+  infoLastUpdate: "Ostatnia aktualizacja",
   infoAuthorNoteTitle: "Nota Autora",
-  infoAuthorNoteDesc: "Ten projekt narzędzia powstał w oparciu o dane udostępnione na serwerze Discord gry Prospecting!, społecznościowej wiki (https://prospectingwiki.org) oraz dodatkowe wartości przekazane przez użytkownika 'unknownuser03' (dokument Word). Część mechanizmów (m.in. kolejność niektórych mnożników, placeholder skalowania wag w muzeum, założenia interakcji statystyk) została zbudowana na moich własnych przypuszczeniach tam, gdzie brakowało oficjalnych formuł.\n\nJeśli znajdziesz błędy, zmienione wartości, braki albo masz lepsze dowody na poprawną formułę – proszę otwórz zgłoszenie na GitHub (Issues) lub skontaktuj się przez Discord przez ping na nick x_neron_x. Twoje uwagi pomagają utrzymać narzędzie w aktualnej i użytecznej formie.",
+  infoAuthorNoteDesc: "Ten projekt narzędzia powstał w oparciu o dane udostępnione na serwerze Discord gry Prospecting!, społecznościowej wiki (https://prospectingwiki.org). Część mechanizmów (m.in. kolejność niektórych mnożników, placeholder skalowania wag w muzeum, założenia interakcji statystyk) została zbudowana na moich własnych przypuszczeniach tam, gdzie brakowało oficjalnych formuł.\n\nJeśli znajdziesz błędy, zmienione wartości, braki albo masz lepsze dowody na poprawną formułę – proszę otwórz zgłoszenie na GitHub (Issues) lub skontaktuj się przez Discord przez ping na nick x_neron_x. Twoje uwagi pomagają utrzymać narzędzie w aktualnej i użytecznej formie.",
   infoHeaderTitle: "Górny Pasek (Header)",
   infoHeaderDesc: "Górny pasek zapewnia szybki dostęp do zmiany wyglądu, języka, zarządzania danymi oraz wsparcia twórcy.\n\nZmiana Języka: Natychmiast przełączaj między językami. Ścieżka w URL jest aktualizowana, dzięki czemu możesz udostępnić link otwierający się bezpośrednio w wybranej wersji językowej.\n\nZmiana Motywu: Wybieraj spośród dostępnych motywów kolorystycznych dopasowując interfejs do preferencji lub warunków (np. ciemne tło).\n\nPrzycisk Wsparcia: Otwiera okno dialogowe z możliwością wsparcia dalszego rozwoju narzędzia. Pomaga to utrzymać aplikację bez reklam i rozwijać nowe funkcje.\n\nWskazówka: Ustaw najpierw język zanim udostępnisz adres — odbiorca zobaczy właściwą wersję.",
   infoDataManagementTitle: "Zarządzanie Danymi",
@@ -131,15 +132,22 @@ export const pl = {
   // Equipment
   rings: "Pierścienie",
   necklace: "Naszyjnik",
-  charm: "Talizman", 
+  charm: "Talizman",
+  selectRing: "Wybierz Pierścień",
+  selectNecklace: "Wybierz Naszyjnik",
+  selectCharm: "Wybierz Talizman",
   shovel: "Łopata",
   pan: "Patelnia",
   enchant: "Zaklęcie",
   baseStats: "Podstawowe Statystyki", 
-  withMuseum: "Z Bonusami z Muzeum",
-  withEventBonuses: "Z Bonusami z Eventów",
-  museumBonuses: "Bonusy z Muzeum",
-  customStats: "Niestandardowe Statystyki",
+  withMuseum: "Z bonusami z muzeum",
+  withEventBonuses: "Z bonusami z eventów",
+  museumBonuses: "Bonusy z muzeum",
+  customStats: "Niestandardowe statystyki",
+  selectStatToBoost: "Wybierz statystykę do wzmocnienia",
+  weightModePlaceholder: "Placeholder - w trybie wagi wartości są obecnie ustawione na 0.0%. Aktualnie pracuję nad dodaniem funkcjonalności",
+  potions: "Mikstury",
+  activePotions: "Aktywne mikstury",
   activeEvents: "Aktywne Eventy",
   events: "Eventy",
   luckEfficiency: "Wydajność Szczęścia",
@@ -250,6 +258,9 @@ export const pl = {
   // PWA Install
   pwaInstallTitle: "Instalacja jako Aplikacja (PWA)",
   pwaInstallDesc: "Możesz zainstalować to narzędzie jako samodzielną aplikację dla szybszego dostępu i okna bez rozpraszania.\n\nDesktop (Chrome / Edge): Kliknij ikonę instalacji w pasku adresu (lub menu przeglądarki > Zainstaluj). Po instalacji uruchamia się w osobnym oknie.\n\nAndroid: Powinien pojawić się prompt po krótkim użyciu. Jeśli nie: menu przeglądarki > Dodaj do ekranu głównego / Zainstaluj aplikację.\n\niOS (Safari): Przycisk Udostępniania > Dodaj do ekranu początkowego (iOS nie pokazuje automatycznego komunikatu).\n\nJęzyk przy instalacji: Instalacja użyje manifestu języka aktywnego w chwili wejścia na stronę. Późniejsza zmiana języka nie wymaga reinstalacji—skrót działa dalej.\n\nOffline: Rdzeń UI + manifesty + ikony są w cache. Dynamiczne dane mogą wymagać połączenia.",
+  
+  // Warnings
+  outdatedItemWarning: "Dane przedmiotu mogą być nieaktualne",
 } as const;
 
 export type Pl = typeof pl;

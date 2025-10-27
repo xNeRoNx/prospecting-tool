@@ -6,8 +6,9 @@ export const pt = {
   infoTab: "Info",
   infoTitle: "Prospecting! Tools – Informações",
   infoIntro: "Esta seção apresenta uma visão geral das ferramentas disponíveis e uma lista completa de itens fabricáveis com suas estatísticas.",
+  infoLastUpdate: "Última atualização",
   infoAuthorNoteTitle: "Nota do Autor",
-  infoAuthorNoteDesc: "Este projeto foi montado com dados públicos do Discord de Prospecting!, a wiki da comunidade (https://prospectingwiki.org) e valores adicionais do usuário 'unknownuser03'. Alguns mecanismos internos (ordem de certos multiplicadores, placeholders de escala de peso do museu e suposições de interação de stats) baseiam-se em inferência própria quando não havia fórmulas oficiais.\n\nSe encontrar erros, mudanças de balance ou faltas, abra uma issue no GitHub do projeto ou reporte no Discord mencionando x_neron_x. Sua contribuição ajuda a manter a ferramenta precisa e útil.",
+  infoAuthorNoteDesc: "Este projeto foi montado com dados públicos do Discord de Prospecting!, a wiki da comunidade (https://prospectingwiki.org). Alguns mecanismos internos (ordem de certos multiplicadores, placeholders de escala de peso do museu e suposições de interação de stats) baseiam-se em inferência própria quando não havia fórmulas oficiais.\n\nSe encontrar erros, mudanças de balance ou faltas, abra uma issue no GitHub do projeto ou reporte no Discord mencionando x_neron_x. Sua contribuição ajuda a manter a ferramenta precisa e útil.",
   infoHeaderTitle: "Barra Superior",
   infoHeaderDesc: "A barra superior fornece acesso rápido para alterar tema, trocar idioma, gerenciar dados e apoiar o criador.\n\nTroca de Idioma: Alterne instantaneamente entre idiomas. O caminho da URL é atualizado para que você possa compartilhar um link que já abra diretamente no idioma selecionado.\n\nTroca de Tema: Escolha temas de cor disponíveis para adaptar a interface às suas preferências ou condições de uso (por exemplo, fundo escuro). As mudanças são imediatas e persistem localmente.\n\nGestão de Dados: Acesso rápido ao painel onde você salva, exporta ou importa seus estados (crafting, museu, equipamento, materiais). Útil para backups e compartilhamento de setups.\n\nBotão de Apoio: Abre um diálogo onde é possível contribuir para manter o desenvolvimento ativo e a ferramenta livre de anúncios. Toda ajuda incentiva novas melhorias.\n\nDica: Defina o idioma antes de compartilhar o link — quem receber verá diretamente a versão correta.",
   infoDataManagementTitle: "Gestão de Dados",
@@ -132,6 +133,9 @@ export const pt = {
   rings: "Anéis",
   necklace: "Colar",
   charm: "Amuleto",
+  selectRing: "Selecionar Anel",
+  selectNecklace: "Selecionar Colar",
+  selectCharm: "Selecionar Amuleto",
   shovel: "Pá",
   pan: "Panela",
   enchant: "Encantamento",
@@ -139,7 +143,11 @@ export const pt = {
   withMuseum: "Com Bônus do Museu",
   withEventBonuses: "Com Bônus de Eventos",
   museumBonuses: "Bônus do Museu",
-  customStats: "Atributos Personalizados",
+  customStats: "Estatísticas Personalizadas",
+  selectStatToBoost: "Selecionar atributo para aumentar",
+  weightModePlaceholder: "Placeholder - no modo peso os valores estão atualmente definidos para 0.0%. Estou trabalhando na adição de funcionalidade",
+  potions: "Poções",
+  activePotions: "Poções Ativas",
   activeEvents: "Eventos Ativos",
   events: "Eventos",
   meteorShower: "Chuva de Meteoros",
@@ -248,6 +256,9 @@ export const pt = {
   // PWA Install
   pwaInstallTitle: "Instalar como Aplicativo (PWA)",
   pwaInstallDesc: "Você pode instalar esta ferramenta como um app independente para acesso mais rápido e janela sem distrações.\n\nDesktop (Chrome / Edge): Clique no ícone de instalação na barra de endereço (ou menu do navegador > Instalar). Após instalar abre em janela própria.\n\nAndroid: Um prompt pode aparecer após curto uso. Caso não: menu do navegador > Adicionar à Tela Inicial / Instalar Aplicativo.\n\niOS (Safari): Botão Compartilhar > Adicionar à Tela de Início (iOS não mostra prompt automático).\n\nIdioma na instalação: O app usa o manifest do idioma ativo quando você abre a página. Trocar idioma depois não exige reinstalar — os atalhos continuam válidos.\n\nOffline: Núcleo do UI + manifests + ícones ficam em cache. Alguns dados dinâmicos ainda podem requerer conexão.",
+  
+  // Warnings
+  outdatedItemWarning: "Dados do item podem estar desatualizados",
 } as const;
 
 export type Pt = typeof pt;

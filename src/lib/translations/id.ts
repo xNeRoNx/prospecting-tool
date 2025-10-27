@@ -6,8 +6,9 @@ export const id = {
   infoTab: "Info",
   infoTitle: "Prospecting! Tools – Informasi",
   infoIntro: "Bagian ini memberikan ringkasan semua alat yang tersedia serta daftar lengkap item yang dapat dibuat beserta statistiknya.",
+  infoLastUpdate: "Pembaruan terakhir",
   infoAuthorNoteTitle: "Catatan Penulis",
-  infoAuthorNoteDesc: "Proyek pendamping ini disusun menggunakan data yang dibagikan secara publik di server Discord Prospecting!, wiki komunitas (https://prospectingwiki.org), serta nilai tambahan yang diberikan oleh pengguna 'unknownuser03' (dokumen Word). Beberapa mekanisme internal—seperti urutan penerapan multiplier tertentu, placeholder (sementara) untuk penskalaan berat museum, dan sejumlah asumsi interaksi statistik—berdasarkan inferensi pribadi ketika formula resmi tidak tersedia.\n\nJika Anda menemukan kesalahan, perubahan keseimbangan (balance), entri yang hilang, atau memiliki bukti yang lebih kuat tentang suatu formula, silakan buka issue di GitHub atau hubungi melalui Discord dengan ping ke x_neron_x. Umpan balik komunitas membantu menjaga alat ini tetap akurat dan bermanfaat.",
+  infoAuthorNoteDesc: "Proyek pendamping ini disusun menggunakan data yang dibagikan secara publik di server Discord Prospecting!, wiki komunitas (https://prospectingwiki.org). Beberapa mekanisme internal—seperti urutan penerapan multiplier tertentu, placeholder (sementara) untuk penskalaan berat museum, dan sejumlah asumsi interaksi statistik—berdasarkan inferensi pribadi ketika formula resmi tidak tersedia.\n\nJika Anda menemukan kesalahan, perubahan keseimbangan (balance), entri yang hilang, atau memiliki bukti yang lebih kuat tentang suatu formula, silakan buka issue di GitHub atau hubungi melalui Discord dengan ping ke x_neron_x. Umpan balik komunitas membantu menjaga alat ini tetap akurat dan bermanfaat.",
   infoHeaderTitle: "Bar Atas",
   infoHeaderDesc: "Bar atas menyediakan akses cepat untuk mengubah tampilan tema, mengganti bahasa, mengelola data, serta mendukung kreator.\n\nPengalih Bahasa: Berpindah antar bahasa seketika. Path URL ikut diperbarui sehingga Anda bisa membagikan tautan yang langsung membuka bahasa yang dipilih.\n\nPengalih Tema: Pilih tema warna yang tersedia untuk menyesuaikan antarmuka dengan preferensi atau kondisi (misalnya latar gelap).\n\nTombol Dukungan: Membuka dialog untuk mendukung pengembangan lebih lanjut. Ini membantu aplikasi tetap bebas iklan dan mendanai fitur baru.\n\nTips: Atur bahasa terlebih dahulu sebelum membagikan tautan—penerima akan langsung melihat versi yang benar.",
   infoDataManagementTitle: "Manajemen Data",
@@ -131,14 +132,21 @@ export const id = {
   rings: "Cincin",
   necklace: "Kalung",
   charm: "Jimat",
+  selectRing: "Pilih Cincin",
+  selectNecklace: "Pilih Kalung",
+  selectCharm: "Pilih Jimat",
   shovel: "Sekop",
   pan: "Pan",
   enchant: "Enchant",
   baseStats: "Stat Dasar",
   withMuseum: "Dengan Bonus Museum",
-  withEventBonuses: "Dengan Bonus Event",
+  withEventBonuses: "Dengan Bonus Acara",
   museumBonuses: "Bonus Museum",
-  customStats: "Stat Kustom",
+  customStats: "Statistik Kustom",
+  selectStatToBoost: "Pilih stat untuk ditingkatkan",
+  weightModePlaceholder: "Placeholder - dalam mode berat nilai saat ini diatur ke 0.0%. Saya sedang mengerjakan penambahan fungsionalitas",
+  potions: "Ramuan",
+  activePotions: "Ramuan Aktif",
   activeEvents: "Event Aktif",
   events: "Event",
   meteorShower: "Meteor Shower",
@@ -247,6 +255,9 @@ export const id = {
   // PWA Install
   pwaInstallTitle: "Instal sebagai Aplikasi (PWA)",
   pwaInstallDesc: "Anda bisa menginstal alat ini sebagai aplikasi mandiri untuk akses cepat dan jendela tanpa gangguan.\n\nDesktop (Chrome / Edge): Klik ikon instal di bilah alamat (atau menu browser > Install). Setelah terpasang akan terbuka di jendela terpisah.\n\nAndroid: Prompt bisa muncul otomatis setelah beberapa saat penggunaan. Jika tidak: menu browser > Tambahkan ke Layar Utama / Install App.\n\niOS (Safari): Tombol Share > Add to Home Screen (tidak ada prompt otomatis di iOS).\n\nBahasa saat instal: Aplikasi memakai manifest bahasa aktif saat pertama kali halaman dibuka. Mengganti bahasa nanti tidak perlu instal ulang—routing internal menyesuaikan.\n\nOffline: UI inti + manifest + ikon berada di cache. Data dinamis tertentu mungkin tetap butuh koneksi.",
+  
+  // Warnings
+  outdatedItemWarning: "Data item mungkin sudah usang",
 } as const;
 
 export type Id = typeof id;

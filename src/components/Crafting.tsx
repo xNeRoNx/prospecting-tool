@@ -12,7 +12,7 @@ import { Plus, Minus, Check, X, Hammer, Wrench, Broom, Trash, ArrowCounterClockw
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import type { CraftingItem, MaterialSummary } from '@/hooks/useAppData.tsx';
-import { craftableItems, ores, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, ores, type CraftableItem, getItemByReference } from '@/lib/gameData';
 
 export function Crafting() {
   const { t } = useLanguage();
@@ -21,10 +21,21 @@ export function Crafting() {
   const [quantity, setQuantity] = useState(1);
   const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
   const [consumedMaterials, setConsumedMaterials] = useState<Record<string, Record<string, number>>>({});
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  
+  // Helper function to resolve CraftingItem to full CraftableItem
+  const resolveItem = (craftingItem: CraftingItem): CraftableItem | null => {
+    return getItemByReference({
+      name: craftingItem.itemName,
+      position: craftingItem.itemPosition
+    });
+  };
+
   const addToCraftingList = (item: CraftableItem, qty: number) => {
     const id = Date.now().toString();
     const newCraftingItem: CraftingItem = {
-      item,
+      itemName: item.name,
+      itemPosition: item.position,
       quantity: qty,
       completed: false,
       id,
@@ -34,11 +45,15 @@ export function Crafting() {
     setCraftingItems(current => [...(current ?? []), newCraftingItem]);
     setSelectedItem(null);
     setQuantity(1);
+    setIsAddDialogOpen(false);
   };
 
   const removeCraftingItem = (id: string) => {
     const itemToRemove = craftingItems.find(item => item.id === id);
     if (!itemToRemove) return;
+    const fullItem = resolveItem(itemToRemove);
+    if (!fullItem) return;
+    
     setCraftingItems(current => (current ?? []).filter(item => item.id !== id));
 
     // Clear the record of consumed materials (if any) — we do not restore them
@@ -52,7 +67,7 @@ export function Crafting() {
     // From inventory, remove only those materials from the removed crafting's recipe that have quantity 0
     setOwnedMaterials(current => {
       const updated: Record<string, number> = { ...current } as any;
-      const recipeMaterials = new Set(itemToRemove.item.recipe.map(r => r.material));
+      const recipeMaterials = new Set(fullItem.recipe.map(r => r.material));
       recipeMaterials.forEach(m => {
         if (updated[m] === 0) {
           delete updated[m];
@@ -70,6 +85,9 @@ export function Crafting() {
       const after = updated.find(ci => ci.id === id);
       if (!before || !after) return updated;
 
+      const fullItem = resolveItem(after);
+      if (!fullItem) return updated;
+
       // Transition to completed -> consume materials
       if (!before.completed && after.completed) {
         const remainingToCraft = after.quantity - (before.craftedCount || 0);
@@ -77,7 +95,7 @@ export function Crafting() {
           const additionalConsumed: Record<string, number> = {};
           setOwnedMaterials(mat => {
             const copy: Record<string, number> = { ...mat } as any;
-            after.item.recipe.forEach(r => {
+            fullItem.recipe.forEach(r => {
               const need = r.amount * remainingToCraft;
               additionalConsumed[r.material] = need;
               if (copy[r.material] !== undefined) {
@@ -127,17 +145,20 @@ export function Crafting() {
   const craftOne = (id: string) => {
     const craftingItem = craftingItems.find(ci => ci.id === id);
     if (!craftingItem) return;
+    const fullItem = resolveItem(craftingItem);
+    if (!fullItem) return;
+    
     if (craftingItem.completed) return; // already fully crafted
     const crafted = craftingItem.craftedCount || 0;
     if (crafted >= craftingItem.quantity) return;
     // Check if we have materials for 1 unit
-    for (const r of craftingItem.item.recipe) {
+    for (const r of fullItem.recipe) {
       if ((ownedMaterials[r.material] || 0) < r.amount) return; // not enough materials
     }
     // Consume materials for 1 unit
     setOwnedMaterials(mat => {
       const copy: Record<string, number> = { ...mat } as any;
-      craftingItem.item.recipe.forEach(r => {
+      fullItem.recipe.forEach(r => {
         copy[r.material] = Math.max(0, (copy[r.material] || 0) - r.amount);
       });
       return copy;
@@ -146,7 +167,7 @@ export function Crafting() {
     setConsumedMaterials(prev => {
       const prevForItem = prev[id] || {};
       const updated: Record<string, number> = { ...prevForItem };
-      craftingItem.item.recipe.forEach(r => {
+      fullItem.recipe.forEach(r => {
         updated[r.material] = (updated[r.material] || 0) + r.amount;
       });
       return { ...prev, [id]: updated };
@@ -161,11 +182,14 @@ export function Crafting() {
   const undoOne = (id: string) => {
     const craftingItem = craftingItems.find(ci => ci.id === id);
     if (!craftingItem) return;
+    const fullItem = resolveItem(craftingItem);
+    if (!fullItem) return;
+    
     const crafted = craftingItem.craftedCount || 0;
     if (crafted <= 0) return;
     // Restore materials for 1 unit
     const recipeMap: Record<string, number> = {};
-    craftingItem.item.recipe.forEach(r => { recipeMap[r.material] = r.amount; });
+    fullItem.recipe.forEach(r => { recipeMap[r.material] = r.amount; });
     setOwnedMaterials(mat => {
       const copy: Record<string, number> = { ...mat } as any;
       Object.entries(recipeMap).forEach(([m, amt]) => {
@@ -222,22 +246,24 @@ export function Crafting() {
     
     craftingItems.forEach(craftingItem => {
       if (craftingItem.completed) return;
+      const fullItem = resolveItem(craftingItem);
+      if (!fullItem) return;
       
       if (showMinimalMaterials) {
         // For minimal mode, calculate cost for one of each unique item type
         const uniqueItems = new Set<string>();
         craftingItems.forEach(ci => {
           if (!ci.completed) {
-            uniqueItems.add(ci.item.name);
+            uniqueItems.add(ci.itemName);
           }
         });
         
-        if (uniqueItems.has(craftingItem.item.name)) {
-          totalCost += craftingItem.item.cost;
+        if (uniqueItems.has(craftingItem.itemName)) {
+          totalCost += fullItem.cost;
         }
       } else {
         // For total mode, multiply by quantity
-        totalCost += craftingItem.item.cost * craftingItem.quantity;
+        totalCost += fullItem.cost * craftingItem.quantity;
       }
     });
     
@@ -250,11 +276,14 @@ export function Crafting() {
 
     craftingItems.forEach(craftingItem => {
       if (craftingItem.completed) return; // nothing needed for completed items
+      const fullItem = resolveItem(craftingItem);
+      if (!fullItem) return;
+      
       const crafted = craftingItem.craftedCount || 0;
       const remainingQty = Math.max(0, craftingItem.quantity - crafted);
       if (remainingQty === 0) return; // no remaining units
 
-      craftingItem.item.recipe.forEach(recipe => {
+      fullItem.recipe.forEach(recipe => {
         const materialName = recipe.material;
         if (!summary[materialName]) {
           summary[materialName] = {
@@ -295,15 +324,17 @@ export function Crafting() {
   };
 
   const calculateCraftableItems = () => {
-    const craftableItems: Array<{ item: CraftingItem; maxQuantity: number }> = [];
+    const craftableItemsResult: Array<{ item: CraftingItem; maxQuantity: number }> = [];
     
     craftingItems.forEach(craftingItem => {
       if (craftingItem.completed) return;
+      const fullItem = resolveItem(craftingItem);
+      if (!fullItem) return;
       
       let maxCraftable = craftingItem.quantity;
       
       // Check each recipe requirement
-      for (const recipe of craftingItem.item.recipe) {
+      for (const recipe of fullItem.recipe) {
         const owned = ownedMaterials[recipe.material] || 0;
         const neededPerItem = recipe.amount;
         const maxPossible = Math.floor(owned / neededPerItem);
@@ -311,11 +342,11 @@ export function Crafting() {
       }
       
       if (maxCraftable > 0) {
-        craftableItems.push({ item: craftingItem, maxQuantity: maxCraftable });
+        craftableItemsResult.push({ item: craftingItem, maxQuantity: maxCraftable });
       }
     });
     
-    return craftableItems;
+    return craftableItemsResult;
   };
 
   const formatStats = (item: CraftableItem) => {
@@ -377,7 +408,11 @@ export function Crafting() {
 
   const removeMaterialManually = (name: string) => {
     // Do not remove if the material is still needed in active (unfinished) recipes
-    const neededInActive = craftingItems.some(ci => !ci.completed && ci.item.recipe.some(r => r.material === name));
+    const neededInActive = craftingItems.some(ci => {
+      if (ci.completed) return false;
+      const fullItem = resolveItem(ci);
+      return fullItem && fullItem.recipe.some(r => r.material === name);
+    });
     if (neededInActive) return; // safety — UI warning can be added later
     setOwnedMaterials(current => {
       const copy = { ...current };
@@ -387,7 +422,11 @@ export function Crafting() {
   };
 
   const materialIsRemovable = (name: string) => {
-    return !craftingItems.some(ci => !ci.completed && ci.item.recipe.some(r => r.material === name));
+    return !craftingItems.some(ci => {
+      if (ci.completed) return false;
+      const fullItem = resolveItem(ci);
+      return fullItem && fullItem.recipe.some(r => r.material === name);
+    });
   };
 
   const clearUnusedMaterials = () => {
@@ -396,7 +435,10 @@ export function Crafting() {
     const needed = new Set<string>();
     craftingItems.forEach(ci => {
       if (!ci.completed) {
-        ci.item.recipe.forEach(r => needed.add(r.material));
+        const fullItem = resolveItem(ci);
+        if (fullItem) {
+          fullItem.recipe.forEach(r => needed.add(r.material));
+        }
       }
     });
     setOwnedMaterials(current => {
@@ -415,7 +457,10 @@ export function Crafting() {
     const needed = new Set<string>();
     craftingItems.forEach(ci => {
       if (!ci.completed) {
-        ci.item.recipe.forEach(r => needed.add(r.material));
+        const fullItem = resolveItem(ci);
+        if (fullItem) {
+          fullItem.recipe.forEach(r => needed.add(r.material));
+        }
       }
     });
     setOwnedMaterials(current => {
@@ -436,61 +481,59 @@ export function Crafting() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">{t('crafting')}</h2>
         
-        <Dialog>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus size={16} />
               {t('addItem')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl h-[95vh]">
             <DialogHeader>
               <DialogTitle>{t('addItem')}</DialogTitle>
             </DialogHeader>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
-                {craftableItemsSorted.map(item => (
-                  <Card 
-                    key={item.name}
-                    className={`cursor-pointer transition-colors hover:bg-accent/10 ${
-                      selectedItem?.name === item.name ? 'bg-accent/20 border-accent' : ''
-                    }`}
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    <CardContent className="p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Badge className={getRarityClass(item.rarity)} variant="outline">
-                              {item.rarity}
-                            </Badge>
-                            <span className="font-medium">{item.name}</span>
-                            <Badge variant="secondary">{item.position}</Badge>
-                          </div>
-                          
-                          <div className="text-xs space-y-1">
-                            {formatStats(item).map((stat, index) => (
-                              <div key={index} className="text-muted-foreground">{stat}</div>
-                            ))}
-                          </div>
-                          
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="font-medium text-green-600">${item.cost.toLocaleString()}</span>
-                            <Wrench size={12} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">
-                              {item.recipe.map(r => `${r.amount} ${r.material}`).join(', ')}
-                            </span>
-                          </div>
+            <div className="grid grid-cols-1 gap-2 overflow-y-auto">
+              {craftableItemsSorted.map(item => (
+                <Card 
+                  key={item.name}
+                  className={`cursor-pointer transition-colors hover:bg-accent/10 ${
+                    selectedItem?.name === item.name ? 'bg-accent/20 border-accent' : ''
+                  }`}
+                  onClick={() => setSelectedItem(selectedItem?.name === item.name ? null : item)}
+                >
+                  <CardContent className="px-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge className={getRarityClass(item.rarity)} variant="outline">
+                            {item.rarity}
+                          </Badge>
+                          <span className="font-medium">{item.name}</span>
+                          <Badge variant="secondary">{item.position}</Badge>
+                        </div>
+                        
+                        <div className="text-xs space-y-1">
+                          {formatStats(item).map((stat, index) => (
+                            <div key={index} className="text-muted-foreground">{stat}</div>
+                          ))}
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-medium text-green-600">${item.cost.toLocaleString()}</span>
+                          <Wrench size={12} className="text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {item.recipe.map(r => `${r.amount} ${r.material}`).join(', ')}
+                          </span>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
+            <div className="space-y-4 relative bottom-0 left-0 w-full">
               <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
-              
               {selectedItem && (
                 <div className="space-y-4 border-t pt-4">
                   <div className="flex items-center gap-4">
@@ -521,7 +564,7 @@ export function Crafting() {
                           <span>{recipe.material}</span>
                           <span>
                             {recipe.amount * quantity}
-                            {recipe.weight && ` (+${recipe.weight * quantity}kg)`}
+                            {recipe.weight && ` (+${recipe.weight}kg)`}
                           </span>
                         </div>
                       ))}
@@ -548,23 +591,27 @@ export function Crafting() {
                   {t('canCraft')}
                 </h4>
                 <div className="space-y-1">
-                  {canCraftItems().map(({ item, maxQuantity }) => (
-                    <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
-                      <Hammer size={14} />
-                      <span className="truncate">
-                        {item.item.name} x{maxQuantity}
-                        {(() => {
-                          const crafted = item.craftedCount || 0;
-                          const remaining = Math.max(0, item.quantity - crafted);
-                          return maxQuantity < remaining && remaining > 0 ? (
-                            <span className="text-xs text-muted-foreground ml-1">
-                              (of {remaining} wanted)
-                            </span>
-                          ) : null;
-                        })()}
-                      </span>
-                    </div>
-                  ))}
+                  {canCraftItems().map(({ item, maxQuantity }) => {
+                    const fullItem = resolveItem(item);
+                    if (!fullItem) return null;
+                    return (
+                      <div key={item.id} className="text-sm flex items-center gap-2 text-green-400">
+                        <Hammer size={14} />
+                        <span className="truncate">
+                          {fullItem.name} x{maxQuantity}
+                          {(() => {
+                            const crafted = item.craftedCount || 0;
+                            const remaining = Math.max(0, item.quantity - crafted);
+                            return maxQuantity < remaining && remaining > 0 ? (
+                              <span className="text-xs text-muted-foreground ml-1">
+                                (of {remaining} wanted)
+                              </span>
+                            ) : null;
+                          })()}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -578,73 +625,77 @@ export function Crafting() {
                 </CardContent>
               </Card>
             ) : (
-              craftingItems.map(craftingItem => (
-                <Card key={craftingItem.id} className={`${craftingItem.completed ? 'opacity-60' : ''}`}>
-                  <CardContent className="p-4">
-                    <div className="space-y-3">
-                      {/* Mobile-friendly layout */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <Checkbox
-                            checked={craftingItem.completed}
-                            onCheckedChange={() => toggleCompleted(craftingItem.id)}
-                            className="mt-1"
-                            disabled={isLoading}
-                          />
-                          <div className="space-y-2 flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Badge className={getRarityClass(craftingItem.item.rarity)} variant="outline">
-                                {craftingItem.item.rarity}
-                              </Badge>
-                              <span className="font-medium break-words">{craftingItem.item.name}</span>
-                              <Badge variant="secondary" className="text-xs">{craftingItem.item.position}</Badge>
-                            </div>
-                            
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                              <span>{t('quantity')}: {(craftingItem.craftedCount || 0)}/{craftingItem.quantity}</span>
-                              <span>
-                                {t('cost')}: $
-                                {showMinimalMaterials 
-                                  ? craftingItem.item.cost.toLocaleString()
-                                  : (craftingItem.item.cost * craftingItem.quantity).toLocaleString()
-                                }
-                              </span>
-                            </div>
-                            
-                            <div className="text-xs">
-                              <div className="flex items-center gap-1 mb-1">
-                                <Wrench size={12} className="text-muted-foreground flex-shrink-0" />
-                                <span className="text-muted-foreground font-medium">Materials:</span>
+              craftingItems.map(craftingItem => {
+                const fullItem = resolveItem(craftingItem);
+                if (!fullItem) return null;
+                
+                return (
+                  <Card key={craftingItem.id} className={`${craftingItem.completed ? 'opacity-60' : ''}`}>
+                    <CardContent className="p-4">
+                      <div className="space-y-3">
+                        {/* Mobile-friendly layout */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <Checkbox
+                              checked={craftingItem.completed}
+                              onCheckedChange={() => toggleCompleted(craftingItem.id)}
+                              className="mt-1"
+                              disabled={isLoading}
+                            />
+                            <div className="space-y-2 flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Badge className={getRarityClass(fullItem.rarity)} variant="outline">
+                                  {fullItem.rarity}
+                                </Badge>
+                                <span className="font-medium break-words">{fullItem.name}</span>
+                                <Badge variant="secondary" className="text-xs">{fullItem.position}</Badge>
                               </div>
-                              <div className="text-muted-foreground break-words">
-                                {showMinimalMaterials 
-                                  ? craftingItem.item.recipe.map(r => 
-                                      `${r.amount} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
-                                    ).join(', ')
-                                  : craftingItem.item.recipe.map(r => 
-                                      `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
-                                    ).join(', ')
-                                }
+                              
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                                <span>{t('quantity')}: {(craftingItem.craftedCount || 0)}/{craftingItem.quantity}</span>
+                                <span>
+                                  {t('cost')}: $
+                                  {showMinimalMaterials 
+                                    ? fullItem.cost.toLocaleString()
+                                    : (fullItem.cost * craftingItem.quantity).toLocaleString()
+                                  }
+                                </span>
+                              </div>
+                              
+                              <div className="text-xs">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <Wrench size={12} className="text-muted-foreground flex-shrink-0" />
+                                  <span className="text-muted-foreground font-medium">Materials:</span>
+                                </div>
+                                <div className="text-muted-foreground break-words">
+                                  {showMinimalMaterials 
+                                    ? fullItem.recipe.map(r => 
+                                        `${r.amount} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
+                                      ).join(', ')
+                                    : fullItem.recipe.map(r => 
+                                        `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
+                                      ).join(', ')
+                                  }
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
                         
-                        <div className="flex items-center gap-1 flex-shrink-0 ml-2 mr-6">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => craftOne(craftingItem.id)}
-                            className="h-8 w-8 p-0"
-                            disabled={isLoading || craftingItem.completed || (craftingItem.craftedCount || 0) >= craftingItem.quantity}
-                            title={t('craftOne')}
-                          >
-                            <Hammer size={12} />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => undoOne(craftingItem.id)}
+                          <div className="flex items-center gap-1 flex-shrink-0 ml-2 mr-6">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => craftOne(craftingItem.id)}
+                              className="h-8 w-8 p-0"
+                              disabled={isLoading || craftingItem.completed || (craftingItem.craftedCount || 0) >= craftingItem.quantity}
+                              title={t('craftOne')}
+                            >
+                              <Hammer size={12} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => undoOne(craftingItem.id)}
                             className="h-8 w-8 p-0"
                             disabled={isLoading || (craftingItem.craftedCount || 0) <= 0}
                             title={t('undoOne')}
@@ -685,7 +736,8 @@ export function Crafting() {
                     </div>
                   </CardContent>
                 </Card>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -829,7 +881,7 @@ export function Crafting() {
                       <Plus size={14} /> {t('addMaterial')}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="max-w-lg max-h-[95vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>{t('addMaterial')}</DialogTitle>
                     </DialogHeader>

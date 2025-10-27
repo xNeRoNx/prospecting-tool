@@ -6,8 +6,9 @@ export const en = {
   infoTab: "Info",
   infoTitle: "Prospecting! Tools – Information",
   infoIntro: "This section provides an overview of the available tools and a full list of craftable items with their stats.",
+  infoLastUpdate: "Last update",
   infoAuthorNoteTitle: "Author's Note",
-  infoAuthorNoteDesc: "This companion project was assembled using data publicly shared on the Prospecting! Discord server, the community wiki (https://prospectingwiki.org) and additional values provided by user 'unknownuser03' (Word document). Several internal mechanisms—such as certain multiplier ordering, museum weight scaling placeholders, and some stat interaction assumptions—are based on my own inference where official formulas were unavailable.\n\nIf you notice mistakes, balance changes, missing entries or have better evidence for a formula, please open a GitHub issue or reach out on Discord by pinging x_neron_x. Community feedback helps keep this tool accurate and useful.",
+  infoAuthorNoteDesc: "This companion project was assembled using data publicly shared on the Prospecting! Discord server, the community wiki (https://prospectingwiki.org). Several internal mechanisms—such as certain multiplier ordering, museum weight scaling placeholders, and some stat interaction assumptions—are based on my own inference where official formulas were unavailable.\n\nIf you notice mistakes, balance changes, missing entries or have better evidence for a formula, please open a GitHub issue or reach out on Discord by pinging x_neron_x. Community feedback helps keep this tool accurate and useful.",
   infoHeaderTitle: "Top Bar (Header)",
   infoHeaderDesc: "The top bar provides quick access to theme appearance changes, language switching, data management, and supporting the creator.\n\nLanguage Switch: Instantly toggle between languages. The URL path updates so you can share a link that opens directly in the selected language.\n\nTheme Switch: Choose from the available color themes to adapt the interface to your preferences or conditions (e.g. a dark background).\n\nSupport Button: Opens a dialog where you can support further development. This helps keep the app ad‑free and funds new features.\n\nTip: Set the language first before sharing the link— the recipient will see the correct version.",
   infoDataManagementTitle: "Data Management",
@@ -132,6 +133,9 @@ export const en = {
   rings: "Rings",
   necklace: "Necklace", 
   charm: "Charm",
+  selectRing: "Select Ring",
+  selectNecklace: "Select Necklace",
+  selectCharm: "Select Charm",
   shovel: "Shovel",
   pan: "Pan",
   enchant: "Enchant",
@@ -140,6 +144,10 @@ export const en = {
   withEventBonuses: "With Event Bonuses",
   museumBonuses: "Museum Bonuses",
   customStats: "Custom Stats",
+  selectStatToBoost: "Select stat to boost",
+  weightModePlaceholder: "Placeholder - in weight mode the values are currently set to 0.0%. I'm currently working on adding functionality",
+  potions: "Potions",
+  activePotions: "Active Potions",
   activeEvents: "Active Events",
   events: "Events",
   luckEfficiency: "Luck Efficiency",
@@ -168,7 +176,7 @@ export const en = {
   sizeBoost: "Size Boost",
   modifierBoost: "Modifier Boost",
   toughness: "Toughness",
-  
+  walkSpeed: "Walk Speed",
   
   // Messages
   noItems: "No items added yet",
@@ -254,7 +262,10 @@ export const en = {
 
   // PWA Install
   pwaInstallTitle: "Install as App (PWA)",
-  pwaInstallDesc: "You can install this tool as a standalone app for faster access and a distraction‑free window.\n\nDesktop (Chrome / Edge): Click the install icon in the address bar (or browser menu > Install). After installation it opens in its own window.\n\nAndroid: A prompt may appear automatically after a short usage period. If not: browser menu > Add to Home Screen / Install App.\n\niOS (Safari): Share button > Add to Home Screen (no automatic prompt on iOS).\n\nLanguage on Install: The app installs using the manifest for the language active when you opened the page. Switching language later doesn’t require reinstall—shortcuts adapt via internal routing.\n\nOffline: Core UI + manifests + icons are cached. Dynamic data (future weight scaling formulas etc.) may still need a connection.",
+  pwaInstallDesc: "You can install this tool as a standalone app for faster access and a distraction‑free window.\n\nDesktop (Chrome / Edge): Click the install icon in the address bar (or browser menu > Install). After installation it opens in its own window.\n\nAndroid: A prompt may appear automatically after a short usage period. If not: browser menu > Add to Home Screen / Install App.\n\niOS (Safari): Share button > Add to Home Screen (no automatic prompt on iOS).\n\nLanguage on Install: The app installs using the manifest for the language active when you opened the page. Switching language later doesn't require reinstall—shortcuts adapt via internal routing.\n\nOffline: Core UI + manifests + icons are cached. Dynamic data (future weight scaling formulas etc.) may still need a connection.",
+  
+  // Warnings
+  outdatedItemWarning: "Item data may be outdated",
 } as const;
 
 export type En = typeof en;

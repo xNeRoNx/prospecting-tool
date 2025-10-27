@@ -166,7 +166,7 @@ export function Museum() {
               <span className="hidden sm:inline">{t('overview')}</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t('museumOverview')} (max)</DialogTitle>
             </DialogHeader>
@@ -211,10 +211,9 @@ export function Museum() {
                                     return (
                                       <div className="space-y-0.5 text-left sm:text-right">
                                         {Object.entries(item.specialEffects).map(([stat, value]) => {
-                                          const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
                                           return (
                                             <div key={stat}>
-                                              {displayStat}: {isMax ? '' : '0.0x | '} {value > 0 ? '+' : ''}{value}x
+                                              {t(stat as any)}: {isMax ? '' : '0.0x | '} {value > 0 ? '+' : ''}{value}x
                                             </div>
                                           );
                                         })}
@@ -300,8 +299,7 @@ export function Museum() {
                                     if (ore.specialEffects) {
                                       const effects = Object.entries(ore.specialEffects)
                                         .map(([stat, value]) => {
-                                          const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
-                                          return `${displayStat}: ${value > 0 ? '+' : ''}${value}x`;
+                                          return `${t(stat as any)}: ${value > 0 ? '+' : ''}${value}x`;
                                         })
                                         .join(', ');
                                       statInfo = effects;
@@ -409,10 +407,9 @@ export function Museum() {
                                     // Show all special effects with weight rule
                                     const isMax = slot.weight !== undefined && slot.weight > ore.maxWeight;
                                     return Object.entries(ore.specialEffects).map(([stat, value]) => {
-                                      const displayStat = stat.replace(/([A-Z])/g, ' $1').toLowerCase();
                                       return (
                                         <div key={stat}>
-                                          {displayStat}: {isMax ? '' : '0.0x | '}{value > 0 ? '+' : ''}{value}x
+                                          {t(stat as any)}: {isMax ? '' : '0.0x | '}{value > 0 ? '+' : ''}{value}x
                                         </div>
                                       );
                                     });
@@ -427,7 +424,7 @@ export function Museum() {
                                   }
                                 })()}
                                 {slot.modifier && (
-                                  <div>
+                                  <div className="pt-1 border-t border-muted mt-1 space-y-0.5">
                                     {modifiers.find(m => m.name === slot.modifier)?.effect}: +{getModifierBonus(ores.find(o => o.name === slot.ore)?.rarity || 'Common')}x
                                   </div>
                                 )}
@@ -468,7 +465,7 @@ export function Museum() {
                 return (
                   <div key={stat} className="flex items-center justify-between">
                     <span className="text-sm capitalize">
-                      {stat.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                      {t(stat as any)}
                     </span>
                     <span className="font-mono text-accent">
                       {displayValue > 0 ? '+' : ''}{displayValue.toFixed(3)}x

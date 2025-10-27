@@ -1,14 +1,25 @@
 import { useState, useEffect, useRef, createContext, useContext, ReactNode } from 'react';
 import { encodeDataForUrl, decodeDataFromUrl } from '@/lib/urlCompression';
 import { useLocalStorageState } from './useLocalStorage';
-import type { CraftableItem } from '../lib/gameData';
+import type { CraftableItem, ItemReference } from '../lib/gameData';
+import { getItemByReference, createItemReference } from '../lib/gameData';
 
 export interface CraftingItem { 
-	item: CraftableItem; 
+	itemName: string;
+	itemPosition: 'Ring' | 'Necklace' | 'Charm';
 	quantity: number; 
 	completed: boolean; 
 	id: string; 
 	craftedCount: number; 
+}
+
+// Legacy interface for migration
+interface LegacyCraftingItem {
+	item: CraftableItem;
+	quantity: number;
+	completed: boolean;
+	id: string;
+	craftedCount?: number;
 }
 export interface MaterialSummary { 
 	[material: string]: { 
@@ -25,16 +36,17 @@ export interface MuseumSlot {
 	id: string; 
 }
 export interface EquipmentSlot {
-	rings: (CraftableItem | null)[]; 
+	rings: ItemReference[]; 
 	ringsSix?: boolean[];
-	necklace: CraftableItem | null; 
+	necklace: ItemReference | null; 
 	necklaceSix?: boolean;
-	charm: CraftableItem | null; 
+	charm: ItemReference | null; 
 	charmSix?: boolean;
 	shovel: string | null; 
 	pan: string | null; 
 	enchant: string | null; 
 	customStats: { [key: string]: number }; 
+	activePotions: string[];
 	activeEvents: string[];
 }
 
@@ -49,6 +61,7 @@ const DEFAULT_EQUIPMENT: EquipmentSlot = {
 	pan: null, 
 	enchant: null, 
 	customStats: {}, 
+	activePotions: [],
 	activeEvents: [] 
 };
 
@@ -82,10 +95,24 @@ function useProvideAppData(): AppDataContextValue {
 		if (equipment === null) setEquipment(DEFAULT_EQUIPMENT);
 		if (ownedMaterials === null) setOwnedMaterials({});
 
-		// Migration: add craftedCount if missing
+		// Migration: Convert legacy CraftingItems (with full item objects) to new format (with references)
 		if (craftingItems !== null) {
 			let needsMigration = false;
 			const migrated = craftingItems.map(ci => {
+				// Check if this is legacy format (has 'item' property)
+				if ('item' in ci && (ci as any).item) {
+					needsMigration = true;
+					const legacyItem = ci as any as LegacyCraftingItem;
+					return {
+						itemName: legacyItem.item.name,
+						itemPosition: legacyItem.item.position,
+						quantity: legacyItem.quantity,
+						completed: legacyItem.completed,
+						id: legacyItem.id,
+						craftedCount: legacyItem.craftedCount ?? (legacyItem.completed ? legacyItem.quantity : 0)
+					} as CraftingItem;
+				}
+				// Add craftedCount if missing in new format
 				if (ci.craftedCount === undefined) {
 					needsMigration = true;
 					return { ...ci, craftedCount: ci.completed ? ci.quantity : 0 } as CraftingItem;
@@ -108,8 +135,35 @@ function useProvideAppData(): AppDataContextValue {
 			setEquipment({ ...equipment, activeEvents: [] });
 			return;
 		}
-		// Migration: ensure ringsSix/necklaceSix/charmSix exist and have correct lengths/defaults
+		
 		let needsMigration = false;
+		let updatedEquipment = { ...equipment };
+		
+		// Migration: Convert legacy equipment items (full objects) to references
+		const rings: ItemReference[] = equipment.rings.map((ring, idx) => {
+			if (!ring) return null as any;
+			// Check if it's a legacy full object
+			if ('name' in ring && 'position' in ring && 'recipe' in ring) {
+				needsMigration = true;
+				return createItemReference(ring as any as CraftableItem);
+			}
+			return ring;
+		});
+		if (needsMigration) updatedEquipment.rings = rings;
+		
+		// Migrate necklace
+		if (equipment.necklace && 'recipe' in equipment.necklace) {
+			needsMigration = true;
+			updatedEquipment.necklace = createItemReference(equipment.necklace as any as CraftableItem);
+		}
+		
+		// Migrate charm
+		if (equipment.charm && 'recipe' in equipment.charm) {
+			needsMigration = true;
+			updatedEquipment.charm = createItemReference(equipment.charm as any as CraftableItem);
+		}
+		
+		// Migration: ensure ringsSix/necklaceSix/charmSix exist and have correct lengths/defaults
 		let ringsSix: boolean[];
 		if (!Array.isArray((equipment as any).ringsSix)) {
 			ringsSix = new Array(equipment.rings.length).fill(false);
@@ -128,8 +182,9 @@ function useProvideAppData(): AppDataContextValue {
 		if (typeof (equipment as any).necklaceSix !== 'boolean') needsMigration = true;
 		const charmSix = typeof (equipment as any).charmSix === 'boolean' ? (equipment as any).charmSix : false;
 		if (typeof (equipment as any).charmSix !== 'boolean') needsMigration = true;
+		
 		if (needsMigration) {
-			setEquipment({ ...equipment, ringsSix, necklaceSix, charmSix });
+			setEquipment({ ...updatedEquipment, ringsSix, necklaceSix, charmSix });
 		}
 	}, [equipment, setEquipment, isLoading]);
 
