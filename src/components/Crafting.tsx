@@ -492,7 +492,7 @@ export function Crafting() {
             <DialogHeader>
               <DialogTitle>{t('addItem')}</DialogTitle>
             </DialogHeader>
-            <div className="grid grid-cols-1 gap-3 overflow-y-auto">
+            <div className="grid grid-cols-1 gap-2 overflow-y-auto">
               {craftableItemsSorted.map(item => (
                 <Card 
                   key={item.name}
@@ -501,9 +501,9 @@ export function Crafting() {
                   }`}
                   onClick={() => setSelectedItem(selectedItem?.name === item.name ? null : item)}
                 >
-                  <CardContent className="p-3">
+                  <CardContent className="px-3">
                     <div className="flex items-start justify-between">
-                      <div className="space-y-2 flex-1">
+                      <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Badge className={getRarityClass(item.rarity)} variant="outline">
                             {item.rarity}
@@ -564,7 +564,7 @@ export function Crafting() {
                           <span>{recipe.material}</span>
                           <span>
                             {recipe.amount * quantity}
-                            {recipe.weight && ` (+${recipe.weight * quantity}kg)`}
+                            {recipe.weight && ` (+${recipe.weight}kg)`}
                           </span>
                         </div>
                       ))}
@@ -673,7 +673,7 @@ export function Crafting() {
                                         `${r.amount} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
                                       ).join(', ')
                                     : fullItem.recipe.map(r => 
-                                        `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight * craftingItem.quantity}kg)` : ''}`
+                                        `${r.amount * craftingItem.quantity} ${r.material}${r.weight ? ` (+${r.weight}kg)` : ''}`
                                       ).join(', ')
                                   }
                                 </div>

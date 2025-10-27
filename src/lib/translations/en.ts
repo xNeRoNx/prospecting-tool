@@ -133,6 +133,9 @@ export const en = {
   rings: "Rings",
   necklace: "Necklace", 
   charm: "Charm",
+  selectRing: "Select Ring",
+  selectNecklace: "Select Necklace",
+  selectCharm: "Select Charm",
   shovel: "Shovel",
   pan: "Pan",
   enchant: "Enchant",
@@ -141,6 +144,8 @@ export const en = {
   withEventBonuses: "With Event Bonuses",
   museumBonuses: "Museum Bonuses",
   customStats: "Custom Stats",
+  selectStatToBoost: "Select stat to boost",
+  weightModePlaceholder: "Placeholder - in weight mode the values are currently set to 0.0%. I'm currently working on adding functionality",
   potions: "Potions",
   activePotions: "Active Potions",
   activeEvents: "Active Events",
@@ -171,7 +176,7 @@ export const en = {
   sizeBoost: "Size Boost",
   modifierBoost: "Modifier Boost",
   toughness: "Toughness",
-  
+  walkSpeed: "Walk Speed",
   
   // Messages
   noItems: "No items added yet",

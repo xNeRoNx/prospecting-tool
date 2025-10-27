@@ -9,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, X, Calculator, Calendar, Flask } from '@phosphor-icons/react';
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
@@ -311,6 +310,25 @@ export function EquipmentSimulation() {
   const calculateMuseumBonuses = () => museumBonusesMax; // keep existing calls in the render
 
   const availableItems = [...craftableItems];
+
+  // Rarity order from Exotic to Common
+  const rarityOrder: { [key: string]: number } = {
+    'Exotic': 0,
+    'Mythic': 1,
+    'Legendary': 2,
+    'Epic': 3,
+    'Rare': 4,
+    'Uncommon': 5,
+    'Common': 6
+  };
+
+  const sortByRarity = (items: CraftableItem[]) => {
+    return items.sort((a, b) => {
+      const orderA = rarityOrder[a.rarity] ?? 999;
+      const orderB = rarityOrder[b.rarity] ?? 999;
+      return orderA - orderB;
+    });
+  };
 
   const getRarityClass = (rarity: string) => {
     return `rarity-${rarity.toLowerCase()}`;
@@ -669,50 +687,54 @@ export function EquipmentSimulation() {
                           </DialogTrigger>
                           <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                             <DialogHeader>
-                              <DialogTitle>Select Ring</DialogTitle>
+                              <DialogTitle>{t('selectRing')}</DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-2">
-                              {availableItems
-                                .filter(item => item.position === 'Ring')
+                            <div className="grid grid-cols-1 gap-2">
+                              {sortByRarity(availableItems.filter(item => item.position === 'Ring'))
                                 .map(item => {
                                   const allStatKeys = new Set<string>();
                                   Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
                                   Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
-                                  const rows = Array.from(allStatKeys).map(key => {
-                                    const baseRange = item.stats?.[key];
-                                    const extRange = item.sixStarStats?.[key];
-                                    if (!Array.isArray(baseRange)) return null;
-                                    const [bMin, bMax] = baseRange as [number, number];
-                                    const isPercent = /Speed|Boost/i.test(key);
-                                    const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
-                                    let extPart = '';
-                                    if (Array.isArray(extRange)) {
-                                      const [eMin, eMax] = extRange as [number, number];
-                                      extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
-                                    }
-                                    return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
-                                  }).filter(Boolean) as string[];
                                   return (
-                                    <Tooltip key={item.name}>
-                                      <TooltipTrigger asChild>
-                                        <Button
-                                          variant="outline"
-                                          onClick={() => equipItem(item, 'rings', index)}
-                                          className="w-full justify-start"
-                                          disabled={isLoading}
-                                        >
-                                          <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                            {item.rarity}
-                                          </Badge>
-                                          <span className="ml-2 font-medium truncate">{item.name}</span>
-                                        </Button>
-                                      </TooltipTrigger>
-                                      {rows.length > 0 && (
-                                        <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
-                                          {rows.join('\n')}
-                                        </TooltipContent>
-                                      )}
-                                    </Tooltip>
+                                    <Card 
+                                      key={item.name}
+                                      className="cursor-pointer transition-colors hover:bg-accent/10"
+                                      onClick={() => equipItem(item, 'rings', index)}
+                                    >
+                                      <CardContent className="px-3">
+                                        <div className="flex items-start justify-between">
+                                          <div className="space-y-1 flex-1">
+                                            <div className="flex items-center gap-2">
+                                              <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                                {item.rarity}
+                                              </Badge>
+                                              <span className="font-medium">{item.name}</span>
+                                            </div>
+                                            
+                                            <div className="text-xs space-y-1">
+                                              {Array.from(allStatKeys).map(key => {
+                                                const baseRange = item.stats?.[key];
+                                                const extRange = item.sixStarStats?.[key];
+                                                if (!Array.isArray(baseRange)) return null;
+                                                const [bMin, bMax] = baseRange as [number, number];
+                                                const isPercent = /Speed|Boost/i.test(key);
+                                                const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                                let extPart = '';
+                                                if (Array.isArray(extRange)) {
+                                                  const [eMin, eMax] = extRange as [number, number];
+                                                  extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                                }
+                                                return (
+                                                  <div key={key} className="text-muted-foreground">
+                                                    {t(key as any) || key}: {fmt(bMin)} - {fmt(bMax)}{extPart}
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </CardContent>
+                                    </Card>
                                   );
                                 })}
                               <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
@@ -769,50 +791,54 @@ export function EquipmentSimulation() {
                       </DialogTrigger>
                       <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                         <DialogHeader>
-                          <DialogTitle>Select Necklace</DialogTitle>
+                          <DialogTitle>{t('selectNecklace')}</DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-2">
-                        {availableItems
-                          .filter(item => item.position === 'Necklace')
+                      <div className="grid grid-cols-1 gap-2">
+                        {sortByRarity(availableItems.filter(item => item.position === 'Necklace'))
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
                             Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
-                            const rows = Array.from(allStatKeys).map(key => {
-                              const baseRange = item.stats?.[key];
-                              const extRange = item.sixStarStats?.[key];
-                              if (!Array.isArray(baseRange)) return null;
-                              const [bMin, bMax] = baseRange as [number, number];
-                              const isPercent = /Speed|Boost/i.test(key);
-                              const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
-                              let extPart = '';
-                              if (Array.isArray(extRange)) {
-                                const [eMin, eMax] = extRange as [number, number];
-                                extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
-                              }
-                              return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
-                            }).filter(Boolean) as string[];
                             return (
-                              <Tooltip key={item.name}>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    onClick={() => equipItem(item, 'necklace')}
-                                    className="w-full justify-start"
-                                    disabled={isLoading}
-                                  >
-                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                      {item.rarity}
-                                    </Badge>
-                                    <span className="ml-2 font-medium truncate">{item.name}</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                {rows.length > 0 && (
-                                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
-                                    {rows.join('\n')}
-                                  </TooltipContent>
-                                )}
-                              </Tooltip>
+                              <Card 
+                                key={item.name}
+                                className="cursor-pointer transition-colors hover:bg-accent/10"
+                                onClick={() => equipItem(item, 'necklace')}
+                              >
+                                <CardContent className="px-3">
+                                  <div className="flex items-start justify-between">
+                                    <div className="space-y-1 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                          {item.rarity}
+                                        </Badge>
+                                        <span className="font-medium">{item.name}</span>
+                                      </div>
+                                      
+                                      <div className="text-xs space-y-1">
+                                        {Array.from(allStatKeys).map(key => {
+                                          const baseRange = item.stats?.[key];
+                                          const extRange = item.sixStarStats?.[key];
+                                          if (!Array.isArray(baseRange)) return null;
+                                          const [bMin, bMax] = baseRange as [number, number];
+                                          const isPercent = /Speed|Boost/i.test(key);
+                                          const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                          let extPart = '';
+                                          if (Array.isArray(extRange)) {
+                                            const [eMin, eMax] = extRange as [number, number];
+                                            extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                          }
+                                          return (
+                                            <div key={key} className="text-muted-foreground">
+                                              {t(key as any) || key}: {fmt(bMin)} - {fmt(bMax)}{extPart}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
                             );
                           })}
                       </div>
@@ -863,50 +889,54 @@ export function EquipmentSimulation() {
                       </DialogTrigger>
                       <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                         <DialogHeader>
-                          <DialogTitle>Select Charm</DialogTitle>
+                          <DialogTitle>{t('selectCharm')}</DialogTitle>
                         </DialogHeader>
-                        <div className="space-y-2">
-                          {availableItems
-                            .filter(item => item.position === 'Charm')
+                        <div className="grid grid-cols-1 gap-2">
+                          {sortByRarity(availableItems.filter(item => item.position === 'Charm'))
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
                             Object.keys(item.sixStarStats || {}).forEach(k => allStatKeys.add(k));
-                            const rows = Array.from(allStatKeys).map(key => {
-                              const baseRange = item.stats?.[key];
-                              const extRange = item.sixStarStats?.[key];
-                              if (!Array.isArray(baseRange)) return null;
-                              const [bMin, bMax] = baseRange as [number, number];
-                              const isPercent = /Speed|Boost/i.test(key);
-                              const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
-                              let extPart = '';
-                              if (Array.isArray(extRange)) {
-                                const [eMin, eMax] = extRange as [number, number];
-                                extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
-                              }
-                              return `${t(key as any) || key}: ${fmt(bMin)} - ${fmt(bMax)}${extPart}`;
-                            }).filter(Boolean) as string[];
                             return (
-                              <Tooltip key={item.name}>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    onClick={() => equipItem(item, 'charm')}
-                                    className="w-full justify-start"
-                                    disabled={isLoading}
-                                  >
-                                    <Badge className={getRarityClass(item.rarity)} variant="outline">
-                                      {item.rarity}
-                                    </Badge>
-                                    <span className="ml-2 font-medium truncate">{item.name}</span>
-                                  </Button>
-                                </TooltipTrigger>
-                                {rows.length > 0 && (
-                                  <TooltipContent side="right" className="max-w-xs whitespace-pre-line text-left">
-                                    {rows.join('\n')}
-                                  </TooltipContent>
-                                )}
-                              </Tooltip>
+                              <Card 
+                                key={item.name}
+                                className="cursor-pointer transition-colors hover:bg-accent/10"
+                                onClick={() => equipItem(item, 'charm')}
+                              >
+                                <CardContent className="px-3">
+                                  <div className="flex items-start justify-between">
+                                    <div className="space-y-1 flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <Badge className={getRarityClass(item.rarity)} variant="outline">
+                                          {item.rarity}
+                                        </Badge>
+                                        <span className="font-medium">{item.name}</span>
+                                      </div>
+                                      
+                                      <div className="text-xs space-y-1">
+                                        {Array.from(allStatKeys).map(key => {
+                                          const baseRange = item.stats?.[key];
+                                          const extRange = item.sixStarStats?.[key];
+                                          if (!Array.isArray(baseRange)) return null;
+                                          const [bMin, bMax] = baseRange as [number, number];
+                                          const isPercent = /Speed|Boost/i.test(key);
+                                          const fmt = (v: number) => `${v}${isPercent ? '%' : ''}`;
+                                          let extPart = '';
+                                          if (Array.isArray(extRange)) {
+                                            const [eMin, eMax] = extRange as [number, number];
+                                            extPart = ` [${fmt(eMin)} - ${fmt(eMax)}]`;
+                                          }
+                                          return (
+                                            <div key={key} className="text-muted-foreground">
+                                              {t(key as any) || key}: {fmt(bMin)} - {fmt(bMax)}{extPart}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
                             );
                           })}
                       </div>
@@ -1030,7 +1060,7 @@ export function EquipmentSimulation() {
                   disabled={isLoading}
                 >
                   <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Select stat to boost" />
+                    <SelectValue placeholder={t('selectStatToBoost')} />
                   </SelectTrigger>
                   <SelectContent>
                     {availableStats.map(stat => (
@@ -1102,7 +1132,7 @@ export function EquipmentSimulation() {
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
               <CardTitle className="text-accent">{t('withMuseum')}</CardTitle>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Weight</span>
+                <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{t('weight')}</span>
                 <Switch
                   checked={showMaxMuseum}
                   onCheckedChange={(v) => setShowMaxMuseum(v)}
@@ -1145,7 +1175,7 @@ export function EquipmentSimulation() {
                   );
                 })}
                 {!showMaxMuseum && (
-                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">Placeholder - in weight mode the values are currently set to 0.0%. I'm currently working on adding functionality</p>
+                  <p className="text-[10px] text-muted-foreground pt-1 border-t border-muted">{t('weightModePlaceholder')}</p>
                 )}
               </div>
             </CardContent>
