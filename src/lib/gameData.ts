@@ -132,7 +132,7 @@ export const craftableItems: CraftableItem[] = [
     position: "Necklace",
     recipe: [{ material: "Platinum", amount: 8 }, { material: "Amethyst", amount: 2 }],
     stats: { sellBoost: [0, 15], luck: [1, 2.5] },
-    sixStarStats: { sellBoost: [0, 18], luck: [1, 0.27] },
+    sixStarStats: { sellBoost: [0, 18], luck: [1, 2.7] },
     cost: 10000
   },
   {
