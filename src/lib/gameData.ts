@@ -71,6 +71,12 @@ export interface Pan {
   event?: boolean;
 }
 
+// Reference type for storing item identifiers instead of full objects
+export interface ItemReference {
+  name: string;
+  position: Positions;
+}
+
 export interface Enchant {
   name: string;
   effects: Effects;
@@ -79,6 +85,21 @@ export interface Enchant {
 export interface Potions {
   name: string;
   effects: Effects;
+}
+
+// Helper function to get a craftable item by reference
+export function getItemByReference(ref: ItemReference): CraftableItem | null {
+  return craftableItems.find(
+    item => item.name === ref.name && item.position === ref.position
+  ) || null;
+}
+
+// Helper function to create a reference from a craftable item
+export function createItemReference(item: CraftableItem): ItemReference {
+  return {
+    name: item.name,
+    position: item.position
+  };
 }
 
 export const potions: Potions[] = [

@@ -13,7 +13,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
-import { craftableItems, shovels, pans, enchants, potions, events, availableStats, type CraftableItem } from '@/lib/gameData';
+import { craftableItems, shovels, pans, enchants, potions, events, availableStats, type CraftableItem, getItemByReference, createItemReference } from '@/lib/gameData';
 import { calculateMuseumBonuses as sharedCalculateMuseumBonuses } from '@/lib/museumUtils';
 
 export function EquipmentSimulation() {
@@ -40,77 +40,25 @@ export function EquipmentSimulation() {
     const current = new Array(equipment.rings.length).fill(value);
     updateEquipment({ ringsSix: current });
   };
-
-  // Helper to check if item data is outdated by comparing with current gameData
-  const isItemDataOutdated = (item: CraftableItem | null) => {
-    if (!item) return false;
-    
-    // Find the current version of this item in gameData
-    const currentItem = craftableItems.find(i => i.name === item.name && i.position === item.position);
     
     // If item doesn't exist in gameData anymore, it's outdated
-    if (!currentItem) return true;
-    
-    // Check if sixStarStats exists in current data but not in saved item
-    if (currentItem.sixStarStats && !item.sixStarStats) return true;
-    
-    // Compare stats structure - check if all stat keys match
-    const savedStatsKeys = Object.keys(item.stats || {}).sort();
-    const currentStatsKeys = Object.keys(currentItem.stats || {}).sort();
-    
-    if (savedStatsKeys.join(',') !== currentStatsKeys.join(',')) return true;
-    
-    // Compare sixStarStats structure if both exist
-    if (item.sixStarStats && currentItem.sixStarStats) {
-      const savedSixStatsKeys = Object.keys(item.sixStarStats).sort();
-      const currentSixStatsKeys = Object.keys(currentItem.sixStarStats).sort();
-      
-      if (savedSixStatsKeys.join(',') !== currentSixStatsKeys.join(',')) return true;
-    }
-    
-    // Compare stat values (ranges)
-    for (const [key, value] of Object.entries(currentItem.stats)) {
-      const savedValue = item.stats?.[key];
-      if (!savedValue || !Array.isArray(value) || !Array.isArray(savedValue)) continue;
-      
-      const [currentMin, currentMax] = value as [number, number];
-      const [savedMin, savedMax] = savedValue as [number, number];
-      
-      if (currentMin !== savedMin || currentMax !== savedMax) return true;
-    }
-    
-    // Compare sixStarStats values if both exist
-    if (item.sixStarStats && currentItem.sixStarStats) {
-      for (const [key, value] of Object.entries(currentItem.sixStarStats)) {
-        const savedValue = item.sixStarStats[key];
-        if (!savedValue || !Array.isArray(value) || !Array.isArray(savedValue)) continue;
-        
-        const [currentMin, currentMax] = value as [number, number];
-        const [savedMin, savedMax] = savedValue as [number, number];
-        
-        if (currentMin !== savedMin || currentMax !== savedMax) return true;
-      }
-    }
-    
-    return false;
-  };
-
   const equipItem = (item: CraftableItem, position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
+    const reference = createItemReference(item);
     if (position === 'rings' && typeof slotIndex === 'number') {
       const newRings = [...equipment.rings];
-      newRings[slotIndex] = item;
+      newRings[slotIndex] = reference;
       updateEquipment({ rings: newRings });
     } else if (position === 'necklace') {
-      updateEquipment({ necklace: item });
+      updateEquipment({ necklace: reference });
     } else if (position === 'charm') {
-      updateEquipment({ charm: item });
+      updateEquipment({ charm: reference });
     }
   };
 
   const unequipItem = (position: 'rings' | 'necklace' | 'charm', slotIndex?: number) => {
     if (position === 'rings' && typeof slotIndex === 'number') {
       const newRings = [...equipment.rings];
-      newRings[slotIndex] = null;
+      newRings[slotIndex] = null as any;
       updateEquipment({ rings: newRings });
     } else if (position === 'necklace') {
       updateEquipment({ necklace: null });
@@ -273,7 +221,9 @@ export function EquipmentSimulation() {
     });
 
     // 6) Equipment Items (rings, necklace, charm) using max roll values, respecting 5★/6★ selection
-    equipment.rings.forEach((item, idx) => {
+    equipment.rings.forEach((itemRef, idx) => {
+      if (!itemRef) return;
+      const item = getItemByReference(itemRef);
       if (!item) return;
       const selected = getItemStatsForTier(item, isRingSix(idx));
       Object.entries(selected).forEach(([key, value]) => {
@@ -284,22 +234,28 @@ export function EquipmentSimulation() {
       });
     });
     if (equipment.necklace) {
-      const selected = getItemStatsForTier(equipment.necklace, equipment.necklaceSix);
-      Object.entries(selected).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          const maxValue = value[1];
-          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
-        }
-      });
+      const item = getItemByReference(equipment.necklace);
+      if (item) {
+        const selected = getItemStatsForTier(item, equipment.necklaceSix);
+        Object.entries(selected).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            const maxValue = value[1];
+            if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+          }
+        });
+      }
     }
     if (equipment.charm) {
-      const selected = getItemStatsForTier(equipment.charm, equipment.charmSix);
-      Object.entries(selected).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          const maxValue = value[1];
-          if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
-        }
-      });
+      const item = getItemByReference(equipment.charm);
+      if (item) {
+        const selected = getItemStatsForTier(item, equipment.charmSix);
+        Object.entries(selected).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            const maxValue = value[1];
+            if (stats[key] !== undefined) stats[key] += maxValue; else stats[key] = maxValue;
+          }
+        });
+      }
     }
 
     return stats; // Museum & Events applied later
@@ -675,43 +631,40 @@ export function EquipmentSimulation() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {equipment.rings.map((ring, index) => (
-                  <Card key={index} className="relative">
-                    <CardContent className="p-3">
-                      {ring ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Badge className={getRarityClass(ring.rarity)} variant="outline">
-                              {ring.rarity}
-                            </Badge>
-                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                              <span>5★</span>
-                              <Switch checked={isRingSix(index)} onCheckedChange={(v)=> setRingSix(index, v)} aria-label={`Toggle ${ring.name} tier`} />
-                              <span>6★</span>
+                {equipment.rings.map((ringRef, index) => {
+                  const ring = ringRef ? getItemByReference(ringRef) : null;
+                  return (
+                    <Card key={index} className="relative">
+                      <CardContent className="p-3">
+                        {ring ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Badge className={getRarityClass(ring.rarity)} variant="outline">
+                                {ring.rarity}
+                              </Badge>
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                                <span>5★</span>
+                                <Switch checked={isRingSix(index)} onCheckedChange={(v)=> setRingSix(index, v)} aria-label={`Toggle ${ring.name} tier`} />
+                                <span>6★</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => unequipItem('rings', index)}
+                                className="h-6 w-6 p-0"
+                                disabled={isLoading}
+                              >
+                                <X size={12} />
+                              </Button>
                             </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => unequipItem('rings', index)}
-                              className="h-6 w-6 p-0"
-                              disabled={isLoading}
-                            >
-                              <X size={12} />
-                            </Button>
+                            <p className="text-sm font-medium">{ring.name}</p>
+                            {renderItemStats(ring, isRingSix(index))}
                           </div>
-                          <p className="text-sm font-medium">{ring.name}</p>
-                          {renderItemStats(ring, isRingSix(index))}
-                          {isItemDataOutdated(ring) && (
-                            <div className="text-xs text-amber-500 flex items-center gap-1">
-                              <span>⚠️ {t('outdatedItemWarning')}</span>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="outline" className="w-full h-16 border-dashed">
-                              <Plus size={16} />
+                        ) : (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="outline" className="w-full h-16 border-dashed">
+                                <Plus size={16} />
                             </Button>
                           </DialogTrigger>
                           <DialogContent>
@@ -769,7 +722,8 @@ export function EquipmentSimulation() {
                       )}
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -781,44 +735,41 @@ export function EquipmentSimulation() {
                 <CardTitle>{t('necklace')}</CardTitle>
               </CardHeader>
               <CardContent>
-                {equipment.necklace ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Badge className={getRarityClass(equipment.necklace.rarity)} variant="outline">
-                        {equipment.necklace.rarity}
-                      </Badge>
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span>5★</span>
-                        <Switch checked={!!equipment.necklaceSix} onCheckedChange={(v)=> updateEquipment({ necklaceSix: v })} aria-label={`Toggle ${equipment.necklace.name} tier`} />
-                        <span>6★</span>
+                {(() => {
+                  const necklace = equipment.necklace ? getItemByReference(equipment.necklace) : null;
+                  return necklace ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Badge className={getRarityClass(necklace.rarity)} variant="outline">
+                          {necklace.rarity}
+                        </Badge>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                          <span>5★</span>
+                          <Switch checked={!!equipment.necklaceSix} onCheckedChange={(v)=> updateEquipment({ necklaceSix: v })} aria-label={`Toggle ${necklace.name} tier`} />
+                          <span>6★</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => unequipItem('necklace')}
+                          disabled={isLoading}
+                        >
+                          <X size={12} />
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => unequipItem('necklace')}
-                        disabled={isLoading}
-                      >
-                        <X size={12} />
-                      </Button>
+                      <p className="font-medium">{necklace.name}</p>
+                      {renderItemStats(necklace, equipment.necklaceSix)}
                     </div>
-                    <p className="font-medium">{equipment.necklace.name}</p>
-                    {renderItemStats(equipment.necklace, equipment.necklaceSix)}
-                    {isItemDataOutdated(equipment.necklace) && (
-                      <div className="text-xs text-amber-500 flex items-center gap-1">
-                        <span>⚠️ {t('outdatedItemWarning')}</span>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full h-24 border-dashed">
-                        <Plus size={20} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Select Necklace</DialogTitle>
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full h-24 border-dashed">
+                          <Plus size={20} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Select Necklace</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-2 max-h-96 overflow-y-auto">
                         {availableItems
@@ -868,7 +819,8 @@ export function EquipmentSimulation() {
                       <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                     </DialogContent>
                   </Dialog>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
 
@@ -877,48 +829,45 @@ export function EquipmentSimulation() {
                 <CardTitle>{t('charm')}</CardTitle>
               </CardHeader>
               <CardContent>
-                {equipment.charm ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Badge className={getRarityClass(equipment.charm.rarity)} variant="outline">
-                        {equipment.charm.rarity}
-                      </Badge>
-                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span>5★</span>
-                        <Switch checked={!!equipment.charmSix} onCheckedChange={(v)=> updateEquipment({ charmSix: v })} aria-label={`Toggle ${equipment.charm.name} tier`} />
-                        <span>6★</span>
+                {(() => {
+                  const charm = equipment.charm ? getItemByReference(equipment.charm) : null;
+                  return charm ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Badge className={getRarityClass(charm.rarity)} variant="outline">
+                          {charm.rarity}
+                        </Badge>
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                          <span>5★</span>
+                          <Switch checked={!!equipment.charmSix} onCheckedChange={(v)=> updateEquipment({ charmSix: v })} aria-label={`Toggle ${charm.name} tier`} />
+                          <span>6★</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => unequipItem('charm')}
+                          disabled={isLoading}
+                        >
+                          <X size={12} />
+                        </Button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => unequipItem('charm')}
-                        disabled={isLoading}
-                      >
-                        <X size={12} />
-                      </Button>
+                      <p className="font-medium">{charm.name}</p>
+                      {renderItemStats(charm, equipment.charmSix)}
                     </div>
-                    <p className="font-medium">{equipment.charm.name}</p>
-                    {renderItemStats(equipment.charm, equipment.charmSix)}
-                    {isItemDataOutdated(equipment.charm) && (
-                      <div className="text-xs text-amber-500 flex items-center gap-1">
-                        <span>⚠️ {t('outdatedItemWarning')}</span>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" className="w-full h-24 border-dashed">
-                        <Plus size={20} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Select Charm</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {availableItems
-                          .filter(item => item.position === 'Charm')
+                  ) : (
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="w-full h-24 border-dashed">
+                          <Plus size={20} />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Select Charm</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-2 max-h-96 overflow-y-auto">
+                          {availableItems
+                            .filter(item => item.position === 'Charm')
                           .map(item => {
                             const allStatKeys = new Set<string>();
                             Object.keys(item.stats || {}).forEach(k => allStatKeys.add(k));
@@ -964,7 +913,8 @@ export function EquipmentSimulation() {
                       <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                     </DialogContent>
                   </Dialog>
-                )}
+                  );
+                })()}
               </CardContent>
             </Card>
           </div>
