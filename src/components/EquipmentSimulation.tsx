@@ -667,11 +667,11 @@ export function EquipmentSimulation() {
                                 <Plus size={16} />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent>
+                          <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                             <DialogHeader>
                               <DialogTitle>Select Ring</DialogTitle>
                             </DialogHeader>
-                            <div className="space-y-2 max-h-96 overflow-y-auto">
+                            <div className="space-y-2">
                               {availableItems
                                 .filter(item => item.position === 'Ring')
                                 .map(item => {
@@ -715,8 +715,8 @@ export function EquipmentSimulation() {
                                     </Tooltip>
                                   );
                                 })}
+                              <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                             </div>
-                            <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
                           </DialogContent>
                         </Dialog>
                       )}
@@ -767,11 +767,11 @@ export function EquipmentSimulation() {
                           <Plus size={20} />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                         <DialogHeader>
                           <DialogTitle>Select Necklace</DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-2 max-h-96 overflow-y-auto">
+                      <div className="space-y-2">
                         {availableItems
                           .filter(item => item.position === 'Necklace')
                           .map(item => {
@@ -861,11 +861,11 @@ export function EquipmentSimulation() {
                           <Plus size={20} />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className='max-w-2xl max-h-[95vh] overflow-y-auto'>
                         <DialogHeader>
                           <DialogTitle>Select Charm</DialogTitle>
                         </DialogHeader>
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
+                        <div className="space-y-2">
                           {availableItems
                             .filter(item => item.position === 'Charm')
                           .map(item => {

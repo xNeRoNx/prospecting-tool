@@ -21,6 +21,7 @@ export function Crafting() {
   const [quantity, setQuantity] = useState(1);
   const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
   const [consumedMaterials, setConsumedMaterials] = useState<Record<string, Record<string, number>>>({});
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   
   // Helper function to resolve CraftingItem to full CraftableItem
   const resolveItem = (craftingItem: CraftingItem): CraftableItem | null => {
@@ -44,6 +45,7 @@ export function Crafting() {
     setCraftingItems(current => [...(current ?? []), newCraftingItem]);
     setSelectedItem(null);
     setQuantity(1);
+    setIsAddDialogOpen(false);
   };
 
   const removeCraftingItem = (id: string) => {
@@ -479,61 +481,59 @@ export function Crafting() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">{t('crafting')}</h2>
         
-        <Dialog>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus size={16} />
               {t('addItem')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[95vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl h-[95vh]">
             <DialogHeader>
               <DialogTitle>{t('addItem')}</DialogTitle>
             </DialogHeader>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
-                {craftableItemsSorted.map(item => (
-                  <Card 
-                    key={item.name}
-                    className={`cursor-pointer transition-colors hover:bg-accent/10 ${
-                      selectedItem?.name === item.name ? 'bg-accent/20 border-accent' : ''
-                    }`}
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    <CardContent className="p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Badge className={getRarityClass(item.rarity)} variant="outline">
-                              {item.rarity}
-                            </Badge>
-                            <span className="font-medium">{item.name}</span>
-                            <Badge variant="secondary">{item.position}</Badge>
-                          </div>
-                          
-                          <div className="text-xs space-y-1">
-                            {formatStats(item).map((stat, index) => (
-                              <div key={index} className="text-muted-foreground">{stat}</div>
-                            ))}
-                          </div>
-                          
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="font-medium text-green-600">${item.cost.toLocaleString()}</span>
-                            <Wrench size={12} className="text-muted-foreground" />
-                            <span className="text-muted-foreground">
-                              {item.recipe.map(r => `${r.amount} ${r.material}`).join(', ')}
-                            </span>
-                          </div>
+            <div className="grid grid-cols-1 gap-3 overflow-y-auto">
+              {craftableItemsSorted.map(item => (
+                <Card 
+                  key={item.name}
+                  className={`cursor-pointer transition-colors hover:bg-accent/10 ${
+                    selectedItem?.name === item.name ? 'bg-accent/20 border-accent' : ''
+                  }`}
+                  onClick={() => setSelectedItem(selectedItem?.name === item.name ? null : item)}
+                >
+                  <CardContent className="p-3">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge className={getRarityClass(item.rarity)} variant="outline">
+                            {item.rarity}
+                          </Badge>
+                          <span className="font-medium">{item.name}</span>
+                          <Badge variant="secondary">{item.position}</Badge>
+                        </div>
+                        
+                        <div className="text-xs space-y-1">
+                          {formatStats(item).map((stat, index) => (
+                            <div key={index} className="text-muted-foreground">{stat}</div>
+                          ))}
+                        </div>
+                        
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="font-medium text-green-600">${item.cost.toLocaleString()}</span>
+                          <Wrench size={12} className="text-muted-foreground" />
+                          <span className="text-muted-foreground">
+                            {item.recipe.map(r => `${r.amount} ${r.material}`).join(', ')}
+                          </span>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
+            <div className="space-y-4 relative bottom-0 left-0 w-full">
               <p className='text-xs text-muted-foreground'>*{t('statsInfo')}</p>
-              
               {selectedItem && (
                 <div className="space-y-4 border-t pt-4">
                   <div className="flex items-center gap-4">
@@ -881,7 +881,7 @@ export function Crafting() {
                       <Plus size={14} /> {t('addMaterial')}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                  <DialogContent className="max-w-lg max-h-[95vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>{t('addMaterial')}</DialogTitle>
                     </DialogHeader>

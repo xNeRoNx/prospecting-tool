@@ -166,7 +166,7 @@ export function Museum() {
               <span className="hidden sm:inline">{t('overview')}</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t('museumOverview')} (max)</DialogTitle>
             </DialogHeader>
