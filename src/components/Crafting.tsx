@@ -21,6 +21,79 @@ export function Crafting() {
   const [quantity, setQuantity] = useState(1);
   const [showMinimalMaterials, setShowMinimalMaterials] = useState(false);
   const [consumedMaterials, setConsumedMaterials] = useState<Record<string, Record<string, number>>>({});
+  
+  // Helper to check if item data is outdated by comparing with current gameData
+  const isItemDataOutdated = (item: CraftableItem) => {
+    // Find the current version of this item in gameData
+    const currentItem = craftableItems.find(i => i.name === item.name && i.position === item.position);
+    
+    // If item doesn't exist in gameData anymore, it's outdated
+    if (!currentItem) return true;
+    
+    // Check if sixStarStats exists in current data but not in saved item
+    if (currentItem.sixStarStats && !item.sixStarStats) return true;
+    
+    // Compare stats structure - check if all stat keys match
+    const savedStatsKeys = Object.keys(item.stats || {}).sort();
+    const currentStatsKeys = Object.keys(currentItem.stats || {}).sort();
+    
+    if (savedStatsKeys.join(',') !== currentStatsKeys.join(',')) return true;
+    
+    // Compare sixStarStats structure if both exist
+    if (item.sixStarStats && currentItem.sixStarStats) {
+      const savedSixStatsKeys = Object.keys(item.sixStarStats).sort();
+      const currentSixStatsKeys = Object.keys(currentItem.sixStarStats).sort();
+      
+      if (savedSixStatsKeys.join(',') !== currentSixStatsKeys.join(',')) return true;
+    }
+    
+    // Compare stat values (ranges)
+    for (const [key, value] of Object.entries(currentItem.stats)) {
+      const savedValue = item.stats?.[key];
+      if (!savedValue || !Array.isArray(value) || !Array.isArray(savedValue)) continue;
+      
+      const [currentMin, currentMax] = value as [number, number];
+      const [savedMin, savedMax] = savedValue as [number, number];
+      
+      if (currentMin !== savedMin || currentMax !== savedMax) return true;
+    }
+    
+    // Compare sixStarStats values if both exist
+    if (item.sixStarStats && currentItem.sixStarStats) {
+      for (const [key, value] of Object.entries(currentItem.sixStarStats)) {
+        const savedValue = item.sixStarStats[key];
+        if (!savedValue || !Array.isArray(value) || !Array.isArray(savedValue)) continue;
+        
+        const [currentMin, currentMax] = value as [number, number];
+        const [savedMin, savedMax] = savedValue as [number, number];
+        
+        if (currentMin !== savedMin || currentMax !== savedMax) return true;
+      }
+    }
+    
+    // Compare recipe structure
+    if (item.recipe && currentItem.recipe) {
+      if (item.recipe.length !== currentItem.recipe.length) return true;
+      
+      // Check if all recipe materials and amounts match
+      for (let i = 0; i < item.recipe.length; i++) {
+        const savedRecipe = item.recipe[i];
+        const currentRecipe = currentItem.recipe[i];
+        
+        if (savedRecipe.material !== currentRecipe.material ||
+            savedRecipe.amount !== currentRecipe.amount ||
+            savedRecipe.weight !== currentRecipe.weight) {
+          return true;
+        }
+      }
+    }
+    
+    // Compare cost
+    if (item.cost !== currentItem.cost) return true;
+    
+    return false;
+  };
+
   const addToCraftingList = (item: CraftableItem, qty: number) => {
     const id = Date.now().toString();
     const newCraftingItem: CraftingItem = {
@@ -599,6 +672,12 @@ export function Crafting() {
                               <span className="font-medium break-words">{craftingItem.item.name}</span>
                               <Badge variant="secondary" className="text-xs">{craftingItem.item.position}</Badge>
                             </div>
+                            
+                            {isItemDataOutdated(craftingItem.item) && (
+                              <div className="text-xs text-amber-500 flex items-center gap-1">
+                                <span>⚠️ {t('outdatedItemWarning')}</span>
+                              </div>
+                            )}
                             
                             <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
                               <span>{t('quantity')}: {(craftingItem.craftedCount || 0)}/{craftingItem.quantity}</span>

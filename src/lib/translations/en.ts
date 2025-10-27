@@ -257,7 +257,10 @@ export const en = {
 
   // PWA Install
   pwaInstallTitle: "Install as App (PWA)",
-  pwaInstallDesc: "You can install this tool as a standalone app for faster access and a distraction‑free window.\n\nDesktop (Chrome / Edge): Click the install icon in the address bar (or browser menu > Install). After installation it opens in its own window.\n\nAndroid: A prompt may appear automatically after a short usage period. If not: browser menu > Add to Home Screen / Install App.\n\niOS (Safari): Share button > Add to Home Screen (no automatic prompt on iOS).\n\nLanguage on Install: The app installs using the manifest for the language active when you opened the page. Switching language later doesn’t require reinstall—shortcuts adapt via internal routing.\n\nOffline: Core UI + manifests + icons are cached. Dynamic data (future weight scaling formulas etc.) may still need a connection.",
+  pwaInstallDesc: "You can install this tool as a standalone app for faster access and a distraction‑free window.\n\nDesktop (Chrome / Edge): Click the install icon in the address bar (or browser menu > Install). After installation it opens in its own window.\n\nAndroid: A prompt may appear automatically after a short usage period. If not: browser menu > Add to Home Screen / Install App.\n\niOS (Safari): Share button > Add to Home Screen (no automatic prompt on iOS).\n\nLanguage on Install: The app installs using the manifest for the language active when you opened the page. Switching language later doesn't require reinstall—shortcuts adapt via internal routing.\n\nOffline: Core UI + manifests + icons are cached. Dynamic data (future weight scaling formulas etc.) may still need a connection.",
+  
+  // Warnings
+  outdatedItemWarning: "Item data may be outdated",
 } as const;
 
 export type En = typeof en;

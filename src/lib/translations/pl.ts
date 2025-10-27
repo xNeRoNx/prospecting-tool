@@ -253,6 +253,9 @@ export const pl = {
   // PWA Install
   pwaInstallTitle: "Instalacja jako Aplikacja (PWA)",
   pwaInstallDesc: "Możesz zainstalować to narzędzie jako samodzielną aplikację dla szybszego dostępu i okna bez rozpraszania.\n\nDesktop (Chrome / Edge): Kliknij ikonę instalacji w pasku adresu (lub menu przeglądarki > Zainstaluj). Po instalacji uruchamia się w osobnym oknie.\n\nAndroid: Powinien pojawić się prompt po krótkim użyciu. Jeśli nie: menu przeglądarki > Dodaj do ekranu głównego / Zainstaluj aplikację.\n\niOS (Safari): Przycisk Udostępniania > Dodaj do ekranu początkowego (iOS nie pokazuje automatycznego komunikatu).\n\nJęzyk przy instalacji: Instalacja użyje manifestu języka aktywnego w chwili wejścia na stronę. Późniejsza zmiana języka nie wymaga reinstalacji—skrót działa dalej.\n\nOffline: Rdzeń UI + manifesty + ikony są w cache. Dynamiczne dane mogą wymagać połączenia.",
+  
+  // Warnings
+  outdatedItemWarning: "Dane przedmiotu mogą być nieaktualne",
 } as const;
 
 export type Pl = typeof pl;

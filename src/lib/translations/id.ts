@@ -250,6 +250,9 @@ export const id = {
   // PWA Install
   pwaInstallTitle: "Instal sebagai Aplikasi (PWA)",
   pwaInstallDesc: "Anda bisa menginstal alat ini sebagai aplikasi mandiri untuk akses cepat dan jendela tanpa gangguan.\n\nDesktop (Chrome / Edge): Klik ikon instal di bilah alamat (atau menu browser > Install). Setelah terpasang akan terbuka di jendela terpisah.\n\nAndroid: Prompt bisa muncul otomatis setelah beberapa saat penggunaan. Jika tidak: menu browser > Tambahkan ke Layar Utama / Install App.\n\niOS (Safari): Tombol Share > Add to Home Screen (tidak ada prompt otomatis di iOS).\n\nBahasa saat instal: Aplikasi memakai manifest bahasa aktif saat pertama kali halaman dibuka. Mengganti bahasa nanti tidak perlu instal ulang—routing internal menyesuaikan.\n\nOffline: UI inti + manifest + ikon berada di cache. Data dinamis tertentu mungkin tetap butuh koneksi.",
+  
+  // Warnings
+  outdatedItemWarning: "Data item mungkin sudah usang",
 } as const;
 
 export type Id = typeof id;

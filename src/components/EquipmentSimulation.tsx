@@ -702,7 +702,9 @@ export function EquipmentSimulation() {
                           <p className="text-sm font-medium">{ring.name}</p>
                           {renderItemStats(ring, isRingSix(index))}
                           {isItemDataOutdated(ring) && (
-                            <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p>
+                            <div className="text-xs text-amber-500 flex items-center gap-1">
+                              <span>⚠️ {t('outdatedItemWarning')}</span>
+                            </div>
                           )}
                         </div>
                       ) : (
@@ -802,7 +804,9 @@ export function EquipmentSimulation() {
                     <p className="font-medium">{equipment.necklace.name}</p>
                     {renderItemStats(equipment.necklace, equipment.necklaceSix)}
                     {isItemDataOutdated(equipment.necklace) && (
-                      <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p>
+                      <div className="text-xs text-amber-500 flex items-center gap-1">
+                        <span>⚠️ {t('outdatedItemWarning')}</span>
+                      </div>
                     )}
                   </div>
                 ) : (
@@ -896,7 +900,9 @@ export function EquipmentSimulation() {
                     <p className="font-medium">{equipment.charm.name}</p>
                     {renderItemStats(equipment.charm, equipment.charmSix)}
                     {isItemDataOutdated(equipment.charm) && (
-                      <p className="text-[10px] text-red-500 italic">*old data, delete and add again</p>
+                      <div className="text-xs text-amber-500 flex items-center gap-1">
+                        <span>⚠️ {t('outdatedItemWarning')}</span>
+                      </div>
                     )}
                   </div>
                 ) : (
