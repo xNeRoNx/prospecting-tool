@@ -649,7 +649,7 @@ export const craftableItems: CraftableItem[] = [
       { material: "Lost Soul", amount: 10 },
     ],
     stats: { digStrength: [80, 200], shakeStrength: [20, 50], sizeBoost: [30, 180], walkSpeed: [1, 4] },
-    sixStarStats: { digStrength: [80, 220], shakeSpeed: [20, 54], sizeBoost: [30, 200], walkSpeed: [1, 4.5] },
+    sixStarStats: { digStrength: [80, 220], shakeStrength: [20, 54], sizeBoost: [30, 200], walkSpeed: [1, 4.5] },
     cost: 220000000
   },
   {

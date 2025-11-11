@@ -1,8 +1,8 @@
 import { type StatMap, type EquipmentStats, type EventMultipliers } from './types';
 import { shovels, pans, enchants, potions, events, getItemByReference } from '@/lib/gameData';
 
-const PRE_EVENTS = ["Luck Totem", "Strength Totem"];
-const POST_EVENTS = ["Meteor Shower", "Admin Shower", "Perfect Dig", "Blizzard", "Codes", "Daily luck bonus", "Friends"];
+const PRE_EVENTS = ["Luck Totem", "Strength Totem", "Luminant Totem"];
+// Any event not listed in PRE_EVENTS will be treated as a post-museum multiplier by default.
 
 export function formatStatValue(key: string, value: number): string {
   const suffix = key.includes('Speed') || key.includes('Boost') ? '%' : '';
@@ -21,8 +21,8 @@ export function separateEventMultipliers(activeEvents: string[]): EventMultiplie
   activeEvents.forEach(name => {
     const event = events.find(e => e.name === name);
     if (!event) return;
-    const target = PRE_EVENTS.includes(name) ? preTotals : POST_EVENTS.includes(name) ? postTotals : null;
-    if (!target) return;
+    // If an event is a PRE event, apply it before museum multipliers; otherwise treat it as POST.
+    const target = PRE_EVENTS.includes(name) ? preTotals : postTotals;
     Object.entries(event.effects).forEach(([stat, mult]) => {
       const add = mult - 1;
       target[stat] = (target[stat] || 0) + add;
