@@ -107,6 +107,15 @@ export const potions: Potions[] = [
   { name: "Basic Capacity Potion", effects: { capacity: 25 } },
   { name: "Greater Luck Potion", effects: { luck: 10 } },
   { name: "Greater Capacity Potion", effects: { capacity: 50 } },
+  { name: "Volcanic Luck Potion", effects: { luck: 20 } },
+  { name: "Volcanic Strength Potion", effects: { digStrength: 5 } },
+  { name: "Supreme Luck Potion", effects: { luck: 50 } },
+  { name: "Frozen Luck Potion", effects: { luck: 100 } },
+  { name: "Frozen Speed Potion", effects: { digSpeed: 20, shakeSpeed: 20 } },
+  { name: "Cryonic Brew (without summit seeker rune)", effects: { luck: 300, capacity: 200 } },
+  { name: "Cryonic Brew (with summit seeker rune)", effects: { luck: 300, capacity: 200, digSpeed: 15, shakeSpeed: 15 } },
+  { name: "Witches Brew", effects: { luck: 500, digStrength: 50 } },
+  { name: "Ambrosia", effects: { luck: 1111 } },
 ];
 
 export const availableStats: (keyof Effects)[] = [
@@ -330,6 +339,20 @@ export const craftableItems: CraftableItem[] = [
     sixStarStats: { digStrength: [10, 32], shakeStrength: [1, 9] },
     cost: 10000000
   },
+  {
+    name: "Spider Bowtie",
+    rarity: "Legendary",
+    position: "Necklace",
+    recipe: [
+      { material: "Emerald", amount: 3 }, 
+      { material: "Diamond", amount: 2 }, 
+      { material: "Bone", amount: 5 }, 
+      { material: "Catseye", amount: 1 }
+    ],
+    stats: { luck: [10, 80], capacity: [40, 100], sellBoost: [20, 50], modifierBoost: [20, 50] },
+    sixStarStats: { luck: [10, 85], capacity: [40, 110], sellBoost: [20, 55], modifierBoost: [20, 55] },
+    cost: 300
+  },
   // Mythic
   {
     name: "Royal Federation Crown",
@@ -388,15 +411,15 @@ export const craftableItems: CraftableItem[] = [
   {
     name: "Amulet of Spirits",
     rarity: "Mythic",
-    position: "Ring",
+    position: "Necklace",
     recipe: [
       { material: "Vortessence", amount: 1 },
       { material: "Painite", amount: 1 },
       { material: "Bone", amount: 10 },
       { material: "Lost Soul", amount: 5 }
     ],
-    stats: { luck: [50, 140], digSpeed: [20, 40], shakeSpeed: [20, 40], sellBoost: [10, 30] },
-    sixStarStats: { luck: [50, 150], digSpeed: [20, 42], shakeSpeed: [20, 42], sellBoost: [10, 32] },
+    stats: { luck: [50, 140], digSpeed: [20, 40], shakeSpeed: [20, 40], sizeBoost: [10, 30] },
+    sixStarStats: { luck: [50, 150], digSpeed: [20, 42], shakeSpeed: [20, 42], sizeBoost: [10, 32] },
     cost: 50000000
   },
   {
@@ -502,6 +525,31 @@ export const craftableItems: CraftableItem[] = [
     cost: 75000000
   },
   {
+    name: "Purifying Ring",
+    rarity: "Mythic",
+    position: "Ring",
+    recipe: [
+      { material: "Diamond", amount: 5 },
+      { material: "Chrysoberyl", amount: 1 },
+      { material: "Diopside", amount: 10 },
+      { material: "Bismuth", amount: 1 },
+      { material: "Mercury", amount: 5 }
+    ],
+    stats: {
+      luck: [20, 80],
+      digStrength: [10, 80],
+      capacity: [20, 100],
+      shakeStrength: [5, 27]
+    },
+    sixStarStats: {
+      luck: [20, 90],
+      digStrength: [10, 90],
+      capacity: [20, 110],
+      shakeStrength: [5, 30]
+    },
+    cost: 80000000
+  },
+  {
     name: "Solar Ring",
     rarity: "Mythic",
     position: "Ring",
@@ -548,6 +596,19 @@ export const craftableItems: CraftableItem[] = [
     },
     cost: 150000000
   },
+  {
+    name: "Candy Sack",
+    rarity: "Mythic",
+    position: "Necklace",
+    recipe: [
+      { material: "Vortessence", amount: 2 },
+      { material: "Cinnabar", amount: 5 },
+      { material: "Lost Soul", amount: 10 }
+    ],
+    stats: { luck: [30, 100], capacity: [100, 300], sizeBoost: [30, 70] },
+    sixStarStats: { luck: [30, 110], capacity: [100, 325], sizeBoost: [30, 75] },
+    cost: 150000000
+  },
   // Exotic
   {
     name: "Fossilized Crown",
@@ -587,8 +648,8 @@ export const craftableItems: CraftableItem[] = [
       { material: "Radiant Gold", amount: 1 },
       { material: "Lost Soul", amount: 10 },
     ],
-    stats: { digStrength: [80, 200], shakeSpeed: [20, 50], sizeBoost: [30, 180], walkSpeed: [1, 4] },
-    sixStarStats: { digStrength: [80, 220], shakeSpeed: [20, 54], sizeBoost: [30, 220], walkSpeed: [1, 4.5] },
+    stats: { digStrength: [80, 200], shakeStrength: [20, 50], sizeBoost: [30, 180], walkSpeed: [1, 4] },
+    sixStarStats: { digStrength: [80, 220], shakeSpeed: [20, 54], sizeBoost: [30, 200], walkSpeed: [1, 4.5] },
     cost: 220000000
   },
   {
@@ -633,6 +694,35 @@ export const craftableItems: CraftableItem[] = [
     sixStarStats: { luck: [50, 245], digStrength: [5, 45], capacity: [10, 110], shakeStrength: [2, 11], sizeBoost: [5, 16] },
     cost: 400000000
   },
+  {
+    name: "Venomshank",
+    rarity: "Exotic",
+    position: "Necklace",
+    recipe: [
+      { material: "Star Garnet", amount: 3 },
+      { material: "Bismuth", amount: 10 },
+      { material: "Mythril", amount: 3 },
+      { material: "Bloodstone", amount: 1 },
+    ],
+    stats: { luck: [600, 1200], digStrength: [-100, -50], digSpeed: [-60, -40], sizeBoost: [20, 50], sellBoost: [20, 50] },
+    sixStarStats: { luck: [600, 1300], digStrength: [-100, -45], digSpeed: [-60, -38], sizeBoost: [20, 55], sellBoost: [20, 55] },
+    cost: 500000000
+  },
+  {
+    name: "Witch Hat",
+    rarity: "Exotic",
+    position: "Charm",
+    recipe: [
+      { material: "Pumpkin Soul", amount: 1 },
+      { material: "Volcanic Core", amount: 1 },
+      { material: "Inferlume", amount: 1 },
+      { material: "Prismara", amount: 1 },
+      { material: "Cryonic Artifact", amount: 1 },
+    ],
+    stats: { luck: [400, 1000], modifierBoost: [40, 100], walkSpeed: [1, 5] },
+    sixStarStats: { luck: [400, 1100], modifierBoost: [40, 110], walkSpeed: [1, 5.5] },
+    cost: 1000
+  },
 ];
 
 // Note: The maxWeight values for each ore are determined by specific game mechanics.
@@ -662,6 +752,7 @@ export const ores: Ore[] = [
   { name: "Titanium", rarity: "Uncommon", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.08 }, maxWeight: 40 },
   { name: "Topaz", rarity: "Uncommon", museumEffect: { stat: "Capacity", maxMultiplier: 0.08 }, maxWeight: 22 },
   { name: "Zircon", rarity: "Uncommon", museumEffect: { stat: "Size Boost", maxMultiplier: 0.05 }, maxWeight: 15 },
+  { name: "Electrum", rarity: "Uncommon", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.08 }, maxWeight: 40 },
   
   // Rare
   { name: "Amber", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.13 }, maxWeight: 21 },
@@ -676,6 +767,7 @@ export const ores: Ore[] = [
   { name: "Pyrelith", rarity: "Rare", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.13 }, maxWeight: 30 },
   { name: "Ruby", rarity: "Rare", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.13 }, maxWeight: 20 },
   { name: "Silver Clamshell", rarity: "Rare", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.13 }, maxWeight: 21 },
+  { name: "Diopside", rarity: "Rare", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.13 }, maxWeight: 21 },
 
   // Epic
   { name: "Ammonite Fossil", rarity: "Epic", museumEffect: { stat: "Capacity", maxMultiplier: 0.2 }, maxWeight: 49 },
@@ -713,6 +805,7 @@ export const ores: Ore[] = [
   { name: "Tourmaline", rarity: "Legendary", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.3 }, maxWeight: 25 },
   { name: "Uranium", rarity: "Legendary", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.3 }, maxWeight: 59 },
   { name: "Volcanic Key", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 20 },
+  { name: "Bismuth", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 78 },
   
   // Mythic
   { name: "Chrysoberyl", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 21 },
@@ -729,6 +822,7 @@ export const ores: Ore[] = [
   { name: "Vortessence", rarity: "Mythic", museumEffect: { stat: "Capacity", maxMultiplier: 0.5 }, maxWeight: 20 },
   { name: "Volcanic Core", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.25 },
     specialEffects: { digStrength: 0.25, sizeBoost: 0.2 }, maxWeight: 20 },
+  { name: "Star Garnet", rarity: "Mythic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.35 }, maxWeight: 20 },
   
   // Exotic
   { name: "Cryogenic Artifact", rarity: "Exotic", museumEffect: { stat: "Dig Strength", maxMultiplier: 1.2 },
@@ -740,7 +834,8 @@ export const ores: Ore[] = [
   { name: "Umbrite", rarity: "Exotic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.4 },
     specialEffects: { digSpeed: 0.4, shakeSpeed: 0.4 }, maxWeight: 30 },
   { name: "Voidstone", rarity: "Exotic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 },
-    specialEffects: { luck: 0.4, capacity: 0.4 }, maxWeight: 20 }
+    specialEffects: { luck: 0.4, capacity: 0.4 }, maxWeight: 20 },
+  { name: "Bloodstone", rarity: "Exotic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.56 }, maxWeight: 40 }
 ];
 
 export const modifiers = [
@@ -770,7 +865,7 @@ export const getModifierBonus = (rarity: string): number => {
     case 'Mythic':
       return 0.05;
     case 'Exotic':
-      return 0.1;
+      return 0.08;
     default:
       return 0.01;
   }
@@ -839,11 +934,7 @@ export const enchants: Enchant[] = [
 
 export interface Event {
   name: string;
-  effects: {
-    luck?: number;
-    digStrength?: number;
-    shakeStrength?: number;
-  };
+  effects: Effects;
 }
 
 export const events: Event[] = [
@@ -853,6 +944,7 @@ export const events: Event[] = [
   { name: "Admin 8x Luck", effects: { luck: 8 } },
   { name: "Luck Totem", effects: { luck: 2 } },
   { name: "Strength Totem", effects: { digStrength: 2, shakeStrength: 2 } },
+  { name: "Luminant Totem", effects: { capacity: 1.5 } },
   { name: "Perfect Dig", effects: { digStrength: 1.5 } },
   { name: "Blizzard", effects: { luck: 2 } },
   { name: "Codes", effects: { luck: 2 } },
