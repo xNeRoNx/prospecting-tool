@@ -1,34 +1,91 @@
-import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
 import type { MuseumSlot } from '@/hooks/useAppData';
+import { ores, modifiers, getModifierBonus, availableStats, type Effects } from '@/lib/gameData';
+import { RARITY_SLOT_COUNTS } from './types';
 
-export interface MuseumBonuses {
-  luck: number;
-  digStrength: number;
-  digSpeed: number;
-  shakeStrength: number;
-  shakeSpeed: number;
-  capacity: number;
-  sellBoost: number;
-  sizeBoost: number;
-  modifierBoost: number;
-}
+/**
+ * Initializes empty museum slots for all rarity tiers.
+ * Creates the initial state with undefined ores and modifiers.
+ * 
+ * @returns Array of empty museum slots
+ */
+export const initializeMuseumSlots = (): MuseumSlot[] => {
+  const slots: MuseumSlot[] = [];
+  
+  Object.entries(RARITY_SLOT_COUNTS).forEach(([rarity, slotsCount]) => {
+    for (let i = 0; i < slotsCount; i++) {
+      slots.push({ 
+        id: `${rarity.toLowerCase()}-${i}`, 
+        ore: undefined, 
+        modifier: undefined 
+      });
+    }
+  });
+  
+  return slots;
+};
+
+/**
+ * Returns the CSS class name for a given ore rarity.
+ * Used for consistent color coding throughout the museum UI.
+ * 
+ * @param rarity - The ore rarity tier
+ * @returns CSS class name (e.g., "rarity-exotic")
+ */
+export const getRarityClass = (rarity: string): string => {
+  return `rarity-${rarity.toLowerCase()}`;
+};
+
+/**
+ * Groups museum slots by their rarity tier.
+ * Ensures all slots exist even if not present in the input array.
+ * 
+ * @param museumSlots - Array of current museum slots
+ * @returns Object with rarity keys and arrays of slots as values
+ */
+export const groupSlotsByRarity = (museumSlots: MuseumSlot[]) => {
+  const grouped: { [key: string]: MuseumSlot[] } = {};
+
+  Object.entries(RARITY_SLOT_COUNTS).forEach(([rarity, slotsCount]) => {
+    grouped[rarity] = [];
+    
+    for (let slotIndex = 0; slotIndex < slotsCount; slotIndex++) {
+      const slotId = `${rarity.toLowerCase()}-${slotIndex}`;
+      const existingSlot = museumSlots.find(s => s.id === slotId);
+      grouped[rarity].push(existingSlot || { id: slotId });
+    }
+  });
+
+  return grouped;
+};
+
+/**
+ * Returns a set of ore names that are currently placed in museum slots.
+ * Used to prevent duplicate ore placement.
+ * 
+ * @param museumSlots - Array of current museum slots
+ * @returns Set of ore names currently in use
+ */
+export const getUsedOres = (museumSlots: MuseumSlot[]): Set<string> => {
+  const used = new Set<string>();
+  museumSlots.forEach(slot => {
+    if (slot.ore) used.add(slot.ore);
+  });
+  return used;
+};
 
 /**
  * Calculates museum bonuses (maximum - based on entered weights and selected modifiers).
  * Preserves identical logic as previously duplicated functions in Museum.tsx and EquipmentSimulation.tsx.
+ * 
+ * @param museumSlots - Array of museum slots with placed ores
+ * @returns Object containing all calculated stat bonuses
  */
-export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses {
-  const bonuses: MuseumBonuses = {
-    luck: 0,
-    digStrength: 0,
-    digSpeed: 0,
-    shakeStrength: 0,
-    shakeSpeed: 0,
-    capacity: 0,
-    sellBoost: 0,
-    sizeBoost: 0,
-    modifierBoost: 0
-  };
+export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): Effects {
+  // Initialize bonuses with all stats set to 0
+  const bonuses = availableStats.reduce((acc, stat) => {
+    acc[stat] = 0;
+    return acc;
+  }, {} as Effects) as Required<Effects>;
 
   museumSlots.forEach(slot => {
     if (!slot.ore) return;
@@ -37,21 +94,18 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): MuseumBonuses
 
     // Special multi-stat effects
     if (ore.specialEffects) {
-      const museumBonusKeys: (keyof MuseumBonuses)[] = [
-        'luck', 'digStrength', 'digSpeed', 'shakeStrength', 'shakeSpeed',
-        'capacity', 'sellBoost', 'sizeBoost', 'modifierBoost'
-      ];
       Object.entries(ore.specialEffects).forEach(([stat, value]) => {
-        if (museumBonusKeys.includes(stat as keyof MuseumBonuses)) {
+        if (availableStats.includes(stat as keyof Effects)) {
           let effectValue = value;
           // Additional bonus for modifier (according to previous logic - added here AND below in switch)
           if (slot.modifier) {
             effectValue += getModifierBonus(ore.rarity);
           }
-          bonuses[stat as keyof MuseumBonuses] += effectValue;
+          bonuses[stat as keyof Effects] += effectValue;
         }
       });
     } else {
+      // Regular single-stat effects
       const baseMultiplier = ore.museumEffect.maxMultiplier;
       const effectStat = ore.museumEffect.stat.toLowerCase();
       if (effectStat.includes('luck')) bonuses.luck += baseMultiplier;
