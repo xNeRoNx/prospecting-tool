@@ -19,7 +19,7 @@ interface MaterialsInventoryProps {
   t: (key: any) => string;
 }
 
-export default function MaterialsInventory({
+export function MaterialsInventory({
   ownedMaterials,
   isLoading,
   onUpdateMaterial,

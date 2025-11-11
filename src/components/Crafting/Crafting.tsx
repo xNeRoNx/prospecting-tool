@@ -4,11 +4,11 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import type { CraftingItem } from '@/hooks/useAppData.tsx';
 import { craftableItems, type CraftableItem, getItemByReference } from '@/lib/gameData';
-import AddItemDialog from './AddItemDialog';
-import CraftingListItem from './CraftingListItem';
-import MaterialsSummary from './MaterialsSummary';
-import MaterialsInventory from './MaterialsInventory';
-import CraftableItemsInfo from './CraftableItemsInfo';
+import { AddItemDialog } from './AddItemDialog';
+import { CraftingListItem } from './CraftingListItem';
+import { MaterialsSummary } from './MaterialsSummary';
+import { MaterialsInventory } from './MaterialsInventory';
+import { CraftableItemsInfo } from './CraftableItemsInfo';
 import { useCraftingLogic } from './useCraftingLogic';
 import {
   calculateMaterialSummary,
@@ -24,7 +24,7 @@ import {
  * Manages the crafting workflow including adding items, tracking materials,
  * and handling the crafting progression
  */
-export default function Crafting() {
+export function Crafting() {
   const { t } = useLanguage();
   const { isLoading, craftingItems, setCraftingItems, ownedMaterials, setOwnedMaterials } = useAppData();
   

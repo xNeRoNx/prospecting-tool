@@ -20,7 +20,7 @@ interface MaterialsSummaryProps {
   t: (key: any) => string;
 }
 
-export default function MaterialsSummary({
+export function MaterialsSummary({
   materialSummary,
   totalCost,
   showMinimalMaterials,

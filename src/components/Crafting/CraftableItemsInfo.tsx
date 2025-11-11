@@ -9,7 +9,7 @@ interface CraftableItemsInfoProps {
   t: (key: any) => string;
 }
 
-export default function CraftableItemsInfo({
+export function CraftableItemsInfo({
   craftableItems,
   resolveItem,
   t

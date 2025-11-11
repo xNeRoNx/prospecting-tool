@@ -20,7 +20,7 @@ interface CraftingListItemProps {
   t: (key: any) => string;
 }
 
-export default function CraftingListItem({
+export function CraftingListItem({
   craftingItem,
   fullItem,
   showMinimalMaterials,

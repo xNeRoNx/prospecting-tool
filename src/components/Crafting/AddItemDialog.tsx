@@ -31,7 +31,7 @@ interface AddItemDialogProps {
  * - Recipe preview with scaled quantities
  * - Item stats display
  */
-export default function AddItemDialog({
+export function AddItemDialog({
   isOpen,
   onOpenChange,
   selectedItem,
