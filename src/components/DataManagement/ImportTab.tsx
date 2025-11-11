@@ -6,6 +6,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { ImportPreview } from './ImportPreview';
 import { ImportPreview as ImportPreviewType, DataSelection } from './types';
 
+/**
+ * Props for the ImportTab component
+ */
 interface ImportTabProps {
   showPreview: boolean;
   importPreview: ImportPreviewType | null;
@@ -21,6 +24,10 @@ interface ImportTabProps {
   onCancelImport: () => void;
   isLoading: boolean;
 }
+
+/**
+ * Tab component for importing data from file or URL
+ */
 
 export function ImportTab({
   showPreview,

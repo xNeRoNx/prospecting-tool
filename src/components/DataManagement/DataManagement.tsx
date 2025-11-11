@@ -10,6 +10,10 @@ import { ImportTab } from './ImportTab';
 import { SaveDialog } from './SaveDialog';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 
+/**
+ * Main data management component providing import, export, and save slot functionality.
+ * Allows users to save their game progress, export to file/URL, and import from various sources.
+ */
 export function DataManagement() {
   const { t } = useLanguage();
   const {

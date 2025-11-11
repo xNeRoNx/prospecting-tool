@@ -7,6 +7,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { DataSelectionForm } from './DataSelectionForm';
 import { ImportPreview as ImportPreviewType, DataSelection } from './types';
 
+/**
+ * Props for the ImportPreview component
+ */
 interface ImportPreviewProps {
   importPreview: ImportPreviewType;
   importSelection: DataSelection;
@@ -17,6 +20,10 @@ interface ImportPreviewProps {
   onCancelImport: () => void;
   isLoading: boolean;
 }
+
+/**
+ * Component displaying a preview of data to be imported with selection options
+ */
 
 export function ImportPreview({
   importPreview,

@@ -2,6 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/hooks/useLanguage';
 
+/**
+ * Props for the DeleteConfirmDialog component
+ */
 interface DeleteConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -10,6 +13,10 @@ interface DeleteConfirmDialogProps {
   onDelete: () => void;
   isLoading: boolean;
 }
+
+/**
+ * Confirmation dialog for deleting a save slot
+ */
 
 export function DeleteConfirmDialog({
   open,

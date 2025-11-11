@@ -3,6 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { useLanguage } from '@/hooks/useLanguage';
 
+/**
+ * Props for the SaveSlotsTab component
+ */
 interface SaveSlotsTabProps {
   saves: any[];
   isLoading: boolean;
@@ -10,6 +13,10 @@ interface SaveSlotsTabProps {
   onLoadFromSlot: (slot: number) => void;
   onDeleteSave: (slot: number) => void;
 }
+
+/**
+ * Tab component displaying save slots with save/load/delete functionality
+ */
 
 export function SaveSlotsTab({
   saves,

@@ -5,6 +5,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SaveMetadata } from './types';
 
+/**
+ * Props for the SaveDialog component
+ */
 interface SaveDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -15,6 +18,10 @@ interface SaveDialogProps {
   onSave: () => void;
   isLoading: boolean;
 }
+
+/**
+ * Dialog for saving data to a slot with metadata input
+ */
 
 export function SaveDialog({
   open,

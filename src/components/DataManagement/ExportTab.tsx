@@ -7,6 +7,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { DataSelectionForm } from './DataSelectionForm';
 import { DataSelection, SaveMetadata } from './types';
 
+/**
+ * Props for the ExportTab component
+ */
 interface ExportTabProps {
   saveMetadata: SaveMetadata;
   onSaveMetadataChange: (metadata: SaveMetadata) => void;
@@ -21,6 +24,10 @@ interface ExportTabProps {
   museumSlotsCount: number;
   ownedMaterialsCount: number;
 }
+
+/**
+ * Tab component for exporting data to file or URL
+ */
 
 export function ExportTab({
   saveMetadata,

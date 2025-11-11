@@ -3,6 +3,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/hooks/useLanguage';
 import { DataSelection } from './types';
 
+/**
+ * Props for the DataSelectionForm component
+ */
 interface DataSelectionFormProps {
   selection: DataSelection;
   onUpdateSelection: (type: keyof DataSelection, checked: boolean) => void;
@@ -14,6 +17,10 @@ interface DataSelectionFormProps {
   museumSlotsCount: number;
   ownedMaterialsCount: number;
 }
+
+/**
+ * Form component for selecting which data categories to import or export
+ */
 
 export function DataSelectionForm({
   selection,

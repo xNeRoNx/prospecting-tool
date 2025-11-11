@@ -5,6 +5,15 @@ import { toast } from 'sonner';
 import { DataSelection, SaveMetadata, ImportPreview } from './types';
 import { useLanguage } from '@/hooks/useLanguage';
 
+/**
+ * Custom hook managing all data management operations including:
+ * - Save slots (save, load, delete)
+ * - Export to file or URL
+ * - Import from file or URL
+ * - Data selection for import/export
+ * 
+ * @returns Object containing state and handlers for data management operations
+ */
 export function useDataManagement() {
   const { t } = useLanguage();
   const { 
@@ -53,12 +62,16 @@ export function useDataManagement() {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [deleteConfirmSlot, setDeleteConfirmSlot] = useState<number | null>(null);
 
-  // Load saves on start
+  /**
+   * Load all saves when component mounts
+   */
   useEffect(() => {
     setSaves(getSaves());
   }, [getSaves]);
 
-  // Reset import state when dialog closes
+  /**
+   * Reset all dialog states when the main dialog closes
+   */
   useEffect(() => {
     if (!dataDialogOpen) {
       setImportPreview(null);
@@ -70,7 +83,9 @@ export function useDataManagement() {
     }
   }, [dataDialogOpen]);
 
-  // Import via URL hash
+  /**
+   * Handle automatic import from URL hash parameter on page load
+   */
   useEffect(() => {
     const hash = window.location.hash;
     if (!hash.includes('#data=')) return;
@@ -90,7 +105,11 @@ export function useDataManagement() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Helper functions
+  /**
+   * Get only the selected data categories based on current selection
+   * @param selection - DataSelection object indicating which categories to include
+   * @returns Object containing only the selected data categories
+   */
   const getSelectedData = (selection: DataSelection) => {
     const data: any = {};
     if (selection.craftingItems) data.craftingItems = craftingItems;
@@ -100,14 +119,23 @@ export function useDataManagement() {
     return data;
   };
 
+  /**
+   * Update a single export selection option
+   */
   const updateExportSelection = (type: keyof DataSelection, checked: boolean) => {
     setExportSelection(prev => ({ ...prev, [type]: checked }));
   };
 
+  /**
+   * Update a single import selection option
+   */
   const updateImportSelection = (type: keyof DataSelection, checked: boolean) => {
     setImportSelection(prev => ({ ...prev, [type]: checked }));
   };
 
+  /**
+   * Select all export options
+   */
   const selectAllExport = () => {
     setExportSelection({ 
       craftingItems: true, 
@@ -117,6 +145,9 @@ export function useDataManagement() {
     });
   };
 
+  /**
+   * Deselect all export options
+   */
   const selectNoneExport = () => {
     setExportSelection({ 
       craftingItems: false, 
@@ -126,6 +157,9 @@ export function useDataManagement() {
     });
   };
 
+  /**
+   * Select all import options
+   */
   const selectAllImport = () => {
     setImportSelection({ 
       craftingItems: true, 
@@ -135,6 +169,9 @@ export function useDataManagement() {
     });
   };
 
+  /**
+   * Deselect all import options
+   */
   const selectNoneImport = () => {
     setImportSelection({ 
       craftingItems: false, 
@@ -144,7 +181,9 @@ export function useDataManagement() {
     });
   };
 
-  // Export handlers
+  /**
+   * Export selected data as a JSON file download
+   */
   const handleExportFile = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
@@ -170,6 +209,9 @@ export function useDataManagement() {
     }
   };
 
+  /**
+   * Export selected data as a shareable URL with compressed data in hash
+   */
   const handleExportToUrl = () => {
     try {
       const selectedData = getSelectedData(exportSelection);
@@ -192,9 +234,14 @@ export function useDataManagement() {
     }
   };
 
-  // Import handlers
+  /**
+   * Trigger the hidden file input for file selection
+   */
   const handleImportFile = () => fileInputRef.current?.click();
 
+  /**
+   * Handle file selection and parse JSON content
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -212,6 +259,9 @@ export function useDataManagement() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  /**
+   * Import data from a URL containing compressed data in hash
+   */
   const handleImportFromUrl = () => {
     if (!urlInput.trim()) return toast.error(t('importError'));
     try {
@@ -227,6 +277,9 @@ export function useDataManagement() {
     }
   };
 
+  /**
+   * Confirm and execute the import with selected data categories
+   */
   const handleConfirmImport = () => {
     if (!importPreview) return;
     try {
@@ -240,18 +293,26 @@ export function useDataManagement() {
     }
   };
 
+  /**
+   * Cancel the current import operation and clear preview
+   */
   const handleCancelImport = () => {
     setImportPreview(null);
     setShowPreview(false);
     setUrlInput('');
   };
 
-  // Save slot handlers
+  /**
+   * Open the save dialog for a specific slot
+   */
   const openSaveDialog = (slot: number) => {
     setSelectedSaveSlot(slot);
     setSaveDialogOpen(true);
   };
 
+  /**
+   * Save current data to a specific slot with metadata
+   */
   const handleSaveToSlot = (slot: number) => {
     try {
       saveToSlot(slot, saveMetadata);
@@ -265,6 +326,9 @@ export function useDataManagement() {
     }
   };
 
+  /**
+   * Load data from a specific save slot
+   */
   const handleLoadFromSlot = (slot: number) => {
     try {
       loadFromSlot(slot);
@@ -276,6 +340,9 @@ export function useDataManagement() {
     }
   };
 
+  /**
+   * Delete a save from a specific slot
+   */
   const handleDeleteSave = (slot: number) => {
     try {
       deleteSave(slot);
