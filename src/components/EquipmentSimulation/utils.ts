@@ -21,8 +21,8 @@ export function separateEventMultipliers(activeEvents: string[]): EventMultiplie
   activeEvents.forEach(name => {
     const event = events.find(e => e.name === name);
     if (!event) return;
-  // If an event is a PRE event, apply it before museum multipliers; otherwise treat it as POST.
-  const target = PRE_EVENTS.includes(name) ? preTotals : postTotals;
+    // If an event is a PRE event, apply it before museum multipliers; otherwise treat it as POST.
+    const target = PRE_EVENTS.includes(name) ? preTotals : postTotals;
     Object.entries(event.effects).forEach(([stat, mult]) => {
       const add = mult - 1;
       target[stat] = (target[stat] || 0) + add;
