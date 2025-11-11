@@ -1,3 +1,4 @@
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -91,6 +92,3 @@ export function CustomStatsCard({
     </Card>
   );
 }
-
-// Add React import
-import * as React from 'react';
