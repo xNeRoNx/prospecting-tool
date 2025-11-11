@@ -934,12 +934,7 @@ export const enchants: Enchant[] = [
 
 export interface Event {
   name: string;
-  effects: {
-    luck?: number;
-    digStrength?: number;
-    shakeStrength?: number;
-    capacity?: number;
-  };
+  effects: Effects;
 }
 
 export const events: Event[] = [
