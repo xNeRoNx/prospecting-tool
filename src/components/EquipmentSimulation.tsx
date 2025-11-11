@@ -13,7 +13,7 @@ import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import { craftableItems, shovels, pans, enchants, potions, events, availableStats, type CraftableItem, getItemByReference, createItemReference } from '@/lib/gameData';
-import { calculateMuseumBonuses as sharedCalculateMuseumBonuses } from '@/lib/museumUtils';
+import { calculateMuseumBonuses as sharedCalculateMuseumBonuses } from '@/components/Museum';
 
 export function EquipmentSimulation() {
   const { t } = useLanguage();
