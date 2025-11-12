@@ -259,6 +259,43 @@ export const pt = {
   
   // Warnings
   outdatedItemWarning: "Dados do item podem estar desatualizados",
+  
+  // Inventory Generator
+  generator: "Gerador",
+  inventoryGenerator: "Gerador de Inventário",
+  inventoryGeneratorDescription: "Gere automaticamente o melhor equipamento e layout de museu para maximizar a eficiência de sorte",
+  equipmentSlots: "Slots de Equipamento",
+  equipmentSlotsDesc: "Configure quais slots de equipamento otimizar",
+  numberOfRings: "Número de Anéis",
+  includeNecklace: "Incluir Colar",
+  includeCharm: "Incluir Amuleto",
+  includeShovel: "Incluir Pá",
+  includePan: "Incluir Bateia",
+  includeEnchant: "Incluir Encantamento",
+  lockedItems: "Itens Bloqueados",
+  lockedItemsDesc: "Forçar itens específicos a serem selecionados",
+  options: "Opções",
+  optimizeMuseum: "Otimizar Layout do Museu",
+  useSixStar: "Usar Itens 6★ (quando disponível)",
+  preservePotions: "Preservar Poções Ativas",
+  preserveEvents: "Preservar Eventos Ativos",
+  generateOptimal: "Gerar Configuração Ideal",
+  generating: "Gerando...",
+  generatorWarning: "Um backup da sua configuração atual será criado antes de aplicar as mudanças. O processo de otimização requer alto uso de CPU e pode demorar um tempo. A página pode congelar ou ficar sem resposta durante os cálculos.",
+  optimizationComplete: "Otimização Completa!",
+  efficiency: "Eficiência",
+  applyChanges: "Aplicar Alterações",
+  itemRarityFilter: "Filtro de Raridade de Itens",
+  deselectAll: "Desmarcar Todos",
+  progressStarting: "Iniciando otimização...",
+  progressGenerating: "Gerando combinações de equipamento...",
+  progressTesting: "Testando combinações...",
+  progressCalculating: "Calculando estatísticas finais...",
+  progressComplete: "Otimização concluída!",
+  stat: "Estatística",
+  current: "Atual",
+  optimized: "Otimizado",
+  change: "Mudança",
 } as const;
 
 export type Pt = typeof pt;

@@ -261,6 +261,43 @@ export const pl = {
   
   // Warnings
   outdatedItemWarning: "Dane przedmiotu mogą być nieaktualne",
+  
+  // Inventory Generator
+  generator: "Generator",
+  inventoryGenerator: "Generator Ekwipunku",
+  inventoryGeneratorDescription: "Automatycznie generuj najlepszy ekwipunek i układ muzeum aby zmaksymalizować efektywność szczęścia",
+  equipmentSlots: "Sloty Ekwipunku",
+  equipmentSlotsDesc: "Skonfiguruj które sloty ekwipunku optymalizować",
+  numberOfRings: "Liczba Pierścieni",
+  includeNecklace: "Uwzględnij Naszyjnik",
+  includeCharm: "Uwzględnij Talizman",
+  includeShovel: "Uwzględnij Łopatę",
+  includePan: "Uwzględnij Patelnię",
+  includeEnchant: "Uwzględnij Zaklęcie",
+  lockedItems: "Zablokowane Przedmioty",
+  lockedItemsDesc: "Wymuś wybór konkretnych przedmiotów",
+  options: "Opcje",
+  optimizeMuseum: "Optymalizuj Układ Muzeum",
+  useSixStar: "Użyj przedmiotów 6★ (gdy dostępne)",
+  preservePotions: "Zachowaj Aktywne Mikstury",
+  preserveEvents: "Zachowaj Aktywne Eventy",
+  generateOptimal: "Wygeneruj Optymalny Zestaw",
+  generating: "Generowanie...",
+  generatorWarning: "Przed zastosowaniem zmian zostanie utworzona kopia zapasowa Twojego obecnego zestawu. Proces optymalizacji wymaga dużego użycia CPU i może potrwać dłuższą chwilę. Strona może się zaciąć lub nie odpowiadać na czas obliczeń.",
+  optimizationComplete: "Optymalizacja Ukończona!",
+  efficiency: "Efektywność",
+  applyChanges: "Zastosuj Zmiany",
+  itemRarityFilter: "Filtr Rzadkości Przedmiotów",
+  deselectAll: "Odznacz Wszystkie",
+  progressStarting: "Rozpoczynanie optymalizacji...",
+  progressGenerating: "Generowanie kombinacji ekwipunku...",
+  progressTesting: "Testowanie kombinacji...",
+  progressCalculating: "Obliczanie końcowych statystyk...",
+  progressComplete: "Optymalizacja zakończona!",
+  stat: "Statystyka",
+  current: "Obecne",
+  optimized: "Zoptymalizowane",
+  change: "Zmiana",
 } as const;
 
 export type Pl = typeof pl;

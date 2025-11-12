@@ -266,6 +266,43 @@ export const en = {
   
   // Warnings
   outdatedItemWarning: "Item data may be outdated",
+  
+  // Inventory Generator
+  generator: "Generator",
+  inventoryGenerator: "Inventory Generator",
+  inventoryGeneratorDescription: "Automatically generate the best equipment and museum layout to maximize luck efficiency",
+  equipmentSlots: "Equipment Slots",
+  equipmentSlotsDesc: "Configure which equipment slots to optimize",
+  numberOfRings: "Number of Rings",
+  includeNecklace: "Include Necklace",
+  includeCharm: "Include Charm",
+  includeShovel: "Include Shovel",
+  includePan: "Include Pan",
+  includeEnchant: "Include Enchant",
+  lockedItems: "Locked Items",
+  lockedItemsDesc: "Force specific items to be selected",
+  options: "Options",
+  optimizeMuseum: "Optimize Museum Layout",
+  useSixStar: "Use 6★ Items (when available)",
+  preservePotions: "Preserve Active Potions",
+  preserveEvents: "Preserve Active Events",
+  generateOptimal: "Generate Optimal Setup",
+  generating: "Generating...",
+  generatorWarning: "A backup of your current setup will be created before applying changes. The optimization process requires high CPU usage and may take a while. The page may freeze or become unresponsive during calculations.",
+  optimizationComplete: "Optimization Complete!",
+  efficiency: "Efficiency",
+  applyChanges: "Apply Changes",
+  itemRarityFilter: "Item Rarity Filter",
+  deselectAll: "Deselect All",
+  progressStarting: "Starting optimization...",
+  progressGenerating: "Generating equipment combinations...",
+  progressTesting: "Testing combinations...",
+  progressCalculating: "Calculating final stats...",
+  progressComplete: "Optimization complete!",
+  stat: "Stat",
+  current: "Current",
+  optimized: "Optimized",
+  change: "Change",
 } as const;
 
 export type En = typeof en;

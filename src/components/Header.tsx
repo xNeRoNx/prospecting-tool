@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heart, Palette } from '@phosphor-icons/react';
+import { Heart, Palette, Sparkle } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { DataManagement } from '@/components/DataManagement';
 import { SupportDialog } from '@/components/SupportDialog';
+import { InventoryGenerator } from '@/components/InventoryGenerator';
 import { useAppData } from '@/hooks/useAppData.tsx';
 import { useState } from 'react';
 
@@ -13,6 +14,7 @@ export function Header() {
   const { currentTheme, setTheme, themes } = useTheme();
   const { isLoading } = useAppData();
   const [showSupport, setShowSupport] = useState(false);
+  const [showGenerator, setShowGenerator] = useState(false);
 
   return (
     <>
@@ -112,6 +114,17 @@ export function Header() {
               <DataManagement />
 
               <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowGenerator(true)}
+                className="gap-2"
+                disabled={isLoading}
+              >
+                <Sparkle size={16} weight="fill" />
+                <span className="hidden sm:inline">{t('generator' as any) || 'Generator'}</span>
+              </Button>
+
+              <Button
                 variant="default"
                 size="sm"
                 onClick={() => setShowSupport(true)}
@@ -126,6 +139,11 @@ export function Header() {
           </div>
         </div>
       </header>
+
+      <InventoryGenerator
+        open={showGenerator}
+        onOpenChange={setShowGenerator}
+      />
 
       <SupportDialog
         open={showSupport}

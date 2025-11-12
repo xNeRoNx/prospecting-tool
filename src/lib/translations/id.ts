@@ -258,6 +258,43 @@ export const id = {
   
   // Warnings
   outdatedItemWarning: "Data item mungkin sudah usang",
+  
+  // Inventory Generator
+  generator: "Generator",
+  inventoryGenerator: "Generator Inventaris",
+  inventoryGeneratorDescription: "Buat peralatan dan tata letak museum terbaik secara otomatis untuk memaksimalkan efisiensi keberuntungan",
+  equipmentSlots: "Slot Peralatan",
+  equipmentSlotsDesc: "Konfigurasikan slot peralatan mana yang akan dioptimalkan",
+  numberOfRings: "Jumlah Cincin",
+  includeNecklace: "Sertakan Kalung",
+  includeCharm: "Sertakan Jimat",
+  includeShovel: "Sertakan Sekop",
+  includePan: "Sertakan Pan",
+  includeEnchant: "Sertakan Enchant",
+  lockedItems: "Item Terkunci",
+  lockedItemsDesc: "Paksa item tertentu untuk dipilih",
+  options: "Opsi",
+  optimizeMuseum: "Optimalkan Tata Letak Museum",
+  useSixStar: "Gunakan Item 6★ (jika tersedia)",
+  preservePotions: "Pertahankan Ramuan Aktif",
+  preserveEvents: "Pertahankan Event Aktif",
+  generateOptimal: "Buat Setup Optimal",
+  generating: "Membuat...",
+  generatorWarning: "Cadangan pengaturan Anda saat ini akan dibuat sebelum menerapkan perubahan. Proses optimasi memerlukan penggunaan CPU yang tinggi dan mungkin memakan waktu cukup lama. Halaman mungkin membeku atau tidak responsif selama kalkulasi.",
+  optimizationComplete: "Optimasi Selesai!",
+  efficiency: "Efisiensi",
+  applyChanges: "Terapkan Perubahan",
+  itemRarityFilter: "Filter Kelangkaan Item",
+  deselectAll: "Batalkan Semua Pilihan",
+  progressStarting: "Memulai optimasi...",
+  progressGenerating: "Menghasilkan kombinasi peralatan...",
+  progressTesting: "Menguji kombinasi...",
+  progressCalculating: "Menghitung statistik akhir...",
+  progressComplete: "Optimasi selesai!",
+  stat: "Statistik",
+  current: "Saat Ini",
+  optimized: "Dioptimalkan",
+  change: "Perubahan",
 } as const;
 
 export type Id = typeof id;
