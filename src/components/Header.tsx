@@ -27,11 +27,11 @@ export function Header() {
 
             <div className="flex items-center gap-2 flex-shrink-0">
               <Select value={currentTheme ?? undefined} onValueChange={(val) => setTheme(val as any)} disabled={isLoading}>
-                <SelectTrigger className="w-16 sm:w-34">
+                <SelectTrigger className="w-16 lg:w-34">
                   <SelectValue>
                     <div className="flex items-center justify-center w-full">
                       <Palette size={14} />
-                      <span className="hidden sm:inline ml-2">
+                      <span className="hidden lg:inline ml-2">
                         {currentTheme && themes[currentTheme as keyof typeof themes]
                           ? t(themes[currentTheme as keyof typeof themes].nameKey as any)
                           : ''}
@@ -71,13 +71,13 @@ export function Header() {
                 }}
                 disabled={isLoading}
               >
-                <SelectTrigger className="w-20 sm:w-48">
+                <SelectTrigger className="w-20 lg:w-48">
                   <SelectValue>
                     <div className="flex items-center justify-center w-full">
                       <span className="text-sm font-medium">
                         {language === 'en' ? '🇺🇸' : language === 'pl' ? '🇵🇱' : language === 'id' ? '🇮🇩' : '🇧🇷'}
                       </span>
-                      <span className="hidden sm:inline ml-2">
+                      <span className="hidden lg:inline ml-2">
                         {language === 'en' ? t('english') : language === 'pl' ? t('polish') : language === 'id' ? t('indonesian') : t('portuguese')}
                       </span>
                     </div>
@@ -121,7 +121,7 @@ export function Header() {
                 disabled={isLoading}
               >
                 <Sparkle size={16} weight="fill" />
-                <span className="hidden sm:inline">{t('generator' as any) || 'Generator'}</span>
+                <span className="hidden md:inline">{t('generator' as any) || 'Generator'}</span>
               </Button>
 
               <Button

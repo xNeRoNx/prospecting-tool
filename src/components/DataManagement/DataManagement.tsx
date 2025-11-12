@@ -65,7 +65,7 @@ export function DataManagement() {
         <DialogTrigger asChild>
           <Button variant="outline" size="sm" className="gap-2" disabled={isLoading}>
             <Database size={16} />
-            <span className="hidden sm:inline">{t('dataManagement')}</span>
+            <span className="hidden lg:inline">{t('dataManagement')}</span>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-4xl max-h-[95vh] w-[95vw] overflow-y-auto">
