@@ -140,6 +140,9 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): Effects {
           case 'Luck':
             bonuses.luck += modifierValue;
             break;
+          case '2x Luck':
+            bonuses.luck += modifierValue * 2;
+            break;
           case 'Modifier Boost':
             bonuses.modifierBoost += modifierValue;
             break;
