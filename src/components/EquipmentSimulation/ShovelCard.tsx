@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { shovels } from '@/lib/gameData';
-import { formatStatValue } from './utils';
+import { formatStatValue, formatPrice } from './utils';
 
 interface ShovelCardProps {
   selectedShovel: string | null;
@@ -63,7 +63,7 @@ export function ShovelCard({ selectedShovel, onShovelChange, isLoading }: Shovel
                 <SelectItem key={shovel.name} value={shovel.name}>
                   <div className="flex flex-col items-start gap-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{shovel.name} - ${shovel.price.toLocaleString()}</span>
+                      <span className="font-medium">{shovel.name} - {formatPrice(shovel.price, shovel.candy)}</span>
                       {shovel.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                     </div>
                     <div className="text-[10px] text-muted-foreground">

@@ -85,9 +85,12 @@ export function RingsCard({
                   {ring ? (
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Badge className={getRarityClass(ring.rarity)} variant="outline">
-                          {ring.rarity}
-                        </Badge>
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <Badge className={getRarityClass(ring.rarity)} variant="outline">
+                            {ring.rarity}
+                          </Badge>
+                          {ring.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+                        </div>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                           <span>5★</span>
                           <Switch 
@@ -140,6 +143,7 @@ export function RingsCard({
                                           {item.rarity}
                                         </Badge>
                                         <span className="font-medium">{item.name}</span>
+                                        {item.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                                       </div>
                                       
                                       <div className="text-xs space-y-1">

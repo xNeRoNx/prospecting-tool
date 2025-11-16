@@ -33,6 +33,8 @@ export interface CraftableItem {
   stats: Stats;
   sixStarStats?: Stats; // For 6* items
   cost: number;
+  event?: boolean;
+  candy?: boolean;
 }
 
 export interface Ore {
@@ -56,6 +58,7 @@ export interface Shovel {
   };
   price: number;
   event?: boolean;
+  candy?: boolean;
 }
 
 export interface Pan {
@@ -69,6 +72,7 @@ export interface Pan {
   passive?: string;
   price: number;
   event?: boolean;
+  candy?: boolean;
 }
 
 // Reference type for storing item identifiers instead of full objects
@@ -109,12 +113,11 @@ export const potions: Potions[] = [
   { name: "Greater Capacity Potion", effects: { capacity: 50 } },
   { name: "Volcanic Luck Potion", effects: { luck: 20 } },
   { name: "Volcanic Strength Potion", effects: { digStrength: 5 } },
-  { name: "Supreme Luck Potion", effects: { luck: 50 } },
   { name: "Frozen Luck Potion", effects: { luck: 100 } },
   { name: "Frozen Speed Potion", effects: { digSpeed: 20, shakeSpeed: 20 } },
-  { name: "Cryonic Brew (without summit seeker rune)", effects: { luck: 300, capacity: 200 } },
-  { name: "Cryonic Brew (with summit seeker rune)", effects: { luck: 300, capacity: 200, digSpeed: 15, shakeSpeed: 15 } },
   { name: "Witches Brew", effects: { luck: 500, digStrength: 50 } },
+  { name: "Supreme Luck Potion", effects: { luck: 50 } },
+  { name: "Cryonic Brew (with summit seeker rune)", effects: { luck: 300, capacity: 200, digSpeed: 15, shakeSpeed: 15 } },
   { name: "Ambrosia", effects: { luck: 1111 } },
 ];
 
@@ -328,7 +331,8 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { luck: [5, 18], capacity: [10, 30], walkSpeed: [0.5, 1] },
     sixStarStats: { luck: [5, 20], capacity: [10, 32], walkSpeed: [0.5, 1] },
-    cost: 5000000
+    cost: 5000000,
+    event: true
   },
   {
     name: "Dragon Claw",
@@ -351,7 +355,9 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { luck: [10, 80], capacity: [40, 100], sellBoost: [20, 50], modifierBoost: [20, 50] },
     sixStarStats: { luck: [10, 85], capacity: [40, 110], sellBoost: [20, 55], modifierBoost: [20, 55] },
-    cost: 300
+    cost: 300,
+    event: true,
+    candy: true
   },
   // Mythic
   {
@@ -420,7 +426,8 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { luck: [50, 140], digSpeed: [20, 40], shakeSpeed: [20, 40], sizeBoost: [10, 30] },
     sixStarStats: { luck: [50, 150], digSpeed: [20, 42], shakeSpeed: [20, 42], sizeBoost: [10, 32] },
-    cost: 50000000
+    cost: 50000000,
+    event: true
   },
   {
     name: "Mythril Ring",
@@ -607,7 +614,9 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { luck: [30, 100], capacity: [100, 300], sizeBoost: [30, 70] },
     sixStarStats: { luck: [30, 110], capacity: [100, 325], sizeBoost: [30, 75] },
-    cost: 150000000
+    cost: 600,
+    event: true,
+    candy: true
   },
   // Exotic
   {
@@ -650,7 +659,8 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { digStrength: [80, 200], shakeStrength: [20, 50], sizeBoost: [30, 180], walkSpeed: [1, 4] },
     sixStarStats: { digStrength: [80, 220], shakeStrength: [20, 54], sizeBoost: [30, 200], walkSpeed: [1, 4.5] },
-    cost: 220000000
+    cost: 220000000,
+    event: true
   },
   {
     name: "Antlers of Life",
@@ -695,6 +705,20 @@ export const craftableItems: CraftableItem[] = [
     cost: 400000000
   },
   {
+    name: "Otherwordly Ring",
+    rarity: "Exotic",
+    position: "Ring",
+    recipe: [
+      { material: "Astral Spore", amount: 1 },
+      { material: "Vineheart", amount: 1 },
+      { material: "Red Beryl", amount: 3 },
+      { material: "Gloomcap", amount: 10 }
+    ],
+    stats: { luck: [50, 250], digSpeed: [0, 20], shakeSpeed: [0, 20], sizeBoost: [5, 20], sellBoost: [10, 30] },
+    sixStarStats: { luck: [50, 275], digSpeed: [0, 22], shakeSpeed: [0, 22], sizeBoost: [5, 21], sellBoost: [10, 32] },
+    cost: 400000000
+  },
+  {
     name: "Venomshank",
     rarity: "Exotic",
     position: "Necklace",
@@ -721,7 +745,9 @@ export const craftableItems: CraftableItem[] = [
     ],
     stats: { luck: [400, 1000], modifierBoost: [40, 100], walkSpeed: [1, 5] },
     sixStarStats: { luck: [400, 1100], modifierBoost: [40, 110], walkSpeed: [1, 5.5] },
-    cost: 1000
+    cost: 1000,
+    event: true,
+    candy: true
   },
 ];
 
@@ -773,7 +799,7 @@ export const ores: Ore[] = [
   { name: "Ammonite Fossil", rarity: "Epic", museumEffect: { stat: "Capacity", maxMultiplier: 0.2 }, maxWeight: 49 },
   { name: "Ashvein", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.14 }, maxWeight: 20 },
   { name: "Aurorite", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 30 },
-  { name: "Bone", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.2 }, maxWeight: 47 },
+  { name: "Bone", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.14 }, maxWeight: 47 },
   { name: "Borealite", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 20 },
   { name: "Cobalt", rarity: "Epic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.2 }, maxWeight: 38 },
   { name: "Emerald", rarity: "Epic", museumEffect: { stat: "Luck", maxMultiplier: 0.2 }, maxWeight: 20 },
@@ -785,6 +811,7 @@ export const ores: Ore[] = [
   { name: "Opal", rarity: "Epic", museumEffect: { stat: "Shake Speed", maxMultiplier: 0.2 }, maxWeight: 20 },
   { name: "Osmium", rarity: "Epic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.2 }, maxWeight: 80 },
   { name: "Pyronium", rarity: "Epic", museumEffect: { stat: "Sell Boost", maxMultiplier: 0.2 }, maxWeight: 55 },
+  { name: "Mercury", rarity: "Epic", museumEffect: { stat: "Shake Strength", maxMultiplier: 0.2 }, maxWeight: 78 },
   
   // Legendary
   { name: "Aetherite", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 20 },
@@ -806,6 +833,7 @@ export const ores: Ore[] = [
   { name: "Uranium", rarity: "Legendary", museumEffect: { stat: "Modifier Boost", maxMultiplier: 0.3 }, maxWeight: 59 },
   { name: "Volcanic Key", rarity: "Legendary", museumEffect: { stat: "Size Boost", maxMultiplier: 0.21 }, maxWeight: 20 },
   { name: "Bismuth", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 78 },
+  { name: "Gloomcap", rarity: "Legendary", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.3 }, maxWeight: 20 },
   
   // Mythic
   { name: "Chrysoberyl", rarity: "Mythic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 }, maxWeight: 21 },
@@ -823,6 +851,7 @@ export const ores: Ore[] = [
   { name: "Volcanic Core", rarity: "Mythic", museumEffect: { stat: "Dig Strength", maxMultiplier: 0.25 },
     specialEffects: { digStrength: 0.25, sizeBoost: 0.2 }, maxWeight: 20 },
   { name: "Star Garnet", rarity: "Mythic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.35 }, maxWeight: 20 },
+  { name: "Red Beryl", rarity: "Mythic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.35 }, maxWeight: 20 },
   
   // Exotic
   { name: "Cryogenic Artifact", rarity: "Exotic", museumEffect: { stat: "Dig Strength", maxMultiplier: 1.2 },
@@ -835,7 +864,8 @@ export const ores: Ore[] = [
     specialEffects: { digSpeed: 0.4, shakeSpeed: 0.4 }, maxWeight: 30 },
   { name: "Voidstone", rarity: "Exotic", museumEffect: { stat: "Luck", maxMultiplier: 0.5 },
     specialEffects: { luck: 0.4, capacity: 0.4 }, maxWeight: 20 },
-  { name: "Bloodstone", rarity: "Exotic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.56 }, maxWeight: 40 }
+  { name: "Bloodstone", rarity: "Exotic", museumEffect: { stat: "Size Boost", maxMultiplier: 0.56 }, maxWeight: 40 },
+  { name: "Astral Spore", rarity: "Exotic", museumEffect: { stat: "Dig Speed", maxMultiplier: 0.8 }, maxWeight: 20 },
 ];
 
 export const modifiers = [
@@ -888,8 +918,9 @@ export const shovels: Shovel[] = [
   { name: "Galactic Shovel", stats: { digStrength: 60, digSpeed: 80, toughness: 6 }, price: 2000000000, event: true },
   { name: "Icebreaker Shovel", stats: { digStrength: 60, digSpeed: 110, toughness: 6 }, price: 10000000000 },
   { name: "Lifetouched Shovel", stats: { digStrength: 100, digSpeed: 100, toughness: 7 }, price: 80000000000 },
-  { name: "Pumpkin Shovel", stats: { digStrength: 100, digSpeed: 125, toughness: 7 }, price: 0, event: true },
-  { name: "Abyssal Shovel", stats: { digStrength: 125, digSpeed: 110, toughness: 7 }, price: 200000000000 }
+  { name: "Pumpkin Shovel", stats: { digStrength: 100, digSpeed: 125, toughness: 8 }, price: 1000, candy: true, event: true },
+  { name: "Abyssal Shovel", stats: { digStrength: 125, digSpeed: 110, toughness: 8 }, price: 200000000000 },
+  { name: "Venomspade", stats: { digStrength: 200, digSpeed: 80, toughness: 8 }, price: 500000000000 }
 ];
 
 export const pans: Pan[] = [
@@ -908,8 +939,9 @@ export const pans: Pan[] = [
   { name: "Galactic Pan", stats: { luck: 100, capacity: 500, shakeStrength: 25, shakeSpeed: 100 }, passive: "Size boost of (+25%) and has a chance to give Voidtorn items", price: 2000000000, event: true },
   { name: "Frostbite Pan", stats: { luck: 300, capacity: 250, shakeStrength: 15, shakeSpeed: 80 }, passive: "Size boost of (+25%)", price: 10000000000 },
   { name: "Lifetouched Pan", stats: { luck: 400, capacity: 300, shakeStrength: 8, shakeSpeed: 110 }, passive: "Modifier boost of (+50%)", price: 100000000000 },
-  { name: "Pumpkin Pan", stats: { luck: 350, capacity: 350, shakeStrength: 20, shakeSpeed: 100 }, passive: "Summons a ghostly spirit", price: 0, event: true },
-  { name: "Abyssal Pan", stats: { luck: 700, capacity: 250, shakeStrength: 8, shakeSpeed: 110 }, passive: "Size boost of (+20%)", price: 200000000000 }
+  { name: "Pumpkin Pan", stats: { luck: 350, capacity: 350, shakeStrength: 20, shakeSpeed: 100 }, passive: "Summons a ghostly spirit", price: 1000, candy: true, event: true },
+  { name: "Abyssal Pan", stats: { luck: 700, capacity: 250, shakeStrength: 8, shakeSpeed: 110 }, passive: "Size boost of (+20%)", price: 200000000000 },
+  { name: "Blightflow Pan", stats: { luck: 500, capacity: 400, shakeStrength: 30, shakeSpeed: 200 }, passive: "Size boost of (+25%)", price: 500000000000 }
 ];
 
 export const enchants: Enchant[] = [
@@ -940,6 +972,8 @@ export interface Event {
 export const events: Event[] = [
   { name: "Meteor Shower", effects: { luck: 2 } },
   { name: "Admin Shower", effects: { luck: 2, digStrength: 2, shakeStrength: 2 } },
+  { name: "Candy Corn", effects: { luck: 1.5 } },
+  { name: "Ghost Gummy", effects: { digStrength: 1.5, shakeStrength: 1.5 } },
   { name: "Admin 4x Luck", effects: { luck: 4 } },
   { name: "Admin 8x Luck", effects: { luck: 8 } },
   { name: "Luck Totem", effects: { luck: 2 } },

@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 
 export function Info() {
   const { t } = useLanguage();
-  const LAST_UPDATE = '26.10.2025';
+  const LAST_UPDATE = '16.11.2025';
 
   return (
     <div className="space-y-8">
@@ -74,7 +74,10 @@ export function Info() {
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="text-sm font-semibold leading-tight">{item.name}</CardTitle>
-                    <Badge className={`rarity-${item.rarity.toLowerCase()}`} variant="outline">{item.rarity}</Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge className={`rarity-${item.rarity.toLowerCase()}`} variant="outline">{item.rarity}</Badge>
+                      {item.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+                    </div>
                   </div>
                   <p className="text-xs text-muted-foreground">{t('position')}: {item.position}</p>
                 </CardHeader>
@@ -124,7 +127,9 @@ export function Info() {
                       </ul>
                     </div>
                   )}
-                  <div className="text-xs text-muted-foreground">{t('cost')}: {item.cost.toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {t('cost')}: {item.candy ? `${item.cost} Candy` : `$${item.cost.toLocaleString()}`}
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -205,7 +210,7 @@ export function Info() {
               <CardContent className="pt-2 text-xs space-y-1">
                 {Object.entries(enchant.effects).map(([stat, val]) => (
                   <div key={stat} className="flex justify-between gap-2">
-                    <span className="truncate">{stat.replace(/([A-Z])/g,' $1').toLowerCase()}</span>
+                    <span className="truncate">{t(stat as any) || stat.replace(/([A-Z])/g,' $1').toLowerCase()}</span>
                     <span className="text-muted-foreground">{val > 0 ? '+' : ''}{val}{/Speed|Boost/i.test(stat) ? '%' : ''}</span>
                   </div>
                 ))}
@@ -227,12 +232,14 @@ export function Info() {
                   <CardTitle className="text-sm font-semibold leading-tight">{p.name}</CardTitle>
                   {p.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                 </div>
-                <p className="text-xs text-muted-foreground">${p.price.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">
+                  {p.candy ? `${p.price} Candy` : `$${p.price.toLocaleString()}`}
+                </p>
               </CardHeader>
               <CardContent className="pt-2 text-xs space-y-1">
                 {Object.entries(p.stats).map(([stat,val]) => (
                   <div key={stat} className="flex justify-between gap-2">
-                    <span className="truncate">{stat.replace(/([A-Z])/g,' $1').toLowerCase()}</span>
+                    <span className="truncate">{t(stat as any) || stat.replace(/([A-Z])/g,' $1').toLowerCase()}</span>
                     <span className="text-muted-foreground">{val}</span>
                   </div>
                 ))}
@@ -257,12 +264,14 @@ export function Info() {
                   <CardTitle className="text-sm font-semibold leading-tight">{s.name}</CardTitle>
                   {s.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                 </div>
-                <p className="text-xs text-muted-foreground">${s.price.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground">
+                  {s.candy ? `${s.price} Candy` : `$${s.price.toLocaleString()}`}
+                </p>
               </CardHeader>
               <CardContent className="pt-2 text-xs space-y-1">
                 {Object.entries(s.stats).map(([stat,val]) => (
                   <div key={stat} className="flex justify-between gap-2">
-                    <span className="truncate">{stat.replace(/([A-Z])/g,' $1').toLowerCase()}</span>
+                    <span className="truncate">{t(stat as any) || stat.replace(/([A-Z])/g,' $1').toLowerCase()}</span>
                     <span className="text-muted-foreground">{val}</span>
                   </div>
                 ))}
