@@ -3,6 +3,38 @@ import { ores, modifiers, getModifierBonus, availableStats, type Effects } from 
 import { RARITY_SLOT_COUNTS } from './types';
 
 /**
+ * Calculates the display value for a modifier bonus.
+ * Handles special cases like '2x Luck' which doubles the base bonus.
+ * 
+ * @param modifierEffect - The effect name of the modifier (e.g., 'Luck', '2x Luck')
+ * @param rarity - The ore rarity tier
+ * @returns The display bonus value
+ */
+export const getDisplayModifierBonus = (modifierEffect: string, rarity: string): number => {
+  const baseBonus = getModifierBonus(rarity);
+  return modifierEffect === '2x Luck' ? baseBonus * 2 : baseBonus;
+};
+
+/**
+ * Generates the display text for a modifier including effect name and bonus value.
+ * 
+ * @param modifierName - The name of the modifier
+ * @param oreName - The name of the ore
+ * @returns Formatted display text (e.g., '2x Luck: +1.6x') or empty string if invalid
+ */
+export const getModifierDisplayText = (modifierName: string | undefined, oreName: string | undefined): string => {
+  if (!modifierName || !oreName) return '';
+  
+  const modifier = modifiers.find(m => m.name === modifierName);
+  const ore = ores.find(o => o.name === oreName);
+  
+  if (!modifier || !ore) return '';
+  
+  const displayBonus = getDisplayModifierBonus(modifier.effect, ore.rarity);
+  return `${modifier.effect}: +${displayBonus}x`;
+};
+
+/**
  * Initializes empty museum slots for all rarity tiers.
  * Creates the initial state with undefined ores and modifiers.
  * 
@@ -139,6 +171,9 @@ export function calculateMuseumBonuses(museumSlots: MuseumSlot[]): Effects {
             break;
           case 'Luck':
             bonuses.luck += modifierValue;
+            break;
+          case '2x Luck':
+            bonuses.luck += modifierValue * 2;
             break;
           case 'Modifier Boost':
             bonuses.modifierBoost += modifierValue;

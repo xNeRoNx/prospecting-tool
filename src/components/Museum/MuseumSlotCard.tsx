@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { X } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import type { MuseumSlot } from '@/hooks/useAppData';
-import { ores, modifiers, getModifierBonus } from '@/lib/gameData';
+import { ores, modifiers } from '@/lib/gameData';
+import { getModifierDisplayText } from './utils';
 
 interface MuseumSlotCardProps {
   /** The museum slot data */
@@ -219,7 +220,7 @@ export function MuseumSlotCard({
                 })()}
                 {slot.modifier && (
                   <div className="pt-1 border-t border-muted mt-1 space-y-0.5">
-                    {modifiers.find(m => m.name === slot.modifier)?.effect}: +{getModifierBonus(ores.find(o => o.name === slot.ore)?.rarity || 'Common')}x
+                    {getModifierDisplayText(slot.modifier, slot.ore)}
                   </div>
                 )}
               </div>
