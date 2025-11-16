@@ -32,6 +32,13 @@ export function separateEventMultipliers(activeEvents: string[]): EventMultiplie
   return { preTotals, postTotals };
 }
 
+export function formatPrice(price: number, isCandy?: boolean): string {
+  if (isCandy) {
+    return `${price.toLocaleString()} Candy`;
+  }
+  return `$${price.toLocaleString()}`;
+}
+
 interface Equipment {
   shovel: string | null;
   pan: string | null;

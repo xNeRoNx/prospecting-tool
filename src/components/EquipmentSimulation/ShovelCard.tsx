@@ -3,7 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { shovels } from '@/lib/gameData';
-import { formatStatValue } from './utils';
+import { formatStatValue, formatPrice } from './utils';
 
 interface ShovelCardProps {
   selectedShovel: string | null;
@@ -33,13 +33,6 @@ export function ShovelCard({ selectedShovel, onShovelChange, isLoading }: Shovel
         ))}
       </div>
     );
-  };
-
-  const formatPrice = (price: number, isCandy?: boolean) => {
-    if (isCandy) {
-      return `${price.toLocaleString()} Candy`;
-    }
-    return `$${price.toLocaleString()}`;
   };
 
   return (

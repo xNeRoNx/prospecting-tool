@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { X } from '@phosphor-icons/react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { pans, enchants } from '@/lib/gameData';
-import { formatStatValue } from './utils';
+import { formatStatValue, formatPrice } from './utils';
 
 interface PanCardProps {
   selectedPan: string | null;
@@ -58,13 +58,6 @@ export function PanCard({
         )}
       </div>
     );
-  };
-
-  const formatPrice = (price: number, isCandy?: boolean) => {
-    if (isCandy) {
-      return `${price.toLocaleString()} Candy`;
-    }
-    return `$${price.toLocaleString()}`;
   };
 
   return (
