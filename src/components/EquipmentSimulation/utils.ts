@@ -1,7 +1,7 @@
 import { type StatMap, type EquipmentStats, type EventMultipliers } from './types';
 import { shovels, pans, enchants, potions, events, getItemByReference } from '@/lib/gameData';
 
-const PRE_EVENTS = ["Luck Totem", "Strength Totem", "Luminant Totem"];
+const PRE_EVENTS = ["Luck Totem", "Strength Totem", "Luminant Totem", "Candy Corn", "Ghost Gummy"];
 // Any event not listed in PRE_EVENTS will be treated as a post-museum multiplier by default.
 
 export function formatStatValue(key: string, value: number): string {

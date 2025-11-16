@@ -35,6 +35,13 @@ export function ShovelCard({ selectedShovel, onShovelChange, isLoading }: Shovel
     );
   };
 
+  const formatPrice = (price: number, isCandy?: boolean) => {
+    if (isCandy) {
+      return `${price.toLocaleString()} Candy`;
+    }
+    return `$${price.toLocaleString()}`;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -63,7 +70,7 @@ export function ShovelCard({ selectedShovel, onShovelChange, isLoading }: Shovel
                 <SelectItem key={shovel.name} value={shovel.name}>
                   <div className="flex flex-col items-start gap-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{shovel.name} - ${shovel.price.toLocaleString()}</span>
+                      <span className="font-medium">{shovel.name} - {formatPrice(shovel.price, shovel.candy)}</span>
                       {shovel.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                     </div>
                     <div className="text-[10px] text-muted-foreground">

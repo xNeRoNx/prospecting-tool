@@ -68,9 +68,12 @@ export function JewelryCard({
         {item ? (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Badge className={getRarityClass(item.rarity)} variant="outline">
-                {item.rarity}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge className={getRarityClass(item.rarity)} variant="outline">
+                  {item.rarity}
+                </Badge>
+                {item.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
+              </div>
               <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                 <span>5★</span>
                 <Switch 
@@ -122,6 +125,7 @@ export function JewelryCard({
                                 {availableItem.rarity}
                               </Badge>
                               <span className="font-medium">{availableItem.name}</span>
+                              {availableItem.event && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Event</Badge>}
                             </div>
                             
                             <div className="text-xs space-y-1">
