@@ -610,7 +610,7 @@ export const craftableItems: CraftableItem[] = [
   {
     name: "Candy Sack",
     rarity: "Mythic",
-    position: "Necklace",
+    position: "Charm",
     recipe: [
       { material: "Vortessence", amount: 2 },
       { material: "Cinnabar", amount: 5 },
