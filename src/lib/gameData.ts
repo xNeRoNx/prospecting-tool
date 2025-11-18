@@ -107,6 +107,10 @@ export function createItemReference(item: CraftableItem): ItemReference {
 }
 
 export const potions: Potions[] = [
+  { name: "Blitz Potion", effects: { digSpeed: 60, shakeSpeed: 60 } },
+  { name: "Quake Potion", effects: { digStrength: 30, shakeStrength: 5 } },
+  { name: "Instability Potion", effects: { modifierBoost: 100 } },
+  { name: "Merchant's Potion", effects: { sellBoost: 100 } },
   { name: "Basic Luck Potion", effects: { luck: 5 } },
   { name: "Basic Capacity Potion", effects: { capacity: 25 } },
   { name: "Greater Luck Potion", effects: { luck: 10 } },
