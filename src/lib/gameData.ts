@@ -107,6 +107,10 @@ export function createItemReference(item: CraftableItem): ItemReference {
 }
 
 export const potions: Potions[] = [
+  { name: "Blitz Potion", effects: { digSpeed: 60, shakeSpeed: 60 } },
+  { name: "Quake Potion", effects: { digStrength: 30, shakeStrength: 5 } },
+  { name: "Instability Potion", effects: { modifierBoost: 100 } },
+  { name: "Merchant's Potion", effects: { sellBoost: 100 } },
   { name: "Basic Luck Potion", effects: { luck: 5 } },
   { name: "Basic Capacity Potion", effects: { capacity: 25 } },
   { name: "Greater Luck Potion", effects: { luck: 10 } },
@@ -606,7 +610,7 @@ export const craftableItems: CraftableItem[] = [
   {
     name: "Candy Sack",
     rarity: "Mythic",
-    position: "Necklace",
+    position: "Charm",
     recipe: [
       { material: "Vortessence", amount: 2 },
       { material: "Cinnabar", amount: 5 },
@@ -705,7 +709,7 @@ export const craftableItems: CraftableItem[] = [
     cost: 400000000
   },
   {
-    name: "Otherwordly Ring",
+    name: "Otherworldly Ring",
     rarity: "Exotic",
     position: "Ring",
     recipe: [
@@ -714,8 +718,8 @@ export const craftableItems: CraftableItem[] = [
       { material: "Red Beryl", amount: 3 },
       { material: "Gloomcap", amount: 10 }
     ],
-    stats: { luck: [50, 250], digSpeed: [0, 20], shakeSpeed: [0, 20], sizeBoost: [5, 20], sellBoost: [10, 30] },
-    sixStarStats: { luck: [50, 275], digSpeed: [0, 22], shakeSpeed: [0, 22], sizeBoost: [5, 21], sellBoost: [10, 32] },
+    stats: { luck: [50, 350], digSpeed: [0, 20], shakeSpeed: [0, 20], sizeBoost: [5, 25], sellBoost: [10, 30] },
+    sixStarStats: { luck: [50, 375], digSpeed: [0, 22], shakeSpeed: [0, 22], sizeBoost: [5, 26], sellBoost: [10, 32] },
     cost: 400000000
   },
   {
