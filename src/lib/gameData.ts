@@ -709,7 +709,7 @@ export const craftableItems: CraftableItem[] = [
     cost: 400000000
   },
   {
-    name: "Otherwordly Ring",
+    name: "Otherworldly Ring",
     rarity: "Exotic",
     position: "Ring",
     recipe: [
@@ -718,8 +718,8 @@ export const craftableItems: CraftableItem[] = [
       { material: "Red Beryl", amount: 3 },
       { material: "Gloomcap", amount: 10 }
     ],
-    stats: { luck: [50, 250], digSpeed: [0, 20], shakeSpeed: [0, 20], sizeBoost: [5, 20], sellBoost: [10, 30] },
-    sixStarStats: { luck: [50, 275], digSpeed: [0, 22], shakeSpeed: [0, 22], sizeBoost: [5, 21], sellBoost: [10, 32] },
+    stats: { luck: [50, 350], digSpeed: [0, 20], shakeSpeed: [0, 20], sizeBoost: [5, 25], sellBoost: [10, 30] },
+    sixStarStats: { luck: [50, 375], digSpeed: [0, 22], shakeSpeed: [0, 22], sizeBoost: [5, 26], sellBoost: [10, 32] },
     cost: 400000000
   },
   {
